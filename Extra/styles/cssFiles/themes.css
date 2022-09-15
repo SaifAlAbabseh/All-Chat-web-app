@@ -1,0 +1,375 @@
+body{
+    margin:0;
+    font-family:sans-serif;
+}
+.main_box{
+    display:flex;
+    background-color:red;
+    border-radius:10px;
+}
+.login_box,.signup_box{
+    padding:40px 20px;
+    text-align:center;
+}
+.allchat_image_box{
+    background-color:#0162AF;
+    border-radius:10px 0 0 10px;
+}
+.inputfield{
+    outline:none;
+    padding:10px 20px ;
+    border:solid 2px #0162AF;
+    border-radius:10px;
+    transition:border 0.2s;
+}
+.inputfield:focus{
+    border:solid 4px #0162AF;
+}
+.buttontag{
+    cursor: pointer;
+    background-color:#0162AF;
+    color:white;
+    border:solid 2px white;
+    border-radius:10px;
+    font-size:15px;
+    padding:10px 20px;
+    transition:all 0.5s;
+}
+.buttontag:hover{
+    background-color:white;
+    border:solid 2px #0162AF;
+    color:#0162AF;
+}
+.boxupperlabel{
+    font-family:sans-serif;
+}
+@media only screen and (max-width:950px){
+    .main_box{
+        display:block;
+    }
+    .forms{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+}
+.invalid{
+    color:red;
+    background-color:white;
+    padding:10px 10px;
+    display:none;
+}
+.mainHeaderImage{
+    background-color:#0162AF;
+    height:100%;
+    width:10%;
+    text-align: center;
+}
+.whole-box{
+    height:100%;
+}
+.link{
+    text-decoration:none;
+    color:red;
+    padding:10px;
+    border:solid 3px red;
+    border-radius:10px;
+    transition:all 0.2s;
+}
+.link:hover{
+    background-color:red;
+    border:solid white 3px;
+    color:white;
+}
+.hrLine{
+    background-color:red;
+    height:5px;
+    border:none;
+}
+.profileBox{
+    text-align:center;
+    background-color:#034780;
+    padding:20px;
+}
+.friendsListBox{
+    background-color:#0162AF;
+    width:300px;
+    height:400px;
+    position: absolute;
+    top:20%;
+    left:40%;
+    overflow:auto;
+    padding:10px;
+}
+.add_box{
+    position: relative;
+    height:80%;
+    display:flex;
+    align-items:center;
+    justify-content: center;
+    background-color:red;
+    border-radius:10px;
+    width:50%;
+}
+.add_box_outer{
+    display:flex;
+    align-items:center;
+    justify-content: center;
+    height:90%;
+}
+.menuBar{
+    display:none;
+}
+.menuC1{
+    transition:transform 0.5s;
+    transform:rotate(90deg);
+}
+.menuC2{
+    transition:transform 0.5s;
+    transform:rotate(0deg);
+}
+#exit_menu_button_box{
+    display:none;
+    width:100%;
+}
+#exit_menu_button{
+    background-color:red;
+    color:white;
+    border-radius:50%;
+    width:50px;
+    height:50px;
+    cursor:pointer;
+    user-select:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    font-size:5vh;
+}
+@media only screen and (max-width:592px){
+    .add_box{
+        width:100%;
+    }
+}
+@media only screen and (max-width:1430px){
+    #exit_menu_button_box{
+        display:block;
+        display:flex;
+        justify-content:center;
+    }
+    .mainHeaderImage{
+        position:absolute;
+        height:50%;
+        width:50%;
+        text-align: center;
+        z-index: 1000;
+    }
+    .friendsListBox{
+        position: static;
+    }
+    .menuBar{
+        display:block;
+        width:100%;
+    }
+    .whole-box{
+        text-align:center;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+    }
+}
+.menuBar{
+    background-color:#034780;
+}
+.editMainBox{
+    width:40%;
+    background-color:#0162AF;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:50px 0px;
+    border-radius:10px;
+}
+@media only screen and (max-width:550px){
+    .editMainBox{
+        width:100%;
+    }
+}
+.outer{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.mainChangeBox{
+    width:100%;
+    padding:50px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.changeBox{
+    background-color:red;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 0px;
+    border-radius:10px;
+}
+#picField{
+    cursor: pointer;
+    color:#0162AF;
+    transition:all 0.5s;
+    font-weight:bolder;
+}
+#picField::-webkit-file-upload-button{
+    visibility:hidden;
+}
+#picField::-o-file-upload-button{
+    visibility:hidden;
+}
+#picField::-ms-file-upload-button{
+    visibility:hidden;
+}
+#picField:hover{
+    background-color:white;
+    font-size:2vw;
+}
+.footOfPic tr td{
+    text-align: center;
+    border-radius:10px;
+}
+.main_chat_box{
+    width:100%;
+    height:90%;
+}
+.main_chat_inner_box{
+    width:700px;
+    height: 80%;
+    background-color:#0162AF;
+}
+#messages{
+    background-color:#034780;
+    height:500px;
+    width:400px;
+    overflow:auto;
+}
+.messageField{
+    width:300px;
+    height:100px;
+    outline:none;
+    resize:none;
+    transition:border 0.2s;
+    border:solid 1px red;
+}
+.messageField:focus{
+    border:solid 3px red;
+}
+.i{
+    font-family:sans-serif;
+    font-weight:bold;
+    font-size:20px;
+    color:white;
+    background-color:gray;
+    border-radius:50%;
+    padding:5px 10px;
+    cursor:pointer;
+    border:solid lightgreen 2px;
+    outline:none;
+}
+.outer_reqs_box{
+    position: absolute;
+    width:100%;
+    height:100%;
+    display:none;
+}
+.reqs{
+    position: absolute;
+    left:50%;
+    top:50%;
+    background-color:gray;
+    border-radius:5px;
+    border:solid lightgreen 5px;
+    padding:20px;
+    width:30%;
+    display:none;
+    color:white;
+}
+#mainDialogBox {
+    display: none;
+    position: absolute;
+    left: 15%;
+    top: 15%;
+    width: 70%;
+    height: 70%;
+    background-color: red;
+    z-index: 1000;
+    border-radius:10px;
+    padding:10px;
+}
+
+#exit {
+    background-color: black;
+    border: solid 1px black;
+    color: white;
+    padding: 5px 10px;
+    font-weight: bold;
+    font-size: 4vh;
+    cursor: pointer;
+    transition:all 0.5s;
+    border-radius:10px;
+}
+#exit:hover{
+    background-color:white;
+    color:black;
+}
+
+#main-dialog-inner {
+    width: 100%;
+    height: 90%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+}
+.otherPlatformDownloadLink{
+    color:black;
+    border:solid black 2px;
+    padding:5px 10px;
+    text-decoration: none;
+    font-size:3vh;
+    width:30vw;
+    text-align:center;
+    transition:all 0.5s;
+    border-radius:10px;
+}
+.otherPlatformDownloadLink:hover{
+    background-color:black;
+    color:red
+}
+.friends_result{
+    height:200px;
+    overflow:auto;
+    background-color:lightgray;
+    box-shadow:0 0 5px 2px lightgray;
+    border:solid #0162AF 2px;
+    border-radius:10px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+.no_sug_label{
+    color:#0162AF;
+    text-align:center;
+}
+.sug_row{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:left;
+    cursor:pointer;
+    user-select:none;
+    width:100%;
+}
+.sug_row:hover{
+    background-color:#0162AF;
+}
