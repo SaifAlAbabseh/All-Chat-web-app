@@ -33,7 +33,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
     <script src="../scripts/main.js"></script>
 </head>
 
-<body onbeforeunload ="gotout()">
+<body>
     <div class="whole-box">
         <div class="menuBar">
             <img style="cursor:pointer" id="m" width="40px" height="40px" src="../Extra/styles/images/menu.png" alt="menu icon">

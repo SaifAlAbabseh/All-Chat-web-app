@@ -8,6 +8,7 @@ function toggle(){
         }
         $("#mainHeader").slideToggle();
 }
+
 $(document).ready(function() {
     $("#exit_menu_button").click(function(){
         toggle();
@@ -22,9 +23,7 @@ $(document).ready(function() {
         $("#innerData").load(url);
     }, 2000);
 });
-function gotout(){
-    window.location.replace("../logout.php");
-}
+
 function generateURL(path){
     let origin = window.location.origin;
     let fullLink = origin + "/All_Chat/";

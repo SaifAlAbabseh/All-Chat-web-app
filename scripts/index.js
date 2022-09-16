@@ -25,5 +25,4 @@ function exitDialog() {
         "user-select": "auto"
     });
     $("#mainDialogBox").hide();
-
 }

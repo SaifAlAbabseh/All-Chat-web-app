@@ -7,5 +7,5 @@ if(isset($_SESSION) && isset($_SESSION["who"])){
     mysqli_close($conn);
     session_destroy();
 }
-header("Location:../../?t=0");
+header("Location:../../");
 ?>

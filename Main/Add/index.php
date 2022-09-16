@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
-    header("Location:../../?t=0");
+    header("Location:../../");
 }
 ?>
 <!DOCTYPE html>
