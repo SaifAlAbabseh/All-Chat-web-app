@@ -1,11 +1,11 @@
-$(document).ready(function() {
+$(document).ready(function () {
     $("#exit").click(exitDialog);
-    $("#userreq").click(function() {
+    $("#userreq").click(function () {
         $(".outer_reqs_box").show();
         $("#username_reqs").show();
         $("#password_reqs").hide();
     });
-    $("#passreq").click(function() {
+    $("#passreq").click(function () {
         $(".outer_reqs_box").show();
         $("#password_reqs").show();
         $("#username_reqs").hide();

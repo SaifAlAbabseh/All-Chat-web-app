@@ -18,23 +18,97 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
         html {
             height: 100%;
         }
+
         @media only screen and (max-width:1430px) {
             body {
                 display: flex;
                 align-items: center;
                 justify-content: center;
             }
-            .mainHeaderImage{
-                display:none;
+
+            .mainHeaderImage {
+                display: none;
             }
         }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="../scripts/main.js"></script>
+    <script>
+        function hideMainBoxBeforeLoading(box_id) {
+            $("#" + box_id + "").css({
+                'pointer-events': 'none',
+                'user-select': 'none',
+                'opacity': '0'
+            });
+        }
+
+        function showLoadingBox() {
+            let temp = document.createElement('div');
+            temp.setAttribute('id', 'loading_box_outer_id');
+            temp.setAttribute('class', 'loading_box_outer');
+            temp.innerHTML = '<div class=loading_bar></div><h3 class=loading_label>Loading</h3>';
+            temp.style.opacity = '0';
+            document.body.appendChild(temp);
+            $('#loading_box_outer_id').animate({
+                opacity: 1
+            }, 1000);
+        }
+
+        function showLoadingBoxForLogout() {
+            document.body.removeChild(document.getElementById("loading_box_outer_id"));
+            let temp = document.createElement('div');
+            temp.setAttribute('id', 'loading_box_outer_id');
+            temp.setAttribute('class', 'loading_box_outer');
+            temp.innerHTML = '<div class=loading_bar></div><h3 class=loading_label>Loading</h3>';
+            temp.style.opacity = '0';
+            document.body.appendChild(temp);
+            $('#loading_box_outer_id').animate({
+                opacity: 1
+            }, 1000);
+        }
+
+        function returnAfterLoading(box_id) {
+            setTimeout(function() {
+                $("#" + box_id + "").css({
+                    'pointer-events': 'all'
+                });
+                $("#" + box_id + "").animate({
+                    opacity: 1
+                }, 1000);
+                $('#loading_box_outer_id').animate({
+                    opacity: 0
+                }, 1000);
+                $('#loading_box_outer_id').css({
+                    'z-index': '-100'
+                });
+            }, 5000);
+        }
+
+        function returnAfterLoadingForLogout() {
+            setTimeout(function() {
+                window.location.replace('Logout/');
+            }, 5000);
+        }
+
+        function startLoadingToLogout(box_id) {
+            hideMainBoxBeforeLoading(box_id);
+            showLoadingBoxForLogout();
+            returnAfterLoadingForLogout();
+        }
+
+        function startLoading(box_id) {
+            hideMainBoxBeforeLoading(box_id);
+            showLoadingBox();
+            returnAfterLoading(box_id);
+        }
+        $(document).ready(function() {
+            startLoading('whole_box_id');
+        });
+    </script>
 </head>
 
 <body>
-    <div class="whole-box">
+    <div class="whole-box" id="whole_box_id">
         <div class="menuBar">
             <img style="cursor:pointer" id="m" width="40px" height="40px" src="../Extra/styles/images/menu.png" alt="menu icon">
         </div>
@@ -55,11 +129,11 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
                     echo
                     "
                     <div class='profileBox'>
-                        <img src='View Image/?u=".$_SESSION["who"]."' width='100px' height='100px' style='border-radius:50%'/>
+                        <img src='View Image/?u=" . $_SESSION["who"] . "' width='100px' height='100px' style='border-radius:50%'/>
                         <br />
                         <h2 style='color:yellow'>" . $_SESSION["who"] . "</h2>
                         <br />
-                        <a class='link' href='Logout/'>Logout</a>
+                        <button onclick=startLoadingToLogout('whole_box_id'); class='link' style='cursor:pointer;font-size:1.5rem;font-weight:bold'>Logout</button>
                     </div>
                     ";
                 } else {
@@ -79,7 +153,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
                 <div id="exit_menu_button">X</div>
             </div>
         </div>
-        
+
         <div class="friendsListBox" id="friendBox">
             <table>
                 <thead>
@@ -97,6 +171,6 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
 </body>
 
 </html>
-<?php 
+<?php
 mysqli_close($conn);
 ?>

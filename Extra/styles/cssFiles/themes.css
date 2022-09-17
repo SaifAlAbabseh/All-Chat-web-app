@@ -43,6 +43,19 @@ body{
 .boxupperlabel{
     font-family:sans-serif;
 }
+.loading_box_outer{
+    border-radius:10px;
+    width:30%;
+    height:150px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    user-select:none;
+    position:absolute;
+    left:35%;
+    top:40%;
+}
 @media only screen and (max-width:950px){
     .main_box{
         display:block;
@@ -372,4 +385,26 @@ body{
 }
 .sug_row:hover{
     background-color:#0162AF;
+}
+.loading_bar{
+    background-color:red;
+    border-radius:10px;
+    width:20vw;
+    height:20px;
+    border-left:solid 0vw #0162AF;
+    animation:loadingAnimate linear 5s 1 alternate;
+}
+@keyframes loadingAnimate{
+    0%{
+        border-left:solid 0vw #0162AF;
+        width:20vw;
+    }
+    100%{
+        border-left:solid 20vw #0162AF;
+        width:0vw;
+    }
+}
+.loading_label{
+    color:red;
+    font-family:sans-serif;
 }

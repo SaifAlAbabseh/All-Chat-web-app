@@ -25,41 +25,89 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
             height: 100%;
         }
     </style>
+    <script>
+        function hideMainBoxBeforeLoading(box_id) {
+            $("#" + box_id + "").css({
+                'pointer-events': 'none',
+                'user-select': 'none'
+            });
+            $("#" + box_id + "").animate({
+                opacity: 0
+            }, 300);
+        }
+
+        function showLoadingBox() {
+            let temp = document.createElement('div');
+            temp.setAttribute('id', 'loading_box_outer_id');
+            temp.setAttribute('class', 'loading_box_outer');
+            temp.innerHTML = '<div class=loading_bar></div><h3 class=loading_label>Loading</h3>';
+            temp.style.opacity = '0';
+            document.body.appendChild(temp);
+            $('#loading_box_outer_id').animate({
+                opacity: 1
+            }, 1000);
+        }
+
+        function returnAfterLoading(box_id) {
+            setTimeout(function() {
+                $("#" + box_id + "").css({
+                    'pointer-events': 'all'
+                });
+                $("#" + box_id + "").animate({
+                    opacity: 1
+                }, 1000);
+                $('#loading_box_outer_id').animate({
+                    opacity: 0
+                }, 1000);
+                $('#loading_box_outer_id').css({
+                    'z-index': '-100'
+                });
+            }, 5000);
+        }
+
+        function startLoading(box_id) {
+            hideMainBoxBeforeLoading(box_id);
+            showLoadingBox();
+            returnAfterLoading(box_id);
+        }
+    </script>
 </head>
 
 <body>
-    <div class="backButton">
-        <a href="../"><img class="backbuttonlink" src="../../Extra/styles/images/backButton.png" alt="Back Button" width="50px" height="50px" /></a>
-    </div>
-    <div class="add_box_outer">
-        <div class="add_box">
-            <form action="../Add/" method="post">
-                <table>
-                    <tr>
-                        <td>
-                            <input type="text" class="inputfield" name="friendUsername" id="friendUsername_field" required placeholder="Username" onkeyup="getSuggesstions(this.value, false)" autocomplete="off" />
-                        </td>
-                        <td>
-                            <input type="submit" name="addFriendButton" class="buttontag" id="addFriendButton" value="ADD">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <div class="friends_result" id="sug_box">
-                                <h2 class="no_sug_label" id="no_sug_label_box">
-                                    No Suggestions.
+    <div id="whole_box" style="height:100%;">
+        <div class="backButton">
+            <a href="../"><img class="backbuttonlink" src="../../Extra/styles/images/backButton.png" alt="Back Button" width="50px" height="50px" /></a>
+        </div>
+        <div class="add_box_outer">
+            <div class="add_box">
+                <form action="../Add/" method="post">
+                    <table>
+                        <tr>
+                            <td>
+                                <input type="text" class="inputfield" name="friendUsername" id="friendUsername_field" required placeholder="Username" onkeyup="getSuggesstions(this.value, false)" autocomplete="off" />
+                            </td>
+                            <td>
+                                <input type="submit" name="addFriendButton" class="buttontag" id="addFriendButton" value="ADD">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <div class="friends_result" id="sug_box">
+                                    <h2 class="no_sug_label" id="no_sug_label_box">
+                                        No Suggestions.
+                                    </h2>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                <h2 id="addfriendLabel">
                                 </h2>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th colspan="2">
-                            <h2 id="addfriendLabel">
-                            </h2>
-                        </th>
-                    </tr>
-                </table>
-            </form>
+                            </th>
+                        </tr>
+                    </table>
+                </form>
+            </div>
         </div>
     </div>
 </body>
@@ -67,6 +115,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
 </html>
 <?php
 if (isset($_POST) && isset($_POST["addFriendButton"])) {
+    echo "<script>startLoading('whole_box');</script>";
     extract($_POST);
     $fusername = $friendUsername;
     $you = $_SESSION["who"];

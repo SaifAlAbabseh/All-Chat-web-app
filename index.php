@@ -26,6 +26,51 @@ $_SESSION["getDB"] = true;
                 $("#mainDialogBox").show();
             }
         });
+
+        function hideMainBoxBeforeLoading(box_id) {
+            $("#" + box_id + "").css({
+                'pointer-events': 'none',
+                'user-select': 'none'
+            });
+            $("#" + box_id + "").animate({
+                opacity: 0
+            }, 500);
+        }
+
+        function showLoadingBox() {
+            let temp = document.createElement('div');
+            temp.setAttribute('id', 'loading_box_outer_id');
+            temp.setAttribute('class', 'loading_box_outer');
+            temp.innerHTML = '<div class=loading_bar></div><h3 class=loading_label>Loading</h3>';
+            temp.style.opacity = '0';
+            document.body.appendChild(temp);
+            $('#loading_box_outer_id').animate({
+                opacity: 1
+            }, 1000);
+        }
+
+        function returnAfterLoading(box_id) {
+            setTimeout(function() {
+                $("#" + box_id + "").css({
+                    'pointer-events': 'all'
+                });
+                $("#" + box_id + "").animate({
+                    opacity: 1
+                }, 1000);
+                $('#loading_box_outer_id').animate({
+                    opacity: 0
+                }, 1000);
+                $('#loading_box_outer_id').css({
+                    'z-index': '-100'
+                });
+            }, 5000);
+        }
+
+        function startLoading(box_id) {
+            hideMainBoxBeforeLoading(box_id);
+            showLoadingBox();
+            returnAfterLoading(box_id);
+        }
     </script>
     <style>
         body,
@@ -152,6 +197,7 @@ $_SESSION["getDB"] = true;
 </html>
 <?php
 if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton"]))) {
+    echo "<script>startLoading('main_box-id');</script>";
     extract($_POST);
     if (isset($loginButton)) {
         $un = $username;
