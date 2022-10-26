@@ -234,13 +234,7 @@ body{
     transition:all 0.5s;
     font-weight:bolder;
 }
-#picField::-webkit-file-upload-button{
-    visibility:hidden;
-}
-#picField::-o-file-upload-button{
-    visibility:hidden;
-}
-#picField::-ms-file-upload-button{
+#picField::file-selector-button{
     visibility:hidden;
 }
 #picField:hover{
