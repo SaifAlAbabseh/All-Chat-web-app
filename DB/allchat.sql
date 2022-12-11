@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Feb 24, 2022 at 05:42 AM
+-- Generation Time: Dec 11, 2022 at 06:53 PM
 -- Server version: 8.0.17
 -- PHP Version: 7.3.10
 
@@ -25,13 +25,26 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `all_chat_groups`
+--
+
+CREATE TABLE `all_chat_groups` (
+  `group_id` varchar(255) NOT NULL,
+  `group_name` varchar(255) NOT NULL,
+  `leader_username` varchar(255) NOT NULL,
+  `group_image` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `friends`
 --
 
 CREATE TABLE `friends` (
   `user1` varchar(1000) NOT NULL,
   `user2` varchar(1000) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -44,7 +57,7 @@ CREATE TABLE `users` (
   `password` varchar(1000) NOT NULL,
   `picture` varchar(1000) NOT NULL,
   `available` varchar(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

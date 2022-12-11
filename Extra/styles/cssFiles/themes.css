@@ -94,6 +94,17 @@ body{
     border:solid white 3px;
     color:white;
 }
+#kicklink:hover{
+    background-color:white;
+}
+#addlink{
+    background-color:white;
+    color:green;
+}
+#addlink:hover{
+    background-color:green;
+    color:white;
+}
 .hrLine{
     background-color:red;
     height:5px;
@@ -110,7 +121,24 @@ body{
     height:400px;
     position: absolute;
     top:20%;
-    left:40%;
+    left:60%;
+    overflow:auto;
+    padding:10px;
+}
+#addfriendBox{
+    left: 40%;
+    display: none;
+    background-color: red;
+    z-index: 1000;
+    border-radius:10px;
+}
+.groupsListBox{
+    background-color:#0162AF;
+    width:300px;
+    height:400px;
+    position: absolute;
+    top:20%;
+    left:30%;
     overflow:auto;
     padding:10px;
 }
@@ -177,8 +205,11 @@ body{
         text-align: center;
         z-index: 1000;
     }
-    .friendsListBox{
+    .friendsListBox, .groupsListBox{
         position: static;
+    }
+    #addfriendBox{
+        position: absolute;
     }
     .menuBar{
         display:block;
@@ -228,13 +259,13 @@ body{
     padding:40px 0px;
     border-radius:10px;
 }
-#picField{
+#picField, #picFieldGroup{
     cursor: pointer;
     color:#0162AF;
     transition:all 0.5s;
     font-weight:bolder;
 }
-#picField::file-selector-button{
+#picField::file-selector-button, #picFieldGroup::file-selector-button{
     visibility:hidden;
 }
 #picField:hover{
@@ -301,7 +332,8 @@ body{
     display:none;
     color:white;
 }
-#mainDialogBox {
+
+#mainDialogBox, #createGroupBox, #addMainDialogBox {
     display: none;
     position: absolute;
     left: 15%;
@@ -312,6 +344,11 @@ body{
     z-index: 1000;
     border-radius:10px;
     padding:10px;
+}
+
+#createGroupBox{
+    height: 50%;
+    width:50%;
 }
 
 #exit {
@@ -330,7 +367,7 @@ body{
     color:black;
 }
 
-#main-dialog-inner {
+#main-dialog-inner, #createGroupBox-inner, #add-main-dialog-inner {
     width: 100%;
     height: 90%;
     display:flex;
@@ -338,6 +375,13 @@ body{
     justify-content:center;
     flex-direction:column;
 }
+
+#add-main-dialog-inner{
+    width: 300px;
+    height: 400px;
+    overflow: auto;
+}
+
 .otherPlatformDownloadLink{
     color:black;
     border:solid black 2px;
@@ -401,4 +445,55 @@ body{
 .loading_label{
     color:red;
     font-family:sans-serif;
+}
+.plus_button{
+    font-size: 1.5rem;
+    width:30px;
+    height:30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color:black;
+    color:white;
+    border-radius: 50%;
+    font-weight: bolder;
+    transition: all 0.5s;
+    cursor: pointer;
+}
+.plus_button:hover{
+    background-color: white;
+    color: black;
+}
+.settingsIconClickable{
+    text-decoration: none;
+}
+.settingsIcon{
+    width: 40px;
+    height: 40px;
+}
+.leaveGroupLink{
+    color:red;
+    background-color: white;
+    font-weight: bolder;
+}
+.main-dialog-inner{
+    width:70%;
+    height:80%;
+    overflow: auto;
+}
+#add_member_button{
+    background-color: green;
+    color:white;
+    width:50px;
+    height:50px;   
+    border-radius: 50%;
+    font-size: 2rem;
+    font-weight: bolder;
+    cursor: pointer;
+    transition: 0.5s all;
+    border: none;
+}
+#add_member_button:hover{
+    background-color: white;
+    color:green;
 }

@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (isset($_SESSION) && isset($_SESSION["who"])) {
+if (isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_REQUEST["group_id"])) {
     require_once("DB.php");
     $query = "SELECT * FROM friends WHERE BINARY user1='" . $_SESSION["who"] . "' OR BINARY user2='" . $_SESSION["who"] . "'";
     $result = mysqli_query($conn, $query);
@@ -18,22 +18,13 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
                 $result2 = mysqli_query($conn, $get);
                 if (mysqli_num_rows($result2)) {
                     while ($row2 = mysqli_fetch_row($result2)) {
-                        $ava;
-                        if ($row2[3] == "0") {
-                            $ava = "<div style='border-radius:50%;background-color:red;width:10px;height:10px'></div>";
-                        } else if ($row2[3] == "1") {
-                            $ava = "<div style='border-radius:50%;background-color:lightgreen;width:10px;height:10px'></div>";
-                        }
                         echo "
                                     
                                     <tr>
-                                        <td><img src='View Image/?u=" . $row2[0] . "' width='50px' height='50px' style='border-radius:50%'/> <sup>" . $ava . "</sup></td>
+                                        <td><img src='../View Image/?u=" . $row2[0] . "' width='50px' height='50px' style='border-radius:50%'/></td>
                                         <td><h2 style='color:white'>" . $row2[0] . "</h2></td>
                                         <td>
-                                            <a href='Chat/?with=" . $row2[0] . "' class='link'>Chat</a>
-                                        </td>
-                                        <td>
-                                            <a href='Delete Friend/?name=" . $row2[0] . "' class='link'>Delete</a>
+                                            <a style='border-color:green;' href='../../addMemberToGroup.php?group_id=" . $_REQUEST["group_id"] . "&user=".$row2[0]."' id='addlink' class='link'>Add</a>
                                         </td>
                                     </tr>
 
@@ -52,4 +43,3 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
 } else {
     echo "<tr><th><h2 style='color:white'>Error..</h2></th></tr>";
 }
-?>

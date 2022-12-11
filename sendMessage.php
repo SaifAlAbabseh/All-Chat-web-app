@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_REQUEST["message"]) && isset($_REQUEST["lastI"]) && isset($_REQUEST["tname"]))) {
-    header("Location:../All_Chat/");
+    echo "Unknown Error..";
 }
 else{
     $message=trim($_REQUEST["message"]);

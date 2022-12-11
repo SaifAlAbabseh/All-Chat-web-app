@@ -50,7 +50,7 @@ if(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_RE
     }
 }
 else{
-    header("Location:../All_Chat/");
+    echo "error";
 }
 
 

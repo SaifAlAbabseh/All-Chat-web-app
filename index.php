@@ -1,6 +1,5 @@
 <?php
 session_start();
-$_SESSION["getDB"] = true;
 ?>
 <!DOCTYPE html>
 <html>

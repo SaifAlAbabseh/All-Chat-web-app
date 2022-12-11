@@ -26,5 +26,8 @@ if (isset($_REQUEST) && isset($_REQUEST["value"]) && isset($_REQUEST["exact"]) &
         echo "<h2 class='no_sug_label' style='color:red'>Error!</h2>";
     }
 } else {
-    header("Location:../All_Chat/");
+    echo "<h2 class='no_sug_label' style='color:red'>Error!</h2>";
 }
+
+
+?>
