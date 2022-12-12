@@ -301,6 +301,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                                 oldpos++;
                             }
                         } else {
+                            disableInputMessageFields();
                             if (res == "nomore") {
                                 var newrow1 = document.createElement("tr");
                                 newrow1.setAttribute("style", "text-align:center");
@@ -308,6 +309,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                                 var msg = document.getElementById("msg");
                                 msg.append(newrow1);
                                 clearInterval(loo);
+                                window.location.replace('../');
                             } else if (res == "error") {
                                 var newrow1 = document.createElement("tr");
                                 newrow1.setAttribute("style", "text-align:center");
@@ -315,6 +317,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                                 var msg = document.getElementById("msg");
                                 msg.append(newrow1);
                                 clearInterval(loo);
+                                window.location.replace('../');
                             } else if (res == "empty") {} else {
                                 window.location.replace('../../');
                             }
@@ -326,6 +329,11 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                 xmlhttp.send();
             }, 1000);
         });
+
+        function disableInputMessageFields(){
+            $("#messageField").prop("disabled", true);
+            $("#sendButton").prop("disabled", true);
+        }
     </script>
 </body>
 
