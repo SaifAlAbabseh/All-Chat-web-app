@@ -26,6 +26,6 @@ if(isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"]=="fromMob
     mysqli_close($conn);
 }
 else{
-    header("../Location:index.php");
+    echo "Unknown Error";
 }
 ?>

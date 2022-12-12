@@ -200,10 +200,10 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
     extract($_POST);
     if (isset($loginButton)) {
         $un = $username;
-        $password = $userpassword;
-        if (trim($un) != "" && trim($password) != "") {
+        $password = trim($userpassword);
+        if (trim($un) != "" && $password != "") {
             require_once("DB.php");
-            $query = "SELECT * FROM users WHERE BINARY username='" . $un . "' AND BINARY password='" . $password . "'";
+            $query = "SELECT * FROM users WHERE BINARY username='" . $un . "' AND password='" . md5($password) . "'";
             $result = mysqli_query($conn, $query);
             if ($result) {
                 if (mysqli_num_rows($result)) {
@@ -236,9 +236,9 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
         }
     } else if (isset($signupButton)) {
         $un = $signupusername;
-        $password = $signupuserpassword;
-        $cpass = $signupuserconfirmpassword;
-        if (trim($un) != "" && trim($password) != "" && trim($cpass) != "") {
+        $password = trim($signupuserpassword);
+        $cpass = trim($signupuserconfirmpassword);
+        if (trim($un) != "" && $password != "" && $cpass != "") {
             $everythingIsGood = true;
             if (strpos($un, " ") || !(strlen($un) >= 6 && strlen($un) <= 12)) {
                 $everythingIsGood = false;
@@ -255,6 +255,8 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                 $everythingIsGood = false;
             }
             if ($everythingIsGood) {
+                $password = md5($password);
+                $cpass = md5($cpass);
                 if ($password == $cpass) {
                     require_once("DB.php");
                     $query = "SELECT username FROM users WHERE BINARY username='" . $un . "'";
