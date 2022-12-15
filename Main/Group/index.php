@@ -301,8 +301,8 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                                 oldpos++;
                             }
                         } else {
-                            disableInputMessageFields();
                             if (res == "nomore") {
+                                disableInputMessageFields();
                                 var newrow1 = document.createElement("tr");
                                 newrow1.setAttribute("style", "text-align:center");
                                 newrow1.innerHTML = "<td style='color:red'><h1>Youre not in the group anymore or the group is deleted.</h1></td>";
@@ -311,6 +311,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                                 clearInterval(loo);
                                 window.location.replace('../');
                             } else if (res == "error") {
+                                disableInputMessageFields();
                                 var newrow1 = document.createElement("tr");
                                 newrow1.setAttribute("style", "text-align:center");
                                 newrow1.innerHTML = "<td style='color:red'><h1>Connection Error</h1></td>";
