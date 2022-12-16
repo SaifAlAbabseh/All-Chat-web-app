@@ -313,6 +313,8 @@ body{
     cursor:pointer;
     border:solid lightgreen 2px;
     outline:none;
+    width: 45px;
+    height: 45px;
 }
 .outer_reqs_box{
     position: absolute;
@@ -374,6 +376,10 @@ body{
     align-items:center;
     justify-content:center;
     flex-direction:column;
+}
+
+#createGroupBox-inner{
+    overflow: auto;
 }
 
 #add-main-dialog-inner{
@@ -496,4 +502,16 @@ body{
 #add_member_button:hover{
     background-color: white;
     color:green;
+}
+.flexColumn{
+    display:flex;
+    flex-direction:column;
+}
+.createGroupButton{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.createGroupForm{
+    width: 100%;
 }

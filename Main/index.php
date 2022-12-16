@@ -132,20 +132,41 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
         </div>
         <button id="exit">X</button>
         <div id="createGroupBox-inner">
-            <form action="" method="post" enctype="multipart/form-data">
-                <div style="display:flex;flex-direction:column;">
-                    <label>Group Name: <input type="button" value=" i " class="i" id="userreq"></label>
-                    <input type="text" name="group_name" class="inputfield" style="width:70%;">
-                </div>
-                <br>
-                <div style="display:flex;flex-direction:column;">
-                    <label>Group Profile Image: <input type="button" value=" i " class="i" id="imagereq"></label>
-                    <input type="file" name="image" id="picFieldGroup" class="inputfield" style="width:70%;">
-                </div>
-                <br>
+            <form action="" method="post" enctype="multipart/form-data" class="createGroupForm">
                 <center>
-                    <input type="submit" class="link" value="Create" name="create_group_button">
+                    <table>
+                        <tr>
+                            <td>
+                                <label>Group Name: </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" name="group_name" class="inputfield" style="width:70%;">
+                            </td>
+                            <td>
+                                <input type="button" value=" i " class="i" id="userreq">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>Group Profile Image: </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="file" name="image" id="picFieldGroup" class="inputfield" style="width:70%;">
+                            </td>
+                            <td>
+                                <input type="button" value=" i " class="i" id="imagereq">
+                            </td>
+                        </tr>
+                    </table>
                 </center>
+                <br>
+                <div class="createGroupButton">
+                    <input type="submit" class="link" value="Create" name="create_group_button" style="cursor:pointer;width:90%;font-weight:bolder;">
+                </div>
             </form>
         </div>
     </div>
