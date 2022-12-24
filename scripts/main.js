@@ -31,10 +31,12 @@ $(document).ready(function() {
     $("#exit_menu_button").click(function(){
         toggle();
         $("#friendBox").css({"pointer-events": "initial","opacity": "1","user-select": "auto"});
+        $("#groupsBox").css({"pointer-events": "initial","opacity": "1","user-select": "auto"});
     });
     $("#m").click(function(){
         toggle();
         $("#friendBox").css({"pointer-events": "none","opacity": "0.2","user-select": "none"});
+        $("#groupsBox").css({"pointer-events": "none","opacity": "0.2","user-select": "none"});
     });
     var friends_url = generateURL("friendsync.php");
     var groups_url = generateURL("groupsync.php");
