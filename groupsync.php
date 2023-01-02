@@ -6,6 +6,7 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
     $result = mysqli_query($conn, $query);
     if ($result) {
         if (mysqli_num_rows($result)) {
+            $checkIfAtLeastOneGroupMatch = false;
             while ($row = mysqli_fetch_row($result)) {
                 $group_id = $row[0];
                 $group_name = $row[1];
@@ -14,6 +15,7 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
                 $get_group_query = "SELECT user_type FROM $group_table_name WHERE BINARY username='" . $_SESSION["who"] . "'";
                 $groups_query_result = mysqli_query($conn, $get_group_query);
                 if (mysqli_num_rows($groups_query_result)) {
+                    $checkIfAtLeastOneGroupMatch = true;
                     echo "
                                     
                                     <tr>
@@ -27,6 +29,9 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
 
                                     ";
                 }
+            }
+            if(!$checkIfAtLeastOneGroupMatch){
+                echo "<tr><th><h2 style='color:white'>No groups to show..</h2></th></tr>";
             }
         } else {
             echo "<tr><th><h2 style='color:white'>No groups to show..</h2></th></tr>";
