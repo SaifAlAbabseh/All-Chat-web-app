@@ -1,5 +1,9 @@
 <?php
 session_start();
+if(isset($_SESSION) && isset($_SESSION["code"])){
+    $old_code = $_SESSION["code"];
+    unset($_SESSION["code"]);
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -173,6 +177,49 @@ session_start();
                         </td>
                     </tr>
                     <tr>
+                        <td colspan="2">
+                            <?php
+
+                            function generateRandomChar(){
+                                $alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                                $numbers = "0123456789";
+
+                                $char_rand_alpha_or_number = rand(1, 2);
+                                if ($char_rand_alpha_or_number == 1) {
+                                    return "" . $alphabets[rand(0, strlen($alphabets) - 1)];
+                                } else if ($char_rand_alpha_or_number == 2) {
+                                    return "" . $numbers[rand(0, strlen($numbers) - 1)];
+                                }
+                            }
+
+                            
+
+                            $_SESSION["code"] = "";
+
+                            echo "<div id='signup_code_box'>";
+
+                            $how_many_chars = rand(4, 6);
+                            for ($i = 1; $i <= $how_many_chars; $i++) {
+                                $_SESSION["code"] .= generateRandomChar();
+                            }
+
+                            for ($i = 1; $i <= $how_many_chars; $i++) {
+                                echo "<img width='25' height='50' src='captcha.php?p=$i'>";
+                            }
+
+                            echo "</div>";
+
+                            echo "<script>console.log('old: ".$_SESSION["code"]."')</script>";
+
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <input type="text" name="signup_code_field" class="inputfield" placeholder="Enter Code" required />
+                        </td>
+                    </tr>
+                    <tr>
                         <td>
                             <input type="submit" name="signupButton" class="buttontag" id="signup_buttontag" value="SIGNUP" />
                         </td>
@@ -181,7 +228,7 @@ session_start();
                         </td>
                     </tr>
                     <tr>
-                        <th colspan="2">
+                        <th colspan="3">
                             <h2 class="invalid" id="invalidforsignup">
                                 INVALID
                             </h2>
@@ -195,9 +242,11 @@ session_start();
 
 </html>
 <?php
+
 if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton"]))) {
     echo "<script>startLoading('main_box-id');</script>";
     extract($_POST);
+
     if (isset($loginButton)) {
         $un = $username;
         $password = trim($userpassword);
@@ -270,22 +319,32 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                 invalidforsignup.innerHTML='Username is already in use';
                             </script>";
                         } else {
-                            $squery = "INSERT INTO users VALUES ('" . $un . "','" . $password . "','defaultUser','0')";
-                            if (mysqli_query($conn, $squery)) {
+                            if($signup_code_field == $old_code){
+                                $squery = "INSERT INTO users VALUES ('" . $un . "','" . $password . "','defaultUser','0')";
+                                if (mysqli_query($conn, $squery)) {
+                                    echo
+                                    "<script>
+                                        var invalidfield=document.getElementById('invalidforsignup');
+                                        invalidfield.style.display='block';
+                                        invalidfield.style.color='green';
+                                        invalidforsignup.innerHTML='Successful';
+                                    </script>";
+                                } else {
+                                    echo
+                                    "<script>
+                                        var invalidfield=document.getElementById('invalidforsignup');
+                                        invalidfield.style.display='block';
+                                        invalidforsignup.innerHTML='Connection Error';
+                                    </script>";
+                                }
+                            }
+                            else{
                                 echo
                                 "<script>
                                     var invalidfield=document.getElementById('invalidforsignup');
                                     invalidfield.style.display='block';
-                                    invalidfield.style.color='green';
-                                    invalidforsignup.innerHTML='Successful';
+                                    invalidforsignup.innerHTML='Invalid captcha code, try again';
                                 </script>";
-                            } else {
-                                echo
-                                "<script>
-                                var invalidfield=document.getElementById('invalidforsignup');
-                                invalidfield.style.display='block';
-                                invalidforsignup.innerHTML='Connection Error';
-                             </script>";
                             }
                         }
                     } else {

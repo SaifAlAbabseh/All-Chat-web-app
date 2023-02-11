@@ -515,3 +515,9 @@ body{
 .createGroupForm{
     width: 100%;
 }
+#signup_code_box{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
