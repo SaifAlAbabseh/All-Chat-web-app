@@ -209,8 +209,6 @@ if(isset($_SESSION) && isset($_SESSION["code"])){
 
                             echo "</div>";
 
-                            echo "<script>console.log('old: ".$_SESSION["code"]."')</script>";
-
                             ?>
                         </td>
                     </tr>
