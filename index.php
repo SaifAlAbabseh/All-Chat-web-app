@@ -1,6 +1,6 @@
 <?php
 session_start();
-if(isset($_SESSION) && isset($_SESSION["code"])){
+if (isset($_SESSION) && isset($_SESSION["code"])) {
     $old_code = $_SESSION["code"];
     unset($_SESSION["code"]);
 }
@@ -180,34 +180,38 @@ if(isset($_SESSION) && isset($_SESSION["code"])){
                         <td colspan="2">
                             <?php
 
-                            function generateRandomChar(){
-                                $alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                            function generateRandomChar()
+                            {
+                                $capital_alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                                $small_alphabets = "abcdefghijklmnopqrstuvwxyz";
                                 $numbers = "0123456789";
 
                                 $char_rand_alpha_or_number = rand(1, 2);
                                 if ($char_rand_alpha_or_number == 1) {
-                                    return "" . $alphabets[rand(0, strlen($alphabets) - 1)];
+                                    $small_or_capital = rand(1, 2);
+                                    if($small_or_capital == 1){
+                                        return "" . $small_alphabets[rand(0, strlen($small_alphabets) - 1)];
+                                    }else if($small_or_capital == 2){
+                                        return "" . $capital_alphabets[rand(0, strlen($capital_alphabets) - 1)];
+                                    }
                                 } else if ($char_rand_alpha_or_number == 2) {
                                     return "" . $numbers[rand(0, strlen($numbers) - 1)];
                                 }
                             }
 
-                            
+                            function showCaptcha()
+                            {
+                                $_SESSION["code"] = "";
 
-                            $_SESSION["code"] = "";
+                                $how_many_chars = rand(4, 6);
+                                for ($i = 1; $i <= $how_many_chars; $i++) {
+                                    $_SESSION["code"] .= generateRandomChar();
+                                }
 
-                            echo "<div id='signup_code_box'>";
-
-                            $how_many_chars = rand(4, 6);
-                            for ($i = 1; $i <= $how_many_chars; $i++) {
-                                $_SESSION["code"] .= generateRandomChar();
+                                echo "<img width='200' height='50' src='captcha.php'>";
                             }
 
-                            for ($i = 1; $i <= $how_many_chars; $i++) {
-                                echo "<img width='25' height='50' src='captcha.php?p=$i'>";
-                            }
-
-                            echo "</div>";
+                            showCaptcha();
 
                             ?>
                         </td>
@@ -317,7 +321,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                 invalidforsignup.innerHTML='Username is already in use';
                             </script>";
                         } else {
-                            if($signup_code_field == $old_code){
+                            if ($signup_code_field == $old_code) {
                                 $squery = "INSERT INTO users VALUES ('" . $un . "','" . $password . "','defaultUser','0')";
                                 if (mysqli_query($conn, $squery)) {
                                     echo
@@ -335,8 +339,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                         invalidforsignup.innerHTML='Connection Error';
                                     </script>";
                                 }
-                            }
-                            else{
+                            } else {
                                 echo
                                 "<script>
                                     var invalidfield=document.getElementById('invalidforsignup');
