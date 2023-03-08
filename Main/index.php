@@ -272,10 +272,13 @@ function checkGroupName($group_name)
 
 function generateGroupID($conn)
 {
-    $id_query = "SELECT * FROM all_chat_groups";
+    $id_query = "SELECT group_id FROM all_chat_groups ORDER BY group_id DESC LIMIT 1";
     $id_result = mysqli_query($conn, $id_query);
     if ($id_result) {
-        $new_id = mysqli_num_rows($id_result) + 1;
+        $new_id = 1;
+        if(mysqli_num_rows($id_result)){    
+            $new_id = mysqli_fetch_row($id_result)[0] + 1;
+        }
         return $new_id;
     }
     return "error";
