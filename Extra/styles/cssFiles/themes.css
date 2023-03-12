@@ -515,3 +515,16 @@ body{
 .createGroupForm{
     width: 100%;
 }
+#imageRenderBox{
+    width: 100px;
+    height: 100px;
+}
+#imageRenderOuterBox{
+    text-align: center;
+}
+#groupEditBox{
+    display: none;
+    position: absolute;
+    left:40%;
+    z-index: 99999;
+}
