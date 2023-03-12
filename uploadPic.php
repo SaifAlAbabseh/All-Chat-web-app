@@ -36,6 +36,7 @@ else{
             align-items: center;
         }
     </style>
+    <script src="scripts/commonMethods.js"></script>
 </head>
 
 <body>
@@ -55,8 +56,9 @@ else{
                     <form action='uploadPic.php?username=".$_REQUEST["username"]."&password=".$_REQUEST["password"]."&temp=".$_REQUEST["temp"]."' method='post' enctype='multipart/form-data'>
                         <tbody class='changeBox'>
                             <tr>
-                                <td>
-                                    <input type='file' name='imagejava' class='inputfield' id='picField' required />
+                                <td id='imageRenderOuterBox'>
+                                    <input type='file' onchange='renderImage()' name='imagejava' class='inputfield' id='picField' required />
+                                    <br>
                                 </td>
 
                             </tr>

@@ -70,6 +70,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
             returnAfterLoading(box_id);
         }
     </script>
+    <script src="../../../scripts/commonMethods.js"></script>
 </head>
 
 <body>
@@ -91,8 +92,9 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
                     <form action="" method="post" enctype="multipart/form-data">
                         <tbody class="changeBox">
                             <tr>
-                                <td>
-                                    <input type="file" name="image" class="inputfield" id="picField" required />
+                                <td id="imageRenderOuterBox">
+                                    <input type="file" onchange="renderImage()" name="image" class="inputfield" id="picField" required />
+                                    <br>
                                 </td>
 
                             </tr>

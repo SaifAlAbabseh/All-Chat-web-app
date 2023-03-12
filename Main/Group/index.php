@@ -84,10 +84,70 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
             });
             $("#addfriendBox").hide();
         }
+
+        function showEditGroupPicBox(){
+            $("#main_box_parent").css({
+                "pointer-events": "none",
+                "opacity": "0.5",
+                "user-select": "none"
+            });
+            $("#mainDialogBox").css({
+                "pointer-events": "none",
+                "opacity": "0.5",
+                "user-select": "none"
+            });
+            $("#groupEditBox").show();
+        }
+
+        function editExitDialog(){
+            $("#mainDialogBox").css({
+                "pointer-events": "initial",
+                "opacity": "1",
+                "user-select": "auto"
+            });
+            $("#groupEditBox").hide();
+        }
     </script>
+    <script src="../../scripts/commonMethods.js"></script>
 </head>
 
 <body>
+    <?php 
+
+        if ($check_result_row[1] == $_SESSION["who"]) {
+            echo 
+            "
+            <div id='groupEditBox' class='friendsListBox'>
+                <button onclick='editExitDialog()' id='exit'>X</button>
+                <center>
+                    <table style='width:100%'>
+                        <caption style='color:red'>
+                            Image should be at most 1MB and should be of type PNG
+                        </caption>
+                        <form action='' method='post' enctype='multipart/form-data'>
+                            <tbody class='changeBox'>
+                                <tr>
+                                    <td id='imageRenderOuterBox'>
+                                        <input type='file' style='width:60%;font-size:1rem;' onchange='renderImage()' name='pic' class='inputfield' id='picField' required />
+                                        <br>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot class='footOfPic' style='background:red'>
+                                <tr>
+                                    <td>
+                                        <input type='submit' value='Change' class='buttontag' name='changePicButton' />
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </form>
+                    </table>
+                </center>
+            </div>
+            ";
+        }
+
+    ?>
     <div class="friendsListBox" id="addfriendBox">
         <button onclick="addExitDialog()" id="exit">X</button>
         <center>
@@ -95,7 +155,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                 <thead>
                     <tr>
                         <th colspan="3" style="color:white">
-                            > Your Friends :
+                            &gt; Your Friends :
                         </th>
                     </tr>
                 </thead>
@@ -109,7 +169,11 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
         <center>
             <?php
             if ($check_result_row[1] == $_SESSION["who"]) {
-                echo "<a href='Destroy Group/?group_id=" . $_REQUEST["group_id"] . "' class='link leaveGroupLink'>Destroy Group</a>";
+                echo "
+                <a href='Destroy Group/?group_id=" . $_REQUEST["group_id"] . "' class='link leaveGroupLink'>Destroy Group</a>
+                &nbsp;
+                <a href='#' class='link leaveGroupLink' onclick='showEditGroupPicBox()'>Edit Picture</a>
+                ";
             } else {
                 echo "<a href='Leave Group/?group_id=" . $_REQUEST["group_id"] . "' class='link leaveGroupLink'>Leave Group</a>";
             }
@@ -339,3 +403,57 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
 </body>
 
 </html>
+
+<?php
+if (isset($_POST) && isset($_POST["changePicButton"])) {
+    if ($_FILES['pic']['name'] != "") {
+        $name = $_FILES["pic"]["name"];
+        $type = substr($name, strlen($name) - 3, strlen($name) - 1);
+        if ($type == "png") {
+            define('MB', 1024000);
+            $size = round((($_FILES["pic"]["size"]) / MB), 0);
+            if ($size <= 1) {
+                $tmp_name = $_FILES["pic"]["tmp_name"];
+                $path = "../../Extra/styles/images/groups images/i" . $_REQUEST["group_id"] . ".png";
+                if(move_uploaded_file($tmp_name, $path)){
+                    echo
+                    "
+                        <script>
+                            alert('Successfully Changed');
+                        </script>
+                        ";
+                }
+                else{
+                    echo
+                    "
+                        <script>
+                            alert('Error');
+                        </script>
+                        ";
+                }
+            } else {
+                echo
+                "
+                        <script>
+                            alert('Size is bigger than 1 MB');
+                        </script>
+                        ";
+            }
+        } else {
+            echo
+            "
+                        <script>
+                            alert('Type is not PNG');
+                        </script>
+                        ";
+        }
+    } else {
+        echo
+        "
+                        <script>
+                            alert('Invalid');
+                        </script>
+                        ";
+    }
+}
+?>
