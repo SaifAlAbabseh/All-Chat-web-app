@@ -259,13 +259,13 @@ body{
     padding:40px 0px;
     border-radius:10px;
 }
-#picField, #picFieldGroup{
+#picField{
     cursor: pointer;
     color:#0162AF;
     transition:all 0.5s;
     font-weight:bolder;
 }
-#picField::file-selector-button, #picFieldGroup::file-selector-button{
+#picField::file-selector-button{
     visibility:hidden;
 }
 #picField:hover{

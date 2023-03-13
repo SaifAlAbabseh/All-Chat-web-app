@@ -33,6 +33,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="../scripts/main.js"></script>
+    <script src="../scripts/commonMethods.js"></script>
     <script>
         function hideMainBoxBeforeLoading(box_id) {
             $("#" + box_id + "").css({
@@ -155,10 +156,14 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
                         </tr>
                         <tr>
                             <td>
-                                <input type="file" name="image" id="picFieldGroup" class="inputfield" style="width:70%;">
+                                <input type="file" onchange='renderImage()' name="image" id="picField" class="inputfield" style="width:70%;font-size:1rem;">
                             </td>
                             <td>
                                 <input type="button" value=" i " class="i" id="imagereq">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="imageRenderOuterBox">
                             </td>
                         </tr>
                     </table>
