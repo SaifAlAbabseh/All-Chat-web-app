@@ -139,7 +139,7 @@ if (isset($_POST) && isset($_POST["changeButton"])) {
 
 
                     $tmp_name = $_FILES["image"]["tmp_name"];
-                    $path = "../../../Extra/styles/images/" . $_SESSION["who"] . ".png";
+                    $path = "../../../Extra/styles/images/users images/" . $_SESSION["who"] . ".png";
                     move_uploaded_file($tmp_name, $path);
                 }
                 mysqli_close($conn);

@@ -322,7 +322,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                             </script>";
                         } else {
                             if ($signup_code_field == $old_code) {
-                                $squery = "INSERT INTO users VALUES ('" . $un . "','" . $password . "','defaultUser','0')";
+                                $squery = "INSERT INTO users VALUES ('" . $un . "','" . $password . "','user','0')";
                                 if (mysqli_query($conn, $squery)) {
                                     echo
                                     "<script>
