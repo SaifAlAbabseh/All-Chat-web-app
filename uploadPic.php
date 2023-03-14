@@ -102,7 +102,7 @@ if (isset($_POST) && isset($_POST["changeButtonjava"])) {
 
 
                     $tmp_name = $_FILES["imagejava"]["tmp_name"];
-                    $path = "Extra/styles/images/" . $_REQUEST["username"] . ".png";
+                    $path = "Extra/styles/images/users images/" . $_REQUEST["username"] . ".png";
                     move_uploaded_file($tmp_name, $path);
                 }
                 mysqli_close($conn);

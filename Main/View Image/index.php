@@ -12,7 +12,7 @@ if(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_RE
             $temp="".$row[0];
         }
     }
-    $path="../../Extra/styles/images/".$temp.".png";
+    $path="../../Extra/styles/images/users images/".$temp.".png";
     header('Content-Type: image/png');
     readfile($path);
 }
