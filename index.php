@@ -18,6 +18,7 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
     <script src="scripts/index.js"></script>
     <script>
         $(document).ready(function() {
+            setSavedCreds();
             var temp = 1;
             temp = parseInt("<?php if (isset($_REQUEST) && isset($_REQUEST["t"])) {echo "0";} ?>");
             if (isNaN(temp)) {
@@ -29,6 +30,13 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                 $("#mainDialogBox").show();
             }
         });
+
+        function setSavedCreds(){
+            if(localStorage.getItem("all_chat-username") != null && localStorage.getItem("all_chat-password") != null){
+                document.getElementById("username_inputfield").value = localStorage.getItem("all_chat-username");
+                document.getElementById("userpassword_field").value = localStorage.getItem("all_chat-password");
+            }
+        }
 
         function hideMainBoxBeforeLoading(box_id) {
             $("#" + box_id + "").css({
@@ -73,6 +81,11 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
             hideMainBoxBeforeLoading(box_id);
             showLoadingBox();
             returnAfterLoading(box_id);
+        }
+
+        function rememberCreds(username, password){
+            localStorage.setItem("all_chat-username", username);
+            localStorage.setItem("all_chat-password", password);
         }
     </script>
     <style>
@@ -129,6 +142,12 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                     <tr>
                         <td colspan="2">
                             <input type="password" name="userpassword" class="inputfield" id="userpassword_field" placeholder="Enter Password.." required />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <input type="checkbox" name="rememberCred" id="rememberCred" class="checkbox">
+                            <label class="small-labels" for="rememberCred">Remember Credentials</label>
                         </td>
                     </tr>
                     <tr>
@@ -262,7 +281,29 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                     $av = "UPDATE users SET available='1' WHERE BINARY username='" . $un . "'";
                     mysqli_query($conn, $av);
                     mysqli_close($conn);
-                    echo "<script>window.location.replace('Main/');</script>";
+                    if(isset($rememberCred)){
+                        echo "
+                            <script>
+                                if(localStorage.getItem('all_chat-username') != null && localStorage.getItem('all_chat-password') != null){
+                                    localStorage.removeItem('all_chat-username');
+                                    localStorage.removeItem('all_chat-password');
+                                    localStorage.setItem('all_chat-username', '".$un."');
+                                    localStorage.setItem('all_chat-password', '".$password."');
+                                }
+                                else{
+                                    localStorage.setItem('all_chat-username', '".$un."');
+                                    localStorage.setItem('all_chat-password', '".$password."');
+                                }
+                                
+                                window.location.replace('Main/');
+                            </script>";
+                    }
+                    else{
+                        echo "
+                            <script>
+                                window.location.replace('Main/');
+                            </script>";
+                    }
                 } else {
                     echo
                     "<script>
