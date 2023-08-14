@@ -420,8 +420,6 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                 invalidfield.style.display='block';
             </script>";
         }
-    } else {
-        echo "<script>window.location.replace('../All_Chat/');</script>";
     }
 }
 ?>

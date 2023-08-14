@@ -297,6 +297,11 @@ function createGroup($conn, $group_name)
     }
     $tmp_name = $_FILES["image"]["tmp_name"];
     $image_name = "i" . $group_id . ".png";
+
+    if(!is_dir("../Extra/styles/images/groups images")) {
+        mkdir("../Extra/styles/images/groups images", 0777);
+	}
+    
     $path = "../Extra/styles/images/groups images/$image_name";
     move_uploaded_file($tmp_name, $path);
 
