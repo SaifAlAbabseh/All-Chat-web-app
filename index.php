@@ -1,4 +1,7 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 session_start();
 if (isset($_SESSION) && isset($_SESSION["code"])) {
     $old_code = $_SESSION["code"];
@@ -279,6 +282,7 @@ function generateSignupCode()
 }
 
 if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton"]) || isset($_POST["verification_button"]))) {
+    require_once("DB.php");
     echo "<script>startLoading('main_box-id');</script>";
     extract($_POST);
 
@@ -286,7 +290,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
         $un = $username;
         $password = trim($userpassword);
         if (trim($un) != "" && $password != "") {
-            require_once("DB.php");
+            
             $query = "SELECT * FROM users WHERE BINARY username='" . $un . "' AND password='" . md5($password) . "'";
             $result = mysqli_query($conn, $query);
             if ($result) {
@@ -294,7 +298,6 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                     $_SESSION["who"] = $un;
                     $av = "UPDATE users SET available='1' WHERE BINARY username='" . $un . "'";
                     mysqli_query($conn, $av);
-                    mysqli_close($conn);
                     if (isset($rememberCred)) {
                         echo "
                             <script>
@@ -363,7 +366,6 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                 $password = md5($password);
                 $cpass = md5($cpass);
                 if ($password == $cpass) {
-                    require_once("DB.php");
                     $query = "SELECT username FROM users WHERE BINARY username='" . $un . "'";
                     $query_email_check = "SELECT email FROM users WHERE BINARY email='".$signupemail."'";
                     $result = mysqli_query($conn, $query);
@@ -391,7 +393,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                 $_SESSION["u_email"] = $signupemail;
                                 $_SESSION["u_username"] = $un;
                                 $_SESSION["u_password"] = $password;
-                                if (mail($signupemail, "All Chat Code for Signing Up", "Your code is: " . $_SESSION["signup_code"], 'From: allchatbot@gmail.com')) {
+                                if(sendMail("allchatbot1@gmail.com", "All Chat", $signupemail, "User", "All Chat Email Verification Code", "Your code is: " . $_SESSION["signup_code"])) {
                                     echo 
                                     "<div id='email_verification_box_parent'>
                                     <div id='email_verification_box'>
@@ -454,7 +456,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
     }
     else if(isset($verification_button) && isset($_SESSION) && isset($_SESSION["u_email"]) && isset($_SESSION["u_username"]) && isset($_SESSION["u_password"]) && isset($verification_code_field)) {
         if($verification_code_field == $_SESSION["signup_code"]) {
-            $squery = "INSERT INTO users VALUES ('".$_SESSION["u_email"]."', '" . $_SESSION["u_username"] . "','" . $_SESSION["u_password"] . "','user','0')";
+            $squery = "INSERT INTO users VALUES ('" . $_SESSION["u_username"] . "','" . $_SESSION["u_password"] . "','user','0', '".$_SESSION["u_email"]."')";
             if (mysqli_query($conn, $squery)) {
                 echo
                 "<script>
@@ -486,5 +488,37 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
         unset($_SESSION["u_username"]);
         unset($_SESSION["u_password"]);
     }
+    mysqli_close($conn);
+}
+
+function sendMail($from_email, $from_name, $to_email, $to_name, $subject, $body) {
+    
+    require $_SERVER['DOCUMENT_ROOT'] . '/All_Chat/mail/Exception.php';
+    require $_SERVER['DOCUMENT_ROOT'] . '/All_Chat/mail/PHPMailer.php';
+    require $_SERVER['DOCUMENT_ROOT'] . '/All_Chat/mail/SMTP.php';
+    
+    $mail = new PHPMailer;
+    $mail->isSMTP(); 
+    //$mail->SMTPDebug = 2; // 0 = off (for production use) - 1 = client messages - 2 = client and server messages
+    $mail->Host = "smtp.gmail.com"; // use $mail->Host = gethostbyname('smtp.gmail.com'); // if your network does not support SMTP over IPv6
+    $mail->Port = 587; // TLS only
+    $mail->SMTPSecure = 'tls'; // ssl is deprecated
+    $mail->SMTPAuth = true;
+    $mail->Username = 'allchatbot1@gmail.com'; // email
+    $mail->Password = ''; // password
+    $mail->setFrom($from_email, $from_name); // From email and name
+    $mail->addAddress($to_email, $to_name); // to email and name
+    $mail->Subject = $subject;
+    $mail->msgHTML($body); //$mail->msgHTML(file_get_contents('contents.html'), __DIR__); //Read an HTML message body from an external file, convert referenced images to embedded,
+    $mail->AltBody = 'HTML messaging not supported'; // If html emails is not supported by the receiver, show this body
+    // $mail->addAttachment('images/phpmailer_mini.png'); //Attach an image file
+    $mail->SMTPOptions = array(
+                        'ssl' => array(
+                            'verify_peer' => false,
+                            'verify_peer_name' => false,
+                            'allow_self_signed' => true
+                        )
+                    );
+    return $mail->send();
 }
 ?>
