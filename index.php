@@ -31,8 +31,8 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
             }
         });
 
-        function setSavedCreds(){
-            if(localStorage.getItem("all_chat-username") != null && localStorage.getItem("all_chat-password") != null){
+        function setSavedCreds() {
+            if (localStorage.getItem("all_chat-username") != null && localStorage.getItem("all_chat-password") != null) {
                 document.getElementById("username_inputfield").value = localStorage.getItem("all_chat-username");
                 document.getElementById("userpassword_field").value = localStorage.getItem("all_chat-password");
             }
@@ -83,7 +83,7 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
             returnAfterLoading(box_id);
         }
 
-        function rememberCreds(username, password){
+        function rememberCreds(username, password) {
             localStorage.setItem("all_chat-username", username);
             localStorage.setItem("all_chat-password", password);
         }
@@ -176,6 +176,11 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                 <table>
                     <tr>
                         <td colspan="2">
+                            <input type="email" name="signupemail" class="inputfield" id="signupemail_inputfield" placeholder="Enter Your Email.." required />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
                             <input type="text" name="signupusername" class="inputfield" id="signupusername_inputfield" placeholder="Enter A Username.." required />
                         </td>
                         <td>
@@ -208,9 +213,9 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                                 $char_rand_alpha_or_number = rand(1, 2);
                                 if ($char_rand_alpha_or_number == 1) {
                                     $small_or_capital = rand(1, 2);
-                                    if($small_or_capital == 1){
+                                    if ($small_or_capital == 1) {
                                         return "" . $small_alphabets[rand(0, strlen($small_alphabets) - 1)];
-                                    }else if($small_or_capital == 2){
+                                    } else if ($small_or_capital == 2) {
                                         return "" . $capital_alphabets[rand(0, strlen($capital_alphabets) - 1)];
                                     }
                                 } else if ($char_rand_alpha_or_number == 2) {
@@ -264,7 +269,16 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
 </html>
 <?php
 
-if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton"]))) {
+function generateSignupCode()
+{
+    $_SESSION["signup_code"] = "";
+    $how_many_chars = rand(4, 8);
+    for ($i = 1; $i <= $how_many_chars; $i++) {
+        $_SESSION["signup_code"] .= generateRandomChar();
+    }
+}
+
+if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton"]) || isset($_POST["verification_button"]))) {
     echo "<script>startLoading('main_box-id');</script>";
     extract($_POST);
 
@@ -281,24 +295,23 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                     $av = "UPDATE users SET available='1' WHERE BINARY username='" . $un . "'";
                     mysqli_query($conn, $av);
                     mysqli_close($conn);
-                    if(isset($rememberCred)){
+                    if (isset($rememberCred)) {
                         echo "
                             <script>
                                 if(localStorage.getItem('all_chat-username') != null && localStorage.getItem('all_chat-password') != null){
                                     localStorage.removeItem('all_chat-username');
                                     localStorage.removeItem('all_chat-password');
-                                    localStorage.setItem('all_chat-username', '".$un."');
-                                    localStorage.setItem('all_chat-password', '".$password."');
+                                    localStorage.setItem('all_chat-username', '" . $un . "');
+                                    localStorage.setItem('all_chat-password', '" . $password . "');
                                 }
                                 else{
-                                    localStorage.setItem('all_chat-username', '".$un."');
-                                    localStorage.setItem('all_chat-password', '".$password."');
+                                    localStorage.setItem('all_chat-username', '" . $un . "');
+                                    localStorage.setItem('all_chat-password', '" . $password . "');
                                 }
                                 
                                 window.location.replace('Main/');
                             </script>";
-                    }
-                    else{
+                    } else {
                         echo "
                             <script>
                                 window.location.replace('Main/');
@@ -352,8 +365,10 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                 if ($password == $cpass) {
                     require_once("DB.php");
                     $query = "SELECT username FROM users WHERE BINARY username='" . $un . "'";
+                    $query_email_check = "SELECT email FROM users WHERE BINARY email='".$signupemail."'";
                     $result = mysqli_query($conn, $query);
-                    if ($result) {
+                    $result_email_check = mysqli_query($conn, $query_email_check);
+                    if ($result && $result_email_check) {
                         if (mysqli_num_rows($result)) {
                             echo
                             "<script>
@@ -361,23 +376,39 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                 invalidfield.style.display='block';
                                 invalidforsignup.innerHTML='Username is already in use';
                             </script>";
-                        } else {
+                        } 
+                        else if(mysqli_num_rows($result_email_check)) {
+                            echo
+                            "<script>
+                                var invalidfield=document.getElementById('invalidforsignup');
+                                invalidfield.style.display='block';
+                                invalidforsignup.innerHTML='Email is already in use';
+                            </script>";
+                        }                        
+                        else {
                             if ($signup_code_field == $old_code) {
-                                $squery = "INSERT INTO users VALUES ('" . $un . "','" . $password . "','user','0')";
-                                if (mysqli_query($conn, $squery)) {
-                                    echo
-                                    "<script>
-                                        var invalidfield=document.getElementById('invalidforsignup');
-                                        invalidfield.style.display='block';
-                                        invalidfield.style.color='green';
-                                        invalidforsignup.innerHTML='Successful';
-                                    </script>";
+                                generateSignupCode();
+                                $_SESSION["u_email"] = $signupemail;
+                                $_SESSION["u_username"] = $un;
+                                $_SESSION["u_password"] = $password;
+                                if (mail($signupemail, "All Chat Code for Signing Up", "Your code is: " . $_SESSION["signup_code"], 'From: allchatbot@gmail.com')) {
+                                    echo 
+                                    "<div id='email_verification_box_parent'>
+                                    <div id='email_verification_box'>
+                                        <h2 style='color:white'>We've sent an email verification code to your email</h2>
+                                        <form action='' method='post'>
+                                            <input type='text' name='verification_code_field' class='inputfield' placeholder='Enter your verification code'>
+                                            <input type='submit' class='buttontag' name='verification_button' value='Verify'>
+                                        </form>
+                                    </div>
+                                </div>";
                                 } else {
                                     echo
                                     "<script>
                                         var invalidfield=document.getElementById('invalidforsignup');
                                         invalidfield.style.display='block';
-                                        invalidforsignup.innerHTML='Connection Error';
+                                        invalidfield.style.color='green';
+                                        invalidforsignup.innerHTML='Error';
                                     </script>";
                                 }
                             } else {
@@ -420,6 +451,40 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                 invalidfield.style.display='block';
             </script>";
         }
+    }
+    else if(isset($verification_button) && isset($_SESSION) && isset($_SESSION["u_email"]) && isset($_SESSION["u_username"]) && isset($_SESSION["u_password"]) && isset($verification_code_field)) {
+        if($verification_code_field == $_SESSION["signup_code"]) {
+            $squery = "INSERT INTO users VALUES ('".$_SESSION["u_email"]."', '" . $_SESSION["u_username"] . "','" . $_SESSION["u_password"] . "','user','0')";
+            if (mysqli_query($conn, $squery)) {
+                echo
+                "<script>
+                var invalidfield=document.getElementById('invalidforsignup');
+                invalidfield.style.display='block';
+                invalidfield.style.color='green';
+                invalidforsignup.innerHTML='Successful';
+            </script>";
+            }
+            else {
+                echo
+                "<script>
+                var invalidfield=document.getElementById('invalidforsignup');
+                invalidfield.style.display='block';
+                invalidforsignup.innerHTML='Connection Error';
+            </script>";
+            }
+        }
+        else {
+            echo
+                "<script>
+                            var invalidfield=document.getElementById('invalidforsignup');
+                            invalidfield.style.display='block';
+                            invalidforsignup.innerHTML='Invalid Code';
+                        </script>";
+        }
+        unset($_SESSION["signup_code"]);
+        unset($_SESSION["u_email"]);
+        unset($_SESSION["u_username"]);
+        unset($_SESSION["u_password"]);
     }
 }
 ?>

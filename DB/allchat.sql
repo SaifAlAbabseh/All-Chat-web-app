@@ -53,6 +53,7 @@ CREATE TABLE `friends` (
 --
 
 CREATE TABLE `users` (
+  `email` varchar(1000) NOT NULL,
   `username` varchar(1000) NOT NULL,
   `password` varchar(1000) NOT NULL,
   `picture` varchar(1000) NOT NULL,
