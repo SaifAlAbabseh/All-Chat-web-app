@@ -31,7 +31,7 @@ if(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_RE
                                 $lastwho="".$row2[0];
                             }
                             $messageDecoded=nl2br(htmlspecialchars(urldecode($message)));
-                            $arr=Array("ava" => $ava, "pos" => $pos, "message" => $messageDecoded, "lastwho" => $lastwho);
+                            $arr=array("ava" => $ava, "pos" => $pos, "message" => $messageDecoded, "lastwho" => $lastwho);
                             echo json_encode($arr);
                         }
                         else{

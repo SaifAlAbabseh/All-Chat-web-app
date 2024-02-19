@@ -26,17 +26,26 @@ if (isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_R
                     $messageDecoded = nl2br(htmlspecialchars(urldecode($message)));
                     $arr = array("pos" => $pos, "message" => $messageDecoded, "lastwho" => $lastwho);
                     echo json_encode($arr);
+                    exit;
                 }
                 else{
                     echo "empty";
+                    exit;
                 }
             } else {
                 echo "error";
+                exit;
             }
         } else {
             echo "nomore";
+            exit;
         }
+    }
+    else {
+        echo "error";
+        exit;
     }
 } else {
     echo "error";
+    exit;
 }

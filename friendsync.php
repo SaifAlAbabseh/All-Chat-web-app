@@ -46,10 +46,10 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
             echo "<tr><th><h2 style='color:white'>No friends to show..</h2></th></tr>";
         }
     } else {
-        session_destroy();
         echo "<tr><th><h2 style='color:white'>Error..</h2></th></tr>";
     }
 } else {
+    session_destroy();
     echo "<tr><th><h2 style='color:white'>Error..</h2></th></tr>";
 }
 ?>

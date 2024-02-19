@@ -3,7 +3,7 @@
 session_start();
 if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_REQUEST["group_id"]) && isset($_REQUEST["member"]) && isset($_SESSION["isGood".$_REQUEST["group_id"]]) && $_SESSION["isGood".$_REQUEST["group_id"]])) {
     session_destroy();
-    header("Location:index.php");
+    header("Location:../All_Chat/");
 }
 else{
     $group_id = $_REQUEST["group_id"];
@@ -15,12 +15,7 @@ else{
     $remove_query = "DELETE FROM $group_table_name WHERE BINARY username='".$member_to_kick."'";
     $remove_result = mysqli_query($conn, $remove_query);
     mysqli_close($conn);
-    if(!$remove_result){
-        die("Error");
-    }
-    else{
-        header("Location:Main/Group/?group_id=".$_REQUEST["group_id"]);
-    }
+    header("Location:Main/Group/?group_id=".$_REQUEST["group_id"]);
 }
 
 ?>
