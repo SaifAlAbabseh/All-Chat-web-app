@@ -291,7 +291,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
         $password = trim($userpassword);
         if (trim($un) != "" && $password != "") {
             
-            $query = "SELECT * FROM users WHERE BINARY username='" . $un . "' AND password='" . md5($password) . "'";
+            $query = "SELECT * FROM users WHERE BINARY username='" . $un . "' AND BINARY password='" . md5($password) . "'";
             $result = mysqli_query($conn, $query);
             if ($result) {
                 if (mysqli_num_rows($result)) {
@@ -378,7 +378,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                 invalidfield.style.display='block';
                                 invalidforsignup.innerHTML='Username is already in use';
                             </script>";
-                        } 
+                        }
                         else if(mysqli_num_rows($result_email_check)) {
                             echo
                             "<script>
@@ -386,7 +386,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                 invalidfield.style.display='block';
                                 invalidforsignup.innerHTML='Email is already in use';
                             </script>";
-                        }                        
+                        }
                         else {
                             if ($signup_code_field == $old_code) {
                                 generateSignupCode();
@@ -499,10 +499,10 @@ function sendMail($from_email, $from_name, $to_email, $to_name, $subject, $body)
     
     $mail = new PHPMailer;
     $mail->isSMTP(); 
-    //$mail->SMTPDebug = 2; // 0 = off (for production use) - 1 = client messages - 2 = client and server messages
+    $mail->SMTPDebug = 2; // 0 = off (for production use) - 1 = client messages - 2 = client and server messages
     $mail->Host = "smtp.gmail.com"; // use $mail->Host = gethostbyname('smtp.gmail.com'); // if your network does not support SMTP over IPv6
-    $mail->Port = 587; // TLS only
-    $mail->SMTPSecure = 'tls'; // ssl is deprecated
+    $mail->Port = 465; // TLS only
+    $mail->SMTPSecure = 'ssl'; // ssl is deprecated
     $mail->SMTPAuth = true;
     $mail->Username = 'allchatbot1@gmail.com'; // email
     $mail->Password = ''; // password
