@@ -1,5 +1,8 @@
 <?php
 
+require_once("DB.php");
+require_once("common.php");
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -210,9 +213,6 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
 
 </html>
 <?php
-
-require_once("DB.php");
-require_once("common.php");
 
 function generateSignupCode()
 {
