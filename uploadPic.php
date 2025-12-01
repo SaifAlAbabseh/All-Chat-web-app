@@ -1,6 +1,9 @@
 <?php
+
+require_once("./common.php");
+
 if (!(isset($_REQUEST) && isset($_REQUEST["username"]) && isset($_REQUEST["password"]) && isset($_REQUEST["temp"]) && $_REQUEST["temp"] == "javaToWeb1090")) {
-    header("Location:../All_Chat/");
+    header("Location:../".$GLOBALS['urlMainPath']."/");
 }
 else{
     $username=$_REQUEST["username"];
@@ -10,7 +13,7 @@ else{
     $query="SELECT * FROM users WHERE BINARY username='".$username."' AND password='".$password."'";
     $result=mysqli_query($conn,$query);
     if(mysqli_num_rows($result)==0){
-        header("Location:../All_Chat/");
+        header("Location:../".$GLOBALS['urlMainPath']."/");
     }
 }
 ?>

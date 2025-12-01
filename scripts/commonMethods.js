@@ -10,3 +10,9 @@ function renderImage(){
     imageRenderBox.setAttribute("src", absolutePath);
     document.getElementById("imageRenderOuterBox").appendChild(imageRenderBox);
 }
+
+function generateURL(path){
+    let origin = window.location.origin;
+    let fullLink = origin + "/All-Chat-web-app/";
+    return fullLink + path;
+}

@@ -1,4 +1,7 @@
 <?php
+
+require_once("./common.php");
+
 session_start();
 
 if (isset($_SESSION) && isset($_SESSION["code"])) {
@@ -8,8 +11,8 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
     $width = 120;
     $height = 50;
     $image = imagecreatetruecolor($width, $height);
-    $textColor = imagecolorallocate($image, 0, 0, 0);
-    $backgroundColor = imagecolorallocate($image, 255, 255, 255);
+    $textColor = imagecolorallocate($image, 255, 255, 255);
+    $backgroundColor = imagecolorallocate($image, 0, 0, 255);
     imagefill($image, 0, 0, $backgroundColor);
     $fontPath = realpath($fontFile);
     imagettftext($image, $fontSize, -10, 0, $fontSize, $textColor, $fontPath, $text);
@@ -20,5 +23,5 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
     readfile($image_path);
 
 } else {
-    header("Location:../All_Chat");
+    header("Location:../".$GLOBALS['urlMainPath']);
 }

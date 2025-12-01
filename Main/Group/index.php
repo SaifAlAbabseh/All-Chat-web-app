@@ -36,12 +36,8 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
             height: 100%;
         }
     </style>
+    <script src="../../scripts/commonMethods.js"></script>
     <script>
-        function generateURL(path) {
-            let origin = window.location.origin;
-            let fullLink = origin + "/All_Chat/";
-            return fullLink + path;
-        }
 
         function showAddMemberBox() {
             $("#main_box_parent").css({
@@ -108,7 +104,6 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
             $("#groupEditBox").hide();
         }
     </script>
-    <script src="../../scripts/commonMethods.js"></script>
 </head>
 
 <body>

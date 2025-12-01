@@ -46,12 +46,6 @@ $(document).ready(function() {
     }, 2000);
 });
 
-function generateURL(path){
-    let origin = window.location.origin;
-    let fullLink = origin + "/All_Chat/";
-    return fullLink + path;
-}
-
 function exitDialog() {
     $("#whole_box_id").css({
         "pointer-events": "initial",
