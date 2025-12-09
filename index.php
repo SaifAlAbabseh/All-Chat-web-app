@@ -76,7 +76,7 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                 <h1 class="boxupperlabel">
                     Login
                 </h1>
-                <form action="?t=0" method="post" autocomplete="off" class="forms">
+                <form action="?t=0" method="post" autocomplete="off" class="forms loginForm">
                     <table>
                         <tr>
                             <td colspan="2">
@@ -406,6 +406,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
             if (mysqli_query($conn, $squery)) {
                 echo
                 "<script>
+                switchToSignupForm(true);
                 var invalidfield=document.getElementById('invalidforsignup');
                 invalidfield.style.display='block';
                 invalidfield.style.color='green';
