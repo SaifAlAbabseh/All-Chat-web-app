@@ -65,7 +65,8 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                     <table>
                         <tr>
                             <td colspan="2">
-                                <div id="messages">
+                                <div id="messages" class="at-top" onscroll="showBlurOnTop()">
+                                    <div class="blur-top"></div>
                                     <table id="msg" style="width:100%">
                                         <?php
                                         require_once("../../DB.php");
@@ -105,13 +106,16 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                                                     $from = "" . $row[0];
                                                     $messageitself = "" . $row[1];
                                                     $lastmessageindex++;
+                                                    $date = "" . $row[3];
+                                                    $OddOrEvenMessage = ($lastmessageindex % 2 == 0) ? "Odd" : "Even";
                                                     if ($from == $you) {
                                                         echo "
-                                                            <tr style='text-align:right'>
-                                                            <td style='color:yellow'>From :  " . $from . " </td>
+                                                            <tr style='text-align:right' class='chat".$OddOrEvenMessage."Message'>
+                                                            <td class='messageDate'> " . $date . " </td>
+                                                            <td style='color:gold'> YOU </td>
                                                             </tr>
-                                                            <tr style='text-align:right;display:flex;justify-content:right'>
-                                                            <td style='color:white;'><p style='inline-size: 150px;overflow-wrap: break-word;'>
+                                                            <tr class='chat".$OddOrEvenMessage."Message'>
+                                                            <td style='color:white;' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;width: 100%;text-align:right;'>
                                                                 " . nl2br(htmlspecialchars(urldecode($messageitself))) . "
                                                                 </p>
                                                             </td>
@@ -119,11 +123,12 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                                                         ";
                                                     } else {
                                                         echo "
-                                                            <tr style='text-align:left'>
+                                                            <tr style='text-align:left' class='chat".$OddOrEvenMessage."Message'>
                                                             <td style='color:yellow'>From :  " . $from . " </td>
+                                                            <td class='messageDate'> " . $date . " </td>
                                                             </tr>
-                                                            <tr style='text-align:left;display:flex;justify-content:left'>
-                                                            <td style='color:white'><p style='inline-size: 150px;overflow-wrap: break-word;'>
+                                                            <tr class='chat".$OddOrEvenMessage."Message'>
+                                                            <td style='color:white' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;width:100%;text-align:left;'>
                                                                 " . nl2br(htmlspecialchars(urldecode($messageitself))) . "
                                                                 </p>
                                                             </td>
@@ -162,6 +167,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
             </div>
         </div>
     </center>
+    <script src="../../scripts/commonMethods.js"></script>
     <script>
         $(document).ready(function() {
             var oldpos = "<?php echo "" . $lastmessageindex; ?>";
@@ -209,6 +215,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                             var arr = JSON.parse(res);
                             var ava = arr.ava;
                             var pos = arr.pos;
+                            var messageDate = arr.date;
                             var mess = arr.message;
                             var lastwho = arr.lastwho;
                             if (ava == "1") {
@@ -224,16 +231,17 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                             if (oldpos != pos) {
                                 var newrow1 = document.createElement("tr");
                                 var newrow2 = document.createElement("tr");
+                                const newMessageOddOrEven = ( oldpos % 2 === 0 ) ? "Even" : "Odd";
+                                newrow1.classList.add("chat" + newMessageOddOrEven + "Message");
+                                newrow2.classList.add("chat" + newMessageOddOrEven + "Message");
                                 if (lastwho == you) {
                                     newrow1.setAttribute("style", "text-align:right");
-                                    newrow2.setAttribute("style", "text-align:right;display:flex;justify-content:right");
-                                    newrow1.innerHTML = "<td style='color:yellow'>From : " + you + "</td>";
-                                    newrow2.innerHTML = "<td style='color:white'><p style='inline-size: 150px;overflow-wrap: break-word;'>" + mess + "</p></td>";
+                                    newrow1.innerHTML = "<td class='messageDate'> " + messageDate + " </td><td style='color:gold'> YOU </td>";
+                                    newrow2.innerHTML = "<td style='color:white' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;width:100%;text-align:right;'>" + mess + "</p></td>";
                                 } else {
                                     newrow1.setAttribute("style", "text-align:left");
-                                    newrow2.setAttribute("style", "text-align:left;display:flex;justify-content:left");
-                                    newrow1.innerHTML = "<td style='color:yellow'>From : " + lastwho + "</td>";
-                                    newrow2.innerHTML = "<td style='color:white'><p style='inline-size: 150px;overflow-wrap: break-word;'>" + mess + "</p></td>";
+                                    newrow1.innerHTML = "<td style='color:yellow'>From : " + lastwho + "</td><td class='messageDate'> " + messageDate + " </td>";
+                                    newrow2.innerHTML = "<td style='color:white' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;width:100%;text-align:left;'>" + mess + "</p></td>";
                                 }
                                 var msg = document.getElementById("msg");
                                 msg.append(newrow1);

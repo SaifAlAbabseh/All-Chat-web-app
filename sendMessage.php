@@ -25,7 +25,7 @@ function sendMessage($message,$you,$tname,$lastI){
     $lastI++;
     require_once("DB.php");
     $messageEncoded=urlencode($message);
-    $query="INSERT INTO ".$tname." VALUES ('".$you."','".$messageEncoded."','".$lastI."')";
+    $query="INSERT INTO ".$tname."(fromwho, message, pos) VALUES ('".$you."','".$messageEncoded."','".$lastI."')";
     if(mysqli_query($conn,$query)){
         echo "ok";
     }

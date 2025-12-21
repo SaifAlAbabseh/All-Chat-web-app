@@ -142,7 +142,7 @@ if (isset($_POST) && isset($_POST["addFriendButton"])) {
                         $query3 = "INSERT INTO friends VALUES ('" . $you . "','" . $fusername . "')";
                         if (mysqli_query($conn, $query3)) {
                             $tablename = "" . $_SESSION["who"] . "" . $fusername;
-                            $query4 = "CREATE TABLE " . $tablename . " (fromwho varchar(1000) , message varchar(1000),pos varchar(1000))";
+                            $query4 = "CREATE TABLE " . $tablename . " (fromwho varchar(1000) , message varchar(1000),pos varchar(1000), whenSent DATETIME DEFAULT CURRENT_TIMESTAMP)";
                             if (mysqli_query($conn, $query4)) {
                                 echo
                                 "

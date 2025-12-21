@@ -332,7 +332,8 @@ function createTables($conn, $group_id, $group_name)
             $normal_group_table_query = "CREATE TABLE " . $normal_group_table_name . " (
             fromwho VARCHAR(255),
             message VARCHAR(1000),
-            pos VARCHAR(255)
+            pos VARCHAR(255),
+            whenSent DATETIME DEFAULT CURRENT_TIMESTAMP
             ) ";
             $normal_group_query_result = mysqli_query($conn, $normal_group_table_query);
             if ($normal_group_query_result) {

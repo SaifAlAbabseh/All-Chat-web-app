@@ -15,16 +15,18 @@ if (isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_R
             $result3 = mysqli_query($conn, $query3);
             if ($result3) {
                 if (mysqli_num_rows($result3)) {
+                    $date = "";
                     $pos = "";
                     $message = "";
                     $lastwho = "";
                     while ($row2 = mysqli_fetch_row($result3)) {
+                        $date="".$row2[3];
                         $pos = "" . $row2[2];
                         $message = "" . $row2[1];
                         $lastwho = "" . $row2[0];
                     }
                     $messageDecoded = nl2br(htmlspecialchars(urldecode($message)));
-                    $arr = array("pos" => $pos, "message" => $messageDecoded, "lastwho" => $lastwho);
+                    $arr = array("date" => $date, "pos" => $pos, "message" => $messageDecoded, "lastwho" => $lastwho);
                     echo json_encode($arr);
                     exit;
                 }

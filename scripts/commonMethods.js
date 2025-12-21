@@ -16,3 +16,8 @@ function generateURL(path){
     let fullLink = origin + "/All-Chat-web-app/";
     return fullLink + path;
 }
+
+function showBlurOnTop() {
+    const messagesBox = document.getElementById("messages");
+    messagesBox.classList.toggle("at-top", messagesBox.scrollTop === 0);
+}
