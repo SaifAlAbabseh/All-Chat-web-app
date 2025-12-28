@@ -15,6 +15,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
     $lastmessageindex = 0;
     $tname = "";
 }
+require_once(dirname(__DIR__, 2) . '/common.php');
 ?>
 <!DOCTYPE html>
 <html>
@@ -243,7 +244,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                                                             </tr>
                                                             <tr class='chat".$OddOrEvenMessage."Message'>
                                                             <td style='color:white;' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;text-align:right;float:right;'>
-                                                                " . nl2br(htmlspecialchars(urldecode($messageitself))) . "
+                                                                " . nl2br(formatMessage(htmlspecialchars(urldecode($messageitself)))) . "
                                                                 </p>
                                                             </td>
                                                             </tr>
@@ -256,7 +257,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                                                             </tr>
                                                             <tr class='chat".$OddOrEvenMessage."Message'>
                                                             <td style='color:white' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;text-align:left;'>
-                                                                " . nl2br(htmlspecialchars(urldecode($messageitself))) . "
+                                                                " . nl2br(formatMessage(htmlspecialchars(urldecode($messageitself)))) . "
                                                                 </p>
                                                             </td>
                                                             </tr>

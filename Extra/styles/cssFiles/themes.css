@@ -780,3 +780,7 @@ body {
     display: block;
     opacity: 1;
 }
+
+.chatMessageLink {
+    color: red;
+}
