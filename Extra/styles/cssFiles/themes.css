@@ -783,4 +783,5 @@ body {
 
 .chatMessageLink {
     color: red;
+    font-weight: bolder;
 }
