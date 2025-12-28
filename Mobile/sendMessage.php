@@ -19,7 +19,7 @@ if(isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"]=="fromMob
         if (mysqli_num_rows($result) == 0) {
             echo "Unknown Error";
         } else {
-            $query="INSERT INTO ".$tableName." VALUES ('".$fromWho."','".$encodedMessage."','".($lastIndex+1)."')";
+            $query="INSERT INTO ".$tableName."(fromwho, message, pos) VALUES ('".$fromWho."','".$encodedMessage."','".($lastIndex+1)."')";
 
             if(mysqli_query($conn,$query)){
                 echo "ok";
