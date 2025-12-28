@@ -13,7 +13,7 @@ function renderImage(){
 
 function generateURL(path){
     let origin = window.location.origin;
-    let fullLink = origin + "/All-Chat-web-app/";
+    let fullLink = origin + "//";
     return fullLink + path;
 }
 
