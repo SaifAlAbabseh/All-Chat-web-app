@@ -24,9 +24,6 @@ jobs:
           exclude: |
             **/DB/**
             **/DB.php
-
-            
-
             **/.git*
             **/.github/**
             **/node_modules/**
