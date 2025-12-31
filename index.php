@@ -3,9 +3,6 @@
 require_once("DB.php");
 require_once("common.php");
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
 session_start();
 if (isset($_SESSION) && isset($_SESSION["code"])) {
     $old_code = $_SESSION["code"];
@@ -339,7 +336,9 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                 $_SESSION["u_email"] = $signupemail;
                                 $_SESSION["u_username"] = $un;
                                 $_SESSION["u_password"] = $password;
-                                if (sendMail("allchatbot1@gmail.com", "All Chat", $signupemail, "User", "All Chat Email Verification Code", "Your code is: " . $_SESSION["signup_code"])) {
+                                
+                                require_once "mail.php";
+                                if (sendMail($signupemail, $un, $_SESSION["signup_code"])) {
                                     echo
                                     "<div id='email_verification_box_parent'>
                                     <div id='email_verification_box'>
@@ -443,35 +442,5 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
     mysqli_close($conn);
 }
 
-function sendMail($from_email, $from_name, $to_email, $to_name, $subject, $body)
-{
 
-    require $_SERVER['DOCUMENT_ROOT'] . '/' . $GLOBALS['urlMainPath'] . '/mail/Exception.php';
-    require $_SERVER['DOCUMENT_ROOT'] . '/' . $GLOBALS['urlMainPath'] . '/mail/PHPMailer.php';
-    require $_SERVER['DOCUMENT_ROOT'] . '/' . $GLOBALS['urlMainPath'] . '/mail/SMTP.php';
-
-    $mail = new PHPMailer;
-    $mail->isSMTP();
-    $mail->SMTPDebug = 0; // 0 = off (for production use) - 1 = client messages - 2 = client and server messages
-    $mail->Host = "smtp.gmail.com"; // use $mail->Host = gethostbyname('smtp.gmail.com'); // if your network does not support SMTP over IPv6
-    $mail->Port = 465; // TLS only
-    $mail->SMTPSecure = 'ssl'; // ssl is deprecated
-    $mail->SMTPAuth = true;
-    $mail->Username = 'allchatbot1@gmail.com'; // email
-    $mail->Password = ''; // password
-    $mail->setFrom($from_email, $from_name); // From email and name
-    $mail->addAddress($to_email, $to_name); // to email and name
-    $mail->Subject = $subject;
-    $mail->msgHTML($body); //$mail->msgHTML(file_get_contents('contents.html'), __DIR__); //Read an HTML message body from an external file, convert referenced images to embedded,
-    $mail->AltBody = 'HTML messaging not supported'; // If html emails is not supported by the receiver, show this body
-    // $mail->addAttachment('images/phpmailer_mini.png'); //Attach an image file
-    $mail->SMTPOptions = array(
-        'ssl' => array(
-            'verify_peer' => false,
-            'verify_peer_name' => false,
-            'allow_self_signed' => true
-        )
-    );
-    return $mail->send();
-}
 ?>
