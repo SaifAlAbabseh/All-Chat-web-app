@@ -3,6 +3,31 @@ session_start();
 if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
     header("Location:../");
 }
+
+require_once("../DB.php");
+
+if (isset($_POST) && isset($_POST["acceptFriendRequestButton"])) {
+    extract($_POST);
+    $query = "DELETE FROM friend_requests WHERE request_id='" . $acceptFriendRequestField . "'";
+    $result = mysqli_query($conn, $query);
+
+    // Actually to be a freind
+    $query = "INSERT INTO friends VALUES ('" . $_SESSION["who"] . "','" . $acceptFriendRequestUsernameField . "')";
+    if (mysqli_query($conn, $query)) {
+        $tablename = "" . $_SESSION["who"] . "" . $acceptFriendRequestUsernameField;
+        $query = "CREATE TABLE " . $tablename . " (fromwho varchar(1000) , message varchar(1000),pos varchar(1000), whenSent DATETIME DEFAULT CURRENT_TIMESTAMP)";
+        mysqli_query($conn, $query);
+    } else {
+        echo "<script>alert('Connection Error.');</script>";
+    }
+}
+
+if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
+    extract($_POST);
+    $query = "DELETE FROM friend_requests WHERE request_id='" . $rejectFriendRequestField . "'";
+    $result = mysqli_query($conn, $query);
+}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -102,6 +127,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
             showLoadingBox();
             returnAfterLoading(box_id);
         }
+
         $(document).ready(function() {
             startLoading('whole_box_id');
             $("#create_group_button").click(function() {
@@ -113,6 +139,11 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
                 $("#createGroupBox").show();
             });
         });
+
+        function showFriendRequests(state) {
+            const notificationsBox = document.getElementById("notificationsBox");
+            notificationsBox.style.display = state;
+        }
     </script>
 </head>
 
@@ -184,10 +215,60 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
             <a href="Add/" class="link" id="addLink">Add New Friend</a>
             <br /><br /><br /><br /><br /><br />
             <a href="Profile/" class="link" id="editLink">Edit Profile</a>
+            <br /><br /><br /><br /><br /><br />
+            <div id="notificationsBox">
+                <button class="closeButtonForNotifications" onclick="showFriendRequests('none')">X</button>
+                <table>
+                    <tr>
+                        <th>
+                            Requester:
+                        </th>
+                        <th>
+                            Sent Date:
+                        </th>
+                        <th>
+                            Action:
+                        </th>
+                    </tr>
+                    <?php
+                    $query = "SELECT * FROM friend_requests WHERE requested_user='" . $_SESSION["who"] . "'";
+                    $result = mysqli_query($conn, $query);
+                    $hasNotifications = false;
+                    if ($result && mysqli_num_rows($result) > 0) {
+                        $hasNotifications = true;
+                        while ($row = mysqli_fetch_row($result)) {
+                    ?>
+                            <tr>
+                                <td>
+                                    <img src="View Image/?u=<?php echo $row[1]; ?>" alt="requester profile image" class="notificationUserImage">
+                                    <h4 class="notificationUsername"> <?php echo $row[1]; ?> </h4>
+                                </td>
+                                <td>
+                                    <?php echo $row[3]; ?>
+                                </td>
+                                <td>
+                                    <form action="" method="POST">
+                                        <input type="hidden" name="acceptFriendRequestField" value="<?php echo $row[0]; ?>">
+                                        <input type="hidden" name="acceptFriendRequestUsernameField" value="<?php echo $row[1]; ?>">
+                                        <input type="submit" name="acceptFriendRequestButton" value="Accept" class="buttontag">
+                                    </form>
+                                    <form action="" method="POST">
+                                        <input type="hidden" name="rejectFriendRequestField" value="<?php echo $row[0]; ?>">
+                                        <input type="submit" name="rejectFriendRequestButton" value="Reject" class="buttontag">
+                                    </form>
+                                </td>
+                            </tr>
+                    <?php
+                        }
+                    }
+                    ?>
+                </table>
+            </div>
+
+            <button <?php if ($hasNotifications) { ?> onclick="showFriendRequests('flex')" <?php } ?> title="Notifications" class="notificationsButton <?php if (!$hasNotifications) echo "notificationsButtonDisabled"; ?>"> &#128276; <?php if ($hasNotifications) { ?> <span class="hasNotifications"></span> <?php } ?> </button>
             <br /><br /><br /><br />
             <hr class="hrLine" />
             <?php
-            require_once("../DB.php");
             $query = "SELECT picture FROM users WHERE BINARY username='" . $_SESSION["who"] . "'";
             $result = mysqli_query($conn, $query);
             if ($result) {
@@ -281,7 +362,7 @@ function generateGroupID($conn)
     $id_result = mysqli_query($conn, $id_query);
     if ($id_result) {
         $new_id = 1;
-        if(mysqli_num_rows($id_result)){    
+        if (mysqli_num_rows($id_result)) {
             $new_id = mysqli_fetch_row($id_result)[0] + 1;
         }
         return $new_id;
@@ -298,10 +379,10 @@ function createGroup($conn, $group_name)
     $tmp_name = $_FILES["image"]["tmp_name"];
     $image_name = "i" . $group_id . ".png";
 
-    if(!is_dir("../Extra/styles/images/groups images")) {
+    if (!is_dir("../Extra/styles/images/groups images")) {
         mkdir("../Extra/styles/images/groups images", 0777);
-	}
-    
+    }
+
     $path = "../Extra/styles/images/groups images/$image_name";
     move_uploaded_file($tmp_name, $path);
 

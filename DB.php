@@ -1,3 +1,3 @@
 <?php
-    $conn = mysqli_connect("", "", "", "");
+    $conn = mysqli_connect("localhost", "root", "", "allchat");
 ?>

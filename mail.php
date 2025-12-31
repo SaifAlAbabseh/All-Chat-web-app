@@ -1,26 +1,41 @@
 <?php
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-function sendMail($to_email, $to_name, $code)
-{
-
-    require $_SERVER['DOCUMENT_ROOT'] . '/' . $GLOBALS['urlMainPath'] . '/mail/Exception.php';
-    require $_SERVER['DOCUMENT_ROOT'] . '/' . $GLOBALS['urlMainPath'] . '/mail/PHPMailer.php';
-    require $_SERVER['DOCUMENT_ROOT'] . '/' . $GLOBALS['urlMainPath'] . '/mail/SMTP.php';
-
-    $from_email = "allchatbot1@gmail.com";
-    $from_name = "All Chat";
-    $subject = "All Chat Email Verification Code";
+function sendFriendRequestMail($to_email, $to_name, $requester_username) {
+    $subject = "Someone Wants To Be Your Friend";
+    $template = file_get_contents(__DIR__ . "/email_templates/friend_request_template.html");
     $site_name = "All Chat";
+    $body = str_replace(
+        ['{{REQUESTER_USERNAME}}', '{{YEAR}}', '{{SITE_NAME}}'],
+        [$requester_username, date('Y'), $site_name],
+        $template
+    );
+    sendMail($to_email, $to_name, $subject, $body);
+}
 
-    $template = file_get_contents("email_templates/signup_verification_template.html");
+function sendVerificationCodeMail($to_email, $to_name, $code) {
+    $subject = "All Chat Email Verification Code";
+    $template = file_get_contents(__DIR__ . "/email_templates/signup_verification_template.html");
+    $site_name = "All Chat";
     $body = str_replace(
         ['{{CODE}}', '{{YEAR}}', '{{SITE_NAME}}'],
         [$code, date('Y'), $site_name],
         $template
     );
+    sendMail($to_email, $to_name, $subject, $body);
+}
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+function sendMail($to_email, $to_name, $subject, $body)
+{
+
+    require 'mail/Exception.php';
+    require 'mail/PHPMailer.php';
+    require 'mail/SMTP.php';
+
+    $from_email = "allchatbot1@gmail.com";
+    $from_name = "All Chat";
 
     $mail = new PHPMailer;
     $mail->isSMTP();

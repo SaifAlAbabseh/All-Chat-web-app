@@ -123,9 +123,9 @@ if (isset($_POST) && isset($_POST["addFriendButton"])) {
     if (trim($fusername) != "" && $fusername != $you) {
         require_once("../../DB.php");
         $query = "SELECT * FROM users WHERE BINARY username='" . $fusername . "'";
-        $result = mysqli_query($conn, $query);
-        if ($result) {
-            if (mysqli_num_rows($result)) {
+        $isUserExistsResult = mysqli_query($conn, $query);
+        if ($isUserExistsResult) {
+            if (mysqli_num_rows($isUserExistsResult)) {
                 $query2 = "SELECT * FROM friends WHERE BINARY user1='" . $you . "' AND BINARY user2='" . $fusername . "' OR BINARY user1='" . $fusername . "' AND BINARY user2='" . $you . "'";
                 $result2 = mysqli_query($conn, $query2);
                 if ($result2) {
@@ -139,22 +139,50 @@ if (isset($_POST) && isset($_POST["addFriendButton"])) {
                         </script>
                         ";
                     } else {
-                        $query3 = "INSERT INTO friends VALUES ('" . $you . "','" . $fusername . "')";
-                        if (mysqli_query($conn, $query3)) {
-                            $tablename = "" . $_SESSION["who"] . "" . $fusername;
-                            $query4 = "CREATE TABLE " . $tablename . " (fromwho varchar(1000) , message varchar(1000),pos varchar(1000), whenSent DATETIME DEFAULT CURRENT_TIMESTAMP)";
-                            if (mysqli_query($conn, $query4)) {
+                        $query = "SELECT * FROM friend_requests WHERE requester='" . $_SESSION["who"] . "' AND requested_user='" . $fusername . "'";
+                        $result = mysqli_query($conn, $query);
+                        if ($result && mysqli_num_rows($result)) {
+                            echo
+                                "
+                            <script>
+                                var errorfield=document.getElementById('addfriendLabel');
+                                errorfield.style.color='white';
+                                errorfield.innerHTML='Already sent friend request';
+                            </script>
+                            ";
+                        } else {
+                            $query = "INSERT INTO friend_requests(requester, requested_user) VALUES ('" . $_SESSION["who"] . "', '" . $fusername . "')";
+                            $result = mysqli_query($conn, $query);
+                            if ($result) {
                                 echo
                                 "
-                                <script>
-                                    var errorfield=document.getElementById('addfriendLabel');
-                                    errorfield.style.color='green';
-                                    errorfield.innerHTML='Successfully Added.';
-                                </script>
+                            <script>
+                                var errorfield=document.getElementById('addfriendLabel');
+                                errorfield.style.color='white';
+                                errorfield.innerHTML='Sent Friend Request';
+                            </script>
+                            ";
+                            
+
+
+                            //Send email to receiver
+
+                            require_once(dirname(__DIR__, 2) . '/mail.php');
+                            $userEmail = mysqli_fetch_assoc($isUserExistsResult)["email"];
+                            sendFriendRequestMail($userEmail, $fusername, $_SESSION["who"]);
+
+                            ////////
+
+                            } else {
+                                echo
+                                "
+                            <script>
+                                var errorfield=document.getElementById('addfriendLabel');
+                                errorfield.style.color='white';
+                                errorfield.innerHTML='Unknown Error..';
+                            </script>
                             ";
                             }
-                        } else {
-                            echo "<script>window.alert('Connection Error.');</script>";
                         }
                     }
                 } else {

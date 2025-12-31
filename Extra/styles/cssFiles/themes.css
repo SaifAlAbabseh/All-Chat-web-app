@@ -127,8 +127,9 @@ body {
 .mainHeaderImage {
     background-color: #0162AF;
     height: 100%;
-    width: 10%;
+    width: max-content;
     text-align: center;
+    overflow: auto;
 }
 
 .whole-box {
@@ -277,6 +278,7 @@ body {
         width: 50%;
         text-align: center;
         z-index: 1000;
+        overflow: visible;
     }
 
     .friendsListBox,
@@ -474,7 +476,7 @@ body {
     width: 50%;
 }
 
-#exit {
+#exit, .closeButtonForNotifications {
     background-color: black;
     border: solid 1px black;
     color: white;
@@ -486,7 +488,13 @@ body {
     border-radius: 10px;
 }
 
-#exit:hover {
+.closeButtonForNotifications {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+}
+
+#exit:hover, .closeButtonForNotifications:hover {
     background-color: white;
     color: black;
 }
@@ -799,4 +807,47 @@ body {
     height: max-content;
     padding: 10px 50px;
     margin-top: 100px;
+}
+
+.notificationsButton {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    position: relative;
+}
+
+.notificationsButtonDisabled {
+    cursor: not-allowed;
+}
+
+.hasNotifications {
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    position: absolute;
+    left: 30px;
+}
+
+.notificationUserImage {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+#notificationsBox {
+    display: none;
+    overflow: auto;
+    width: 70%;
+    height: 70%;
+    background-color: red;
+    color: white;
+    position: absolute;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
