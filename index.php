@@ -96,9 +96,11 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                         </tr>
                         <tr>
                             <td>
+                                <br>
                                 <input type="submit" name="loginButton" class="buttontag" id="login_buttontag" value="LOGIN" />
                             </td>
                             <td>
+                                <br>
                                 <input type="reset" name="login_clearbutton" class="buttontag" id="login_buttontagclear" value="CLEAR" />
                             </td>
                         </tr>
@@ -151,13 +153,16 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                         </tr>
                         <tr>
                             <td>
+                                <br>
                                 <input type="submit" name="signupButton" class="buttontag" id="signup_buttontag" value="SIGNUP" />
                             </td>
                             <td>
+                                <br>
                                 <input type="reset" name="signup_clearbutton" class="buttontag" id="signup_buttontagclear" value="CLEAR" />
                             </td>
                         </tr>
                     </table>
+                    <br>
                     <div class="captchaOuterBoxParent">
                         <?php
 

@@ -70,6 +70,13 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
                         </h2>
                     </th>
                 </tr>
+                <tr>
+                    <th colspan="2">
+                        <h2>
+                            <a class="link" href="Change Password/">Change Password</a>
+                        </h2>
+                    </th>
+                </tr>
             </table>
         </div>
     </div>

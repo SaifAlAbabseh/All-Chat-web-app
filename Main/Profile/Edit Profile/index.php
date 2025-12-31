@@ -9,7 +9,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
 
 <head>
     <title>
-        All Chat | Edit Profile |Change Picture
+        All Chat | Edit Profile | Change Picture
     </title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="stylesheet" href="../../../Extra/styles/cssFiles/themes.css" />
