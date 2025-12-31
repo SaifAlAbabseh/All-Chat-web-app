@@ -788,16 +788,15 @@ body {
     opacity: 1;
 }
 
-<<<<<<< HEAD
+.chatMessageLink {
+    color: red;
+    font-weight: bolder;
+}
+
 .changePasswordForm {
     background-color: red;
     width: max-content;
     height: max-content;
     padding: 10px 50px;
     margin-top: 100px;
-=======
-.chatMessageLink {
-    color: red;
-    font-weight: bolder;
->>>>>>> 8bbc9fb0f32c0652b4672283cb4a6a8ae3e1a5a0
 }
