@@ -3,6 +3,7 @@
 session_start();
 if (isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_REQUEST["group_id"])) {
     require_once("DB.php");
+    require_once("common.php");
     $you = $_SESSION["who"];
     $group_id = $_REQUEST["group_id"];
     $check_table_name = "g" . $group_id . "_users";
@@ -25,7 +26,7 @@ if (isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_R
                         $message = "" . $row2[1];
                         $lastwho = "" . $row2[0];
                     }
-                    $messageDecoded = nl2br(htmlspecialchars(urldecode($message)));
+                    $messageDecoded = nl2br(formatMessage(htmlspecialchars(urldecode($message))));
                     $arr = array("date" => $date, "pos" => $pos, "message" => $messageDecoded, "lastwho" => $lastwho);
                     echo json_encode($arr);
                     exit;
