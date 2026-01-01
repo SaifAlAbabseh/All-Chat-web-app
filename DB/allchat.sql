@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 31, 2025 at 11:06 AM
+-- Generation Time: Jan 01, 2026 at 03:27 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -32,7 +32,7 @@ CREATE TABLE `all_chat_groups` (
   `group_name` varchar(255) NOT NULL,
   `leader_username` varchar(255) NOT NULL,
   `group_image` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
 
@@ -43,7 +43,7 @@ CREATE TABLE `all_chat_groups` (
 CREATE TABLE `friends` (
   `user1` varchar(1000) NOT NULL,
   `user2` varchar(1000) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB;
 
 --
 -- Dumping data for table `friends`
@@ -63,7 +63,7 @@ CREATE TABLE `friend_requests` (
   `requester` varchar(200) NOT NULL,
   `requested_user` varchar(200) NOT NULL,
   `whenSent` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
 
@@ -76,8 +76,9 @@ CREATE TABLE `users` (
   `password` varchar(1000) NOT NULL,
   `picture` varchar(1000) NOT NULL,
   `available` varchar(1) NOT NULL,
-  `email` varchar(1000) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `email` varchar(1000) NOT NULL,
+  `view_image_token` varchar(200) DEFAULT NULL
+) ENGINE=InnoDB;
 
 --
 -- Indexes for dumped tables
@@ -97,7 +98,7 @@ ALTER TABLE `friend_requests`
 -- AUTO_INCREMENT for table `friend_requests`
 --
 ALTER TABLE `friend_requests`
-  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
