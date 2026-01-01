@@ -387,7 +387,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
         }
     } else if (isset($verification_button) && isset($_SESSION) && isset($_SESSION["u_email"]) && isset($_SESSION["u_username"]) && isset($_SESSION["u_password"]) && isset($verification_code_field)) {
         if ($verification_code_field == $_SESSION["signup_code"]) {
-            $squery = "INSERT INTO users VALUES ('" . $_SESSION["u_username"] . "','" . $_SESSION["u_password"] . "','user','0', '" . $_SESSION["u_email"] . "')";
+            $squery = "INSERT INTO users(username, password, picture, available, email) VALUES ('" . $_SESSION["u_username"] . "','" . $_SESSION["u_password"] . "','user','0', '" . $_SESSION["u_email"] . "')";
             if (mysqli_query($conn, $squery)) {
                 echo
                 "<script>
