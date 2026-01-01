@@ -5,10 +5,31 @@ function sendFriendRequestMail($urlMainPath, $to_email, $to_name, $requester_use
     $subject = "Someone Wants To Be Your Friend";
     $template = file_get_contents(__DIR__ . "/email_templates/friend_request_template.html");
     $site_name = "All Chat";
-    $requester_profile_image_source = generateFullAbsolutePathForEmailUserImage($urlMainPath, $baseUrl, $to_name, $token);
+
+
+    require_once "DB.php";
+    $query = "SELECT picture FROM users WHERE BINARY username='" . $username . "'";
+    $result = mysqli_query($conn, $query);
+    mysqli_close($conn);
+    $temp = "user";
+    if ($result) {
+        if (mysqli_num_rows($result)) {
+            $row = mysqli_fetch_row($result);
+            $temp = $row[0];
+        }
+    }
+    $imagePath = "Extra/styles/images/users images/" . $temp . ".png";
+    $type = pathinfo($imagePath, PATHINFO_EXTENSION);
+    $data = file_get_contents($imagePath);
+    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+
+
+
+
+    // $requester_profile_image_source = generateFullAbsolutePathForEmailUserImage($urlMainPath, $baseUrl, $to_name, $token);
     $body = str_replace(
         ['{{REQUESTER_PROFILE_IMAGE_SOURCE}}', '{{REQUESTER_USERNAME}}', '{{YEAR}}', '{{SITE_NAME}}'],
-        [$requester_profile_image_source, $requester_username, date('Y'), $site_name],
+        [$base64, $requester_username, date('Y'), $site_name],
         $template
     );
     return sendMail($to_email, $to_name, $subject, $body);
