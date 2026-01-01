@@ -1,12 +1,14 @@
 <?php
 
-function sendFriendRequestMail($to_email, $to_name, $requester_username) {
+function sendFriendRequestMail($urlMainPath, $to_email, $to_name, $requester_username, $token) {
+    require_once "server_info.php";
     $subject = "Someone Wants To Be Your Friend";
     $template = file_get_contents(__DIR__ . "/email_templates/friend_request_template.html");
     $site_name = "All Chat";
+    $requester_profile_image_source = generateFullAbsolutePathForEmailUserImage($urlMainPath, $baseUrl, $to_name, $token);
     $body = str_replace(
-        ['{{REQUESTER_USERNAME}}', '{{YEAR}}', '{{SITE_NAME}}'],
-        [$requester_username, date('Y'), $site_name],
+        ['{{REQUESTER_PROFILE_IMAGE_SOURCE}}', '{{REQUESTER_USERNAME}}', '{{YEAR}}', '{{SITE_NAME}}'],
+        [$requester_profile_image_source, $requester_username, date('Y'), $site_name],
         $template
     );
     return sendMail($to_email, $to_name, $subject, $body);

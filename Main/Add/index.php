@@ -143,7 +143,7 @@ if (isset($_POST) && isset($_POST["addFriendButton"])) {
                         $result = mysqli_query($conn, $query);
                         if ($result && mysqli_num_rows($result)) {
                             echo
-                                "
+                            "
                             <script>
                                 var errorfield=document.getElementById('addfriendLabel');
                                 errorfield.style.color='white';
@@ -156,32 +156,41 @@ if (isset($_POST) && isset($_POST["addFriendButton"])) {
                             if ($result) {
                                 echo
                                 "
-                            <script>
-                                var errorfield=document.getElementById('addfriendLabel');
-                                errorfield.style.color='white';
-                                errorfield.innerHTML='Sent Friend Request';
-                            </script>
-                            ";
-                            
+                                <script>
+                                    var errorfield=document.getElementById('addfriendLabel');
+                                    errorfield.style.color='white';
+                                    errorfield.innerHTML='Sent Friend Request';
+                                </script>
+                                ";
 
+                                //Send email to receiver
 
-                            //Send email to receiver
+                                require_once(dirname(__DIR__, 2) . '/common.php');
+                                $everythingIsOk = false;
+                                $result = updateUserImageToken($conn, $fusername);
+                                if ($result[0]) {
+                                    require_once(dirname(__DIR__, 2) . '/mail.php');
+                                    $userEmail = mysqli_fetch_assoc($isUserExistsResult)["email"];
+                                    if (sendFriendRequestMail($urlMainPath, $userEmail, $fusername, $_SESSION["who"], $result[1])) {
+                                        $everythingIsOk = true;
+                                    }
+                                }
 
-                            require_once(dirname(__DIR__, 2) . '/mail.php');
-                            $userEmail = mysqli_fetch_assoc($isUserExistsResult)["email"];
-                            sendFriendRequestMail($userEmail, $fusername, $_SESSION["who"]);
+                                //Change token so it can't be used again
+                                if($everythingIsOk)
+                                    updateUserImageToken($conn, $fusername);
 
-                            ////////
+                                ////////
 
                             } else {
                                 echo
                                 "
-                            <script>
-                                var errorfield=document.getElementById('addfriendLabel');
-                                errorfield.style.color='white';
-                                errorfield.innerHTML='Unknown Error..';
-                            </script>
-                            ";
+                                <script>
+                                    var errorfield=document.getElementById('addfriendLabel');
+                                    errorfield.style.color='white';
+                                    errorfield.innerHTML='Unknown Error..';
+                                </script>
+                                ";
                             }
                         }
                     }

@@ -163,25 +163,6 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                     <div class="captchaOuterBoxParent">
                         <?php
 
-                        function generateRandomChar()
-                        {
-                            $capital_alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                            $small_alphabets = "abcdefghijklmnopqrstuvwxyz";
-                            $numbers = "0123456789";
-
-                            $char_rand_alpha_or_number = rand(1, 2);
-                            if ($char_rand_alpha_or_number == 1) {
-                                $small_or_capital = rand(1, 2);
-                                if ($small_or_capital == 1) {
-                                    return "" . $small_alphabets[rand(0, strlen($small_alphabets) - 1)];
-                                } else if ($small_or_capital == 2) {
-                                    return "" . $capital_alphabets[rand(0, strlen($capital_alphabets) - 1)];
-                                }
-                            } else if ($char_rand_alpha_or_number == 2) {
-                                return "" . $numbers[rand(0, strlen($numbers) - 1)];
-                            }
-                        }
-
                         function showCaptcha()
                         {
                             $_SESSION["code"] = "";
@@ -356,7 +337,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                         var invalidfield=document.getElementById('invalidforsignup');
                                         invalidfield.style.display='block';
                                         invalidfield.style.color='red';
-                                        invalidforsignup.innerHTML='Error';
+                                        invalidforsignup.innerHTML='Email could not be sent error';
                                     </script>";
                                 }
                             } else {
