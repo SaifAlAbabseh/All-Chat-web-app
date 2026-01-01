@@ -39,6 +39,7 @@ function getImage($conn, $username) {
     }
     $path = "../../Extra/styles/images/users images/" . $temp . ".png";
     header('Content-Type: image/png');
+    header('Access-Control-Allow-Origin: *');
     readfile($path);
 }
 
