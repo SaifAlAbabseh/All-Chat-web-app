@@ -27,13 +27,13 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
                         echo "
                                     
                                     <tr>
-                                        <td><img src='View Image/?u=" . $row2[0] . "' width='50px' height='50px' style='border-radius:50%'/> <sup>" . $ava . "</sup></td>
+                                        <td><img src='View_Image/?u=" . $row2[0] . "' width='50px' height='50px' style='border-radius:50%'/> <sup>" . $ava . "</sup></td>
                                         <td><h2 style='color:white'>" . $row2[0] . "</h2></td>
                                         <td>
                                             <a href='Chat/?with=" . $row2[0] . "' class='link'>Chat</a>
                                         </td>
                                         <td>
-                                            <a href='Delete Friend/?name=" . $row2[0] . "' class='link'>Delete</a>
+                                            <a href='Delete_Friend/?name=" . $row2[0] . "' class='link'>Delete</a>
                                         </td>
                                     </tr>
 

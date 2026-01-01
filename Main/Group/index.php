@@ -166,12 +166,12 @@ require_once(dirname(__DIR__, 2) . '/common.php');
             <?php
             if ($check_result_row[1] == $_SESSION["who"]) {
                 echo "
-                <a href='Destroy Group/?group_id=" . $_REQUEST["group_id"] . "' class='link leaveGroupLink'>Destroy Group</a>
+                <a href='Destroy_Group/?group_id=" . $_REQUEST["group_id"] . "' class='link leaveGroupLink'>Destroy_Group</a>
                 &nbsp;
                 <a href='#' class='link leaveGroupLink' onclick='showEditGroupPicBox()'>Edit Picture</a>
                 ";
             } else {
-                echo "<a href='Leave Group/?group_id=" . $_REQUEST["group_id"] . "' class='link leaveGroupLink'>Leave Group</a>";
+                echo "<a href='Leave_Group/?group_id=" . $_REQUEST["group_id"] . "' class='link leaveGroupLink'>Leave_Group</a>";
             }
             ?>
             <br /><br /><br />
@@ -193,7 +193,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                             <tr>
                                 <td>
                                     <?php
-                                    echo "<img src='../View Group Image/?group_id=" . $_REQUEST["group_id"] . "' width='50px' height='50px' style='border-radius:50%'/>";
+                                    echo "<img src='../View_Group_Image/?group_id=" . $_REQUEST["group_id"] . "' width='50px' height='50px' style='border-radius:50%'/>";
                                     ?>
                                 </td>
                                 <td>
@@ -418,7 +418,7 @@ if (isset($_POST) && isset($_POST["changePicButton"])) {
             $size = round((($_FILES["pic"]["size"]) / MB), 0);
             if ($size <= 1) {
                 $tmp_name = $_FILES["pic"]["tmp_name"];
-                $path = "../../Extra/styles/images/groups images/i" . $_REQUEST["group_id"] . ".png";
+                $path = "../../Extra/styles/images/groups_images/i" . $_REQUEST["group_id"] . ".png";
                 if(move_uploaded_file($tmp_name, $path)){
                     echo
                     "

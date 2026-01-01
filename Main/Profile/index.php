@@ -44,7 +44,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
                         "
                         <tr>
                         <td>
-                        <img src='../View Image/?u=".$_SESSION["who"]."' width='100px' height='100px' style='border-radius:50%'/>
+                        <img src='../View_Image/?u=".$_SESSION["who"]."' width='100px' height='100px' style='border-radius:50%'/>
                         </td>
                         <td>
                         <h2 style='color:yellow'>" . $_SESSION["who"] . "</h2>
@@ -66,14 +66,14 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
                 <tr>
                     <th colspan="2">
                         <h2>
-                            <a class="link" href="Edit Profile/">Change Picture</a>
+                            <a class="link" href="Edit_Profile/">Change Picture</a>
                         </h2>
                     </th>
                 </tr>
                 <tr>
                     <th colspan="2">
                         <h2>
-                            <a class="link" href="Change Password/">Change Password</a>
+                            <a class="link" href="Change_Password/">Change Password</a>
                         </h2>
                     </th>
                 </tr>

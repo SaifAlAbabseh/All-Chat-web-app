@@ -22,7 +22,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                             echo "
                                         
                                         <tr>
-                                            <td><img src='../View Image/?u=" . $row[0] . "' width='50px' height='50px' style='border-radius:50%'/></td>
+                                            <td><img src='../View_Image/?u=" . $row[0] . "' width='50px' height='50px' style='border-radius:50%'/></td>
                                             <td><h2 style='color:white'>" . $row[0] . "</h2></td>
                                             <td><a style='color:blue;border:blue 2px solid;' class='link' href='../../kickMember.php?group_id=" . $group_id . "&member=" . $row[0] . "' id='kicklink'>Kick</a></td>
                                         </tr>
@@ -34,7 +34,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                                 echo "
                                         
                                         <tr>
-                                            <td><img src='../View Image/?u=" . $row[0] . "' width='50px' height='50px' style='border-radius:50%'/></td>
+                                            <td><img src='../View_Image/?u=" . $row[0] . "' width='50px' height='50px' style='border-radius:50%'/></td>
                                             <td><h2 style='color:white'>" . $row[0] . "<sup style='font-style:italic;color:green;'>[Admin]</sup></h2></td>
                                         </tr>
     
@@ -45,7 +45,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                                 echo "
                                         
                                         <tr>
-                                            <td><img src='../View Image/?u=" . $row[0] . "' width='50px' height='50px' style='border-radius:50%'/></td>
+                                            <td><img src='../View_Image/?u=" . $row[0] . "' width='50px' height='50px' style='border-radius:50%'/></td>
                                             <td><h2 style='color:white'>" . $row[0] . "</h2></td>
                                         </tr>
     

@@ -34,19 +34,17 @@ function generateRandomChar()
     }
 }
 
-function generateTokenCode()
-{
-    $token = "";
-    $how_many_chars = rand(4, 8);
-    for ($i = 1; $i <= $how_many_chars; $i++) {
-        $token .= generateRandomChar();
+function getUserImageName($conn, $username) {
+    $query = "SELECT picture FROM users WHERE BINARY username='" . $username . "'";
+    $result = mysqli_query($conn, $query);
+    $imageName = "user";
+    if ($result) {
+        if (mysqli_num_rows($result)) {
+            $row = mysqli_fetch_row($result);
+            $imageName = $row[0];
+        }
+        else 
+            return null;
     }
-    return $token;
-}
-
-function updateUserImageToken($conn, $username)
-{
-    $token = generateTokenCode();
-    $query = "UPDATE users SET view_image_token='" . $token . "' WHERE username='" . $username . "'";
-    return [mysqli_query($conn, $query), $token];
+    return $imageName;
 }

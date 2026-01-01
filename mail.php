@@ -1,41 +1,28 @@
 <?php
 
-function sendFriendRequestMail($urlMainPath, $to_email, $to_name, $requester_username, $token) {
+function sendFriendRequestMail($conn, $urlMainPath, $to_email, $to_name, $requester_username)
+{
     require_once "server_info.php";
+    require_once "common.php";
+
     $subject = "Someone Wants To Be Your Friend";
     $template = file_get_contents(__DIR__ . "/email_templates/friend_request_template.html");
     $site_name = "All Chat";
 
+    $imageName = getUserImageName($conn, $requester_username);
+    $hostPath = generateHostPath($urlMainPath, $baseUrl);
+    $imagePath = $hostPath . "/Extra/styles/images/users_images/" . $imageName . ".png";
 
-    require_once "DB.php";
-    $query = "SELECT picture FROM users WHERE BINARY username='" . $to_name . "'";
-    $result = mysqli_query($conn, $query);
-    mysqli_close($conn);
-    $temp = "user";
-    if ($result) {
-        if (mysqli_num_rows($result)) {
-            $row = mysqli_fetch_row($result);
-            $temp = $row[0];
-        }
-    }
-    $imagePath = "Extra/styles/images/users images/" . $temp . ".png";
-    $type = pathinfo($imagePath, PATHINFO_EXTENSION);
-    $data = file_get_contents($imagePath);
-    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-
-
-
-
-    // $requester_profile_image_source = generateFullAbsolutePathForEmailUserImage($urlMainPath, $baseUrl, $to_name, $token);
     $body = str_replace(
-        ['{{REQUESTER_PROFILE_IMAGE_SOURCE}}', '{{REQUESTER_USERNAME}}', '{{YEAR}}', '{{SITE_NAME}}'],
-        [$base64, $requester_username, date('Y'), $site_name],
+        ['{{REQUESTER_USERNAME}}', '{{YEAR}}', '{{SITE_NAME}}'],
+        [$requester_username, date('Y'), $site_name],
         $template
     );
-    return sendMail($to_email, $to_name, $subject, $body);
+    return sendMail([true, $imagePath], $to_email, $to_name, $subject, $body);
 }
 
-function sendVerificationCodeMail($to_email, $to_name, $code) {
+function sendVerificationCodeMail($to_email, $to_name, $code)
+{
     $subject = "All Chat Email Verification Code";
     $template = file_get_contents(__DIR__ . "/email_templates/signup_verification_template.html");
     $site_name = "All Chat";
@@ -44,13 +31,13 @@ function sendVerificationCodeMail($to_email, $to_name, $code) {
         [$code, date('Y'), $site_name],
         $template
     );
-    return sendMail($to_email, $to_name, $subject, $body);
+    return sendMail([false, null], $to_email, $to_name, $subject, $body);
 }
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-function sendMail($to_email, $to_name, $subject, $body)
+function sendMail($isImage, $to_email, $to_name, $subject, $body)
 {
 
     require 'mail/Exception.php';
@@ -72,7 +59,12 @@ function sendMail($to_email, $to_name, $subject, $body)
     $mail->setFrom($from_email, $from_name); // From email and name
     $mail->addAddress($to_email, $to_name); // to email and name
     $mail->Subject = $subject;
-    $mail->msgHTML($body); //$mail->msgHTML(file_get_contents('contents.html'), __DIR__); //Read an HTML message body from an external file, convert referenced images to embedded,
+    if ($isImage[0]) {
+        $mail->addEmbeddedImage($isImage[1], 'logo_cid');
+    }
+    $mail->isHTML(true);
+    $mail->Body = $body;
+    // $mail->msgHTML($body); //$mail->msgHTML(file_get_contents('contents.html'), __DIR__); //Read an HTML message body from an external file, convert referenced images to embedded,
     $mail->AltBody = 'HTML messaging not supported'; // If html emails is not supported by the receiver, show this body
     // $mail->addAttachment('images/phpmailer_mini.png'); //Attach an image file
     $mail->SMTPOptions = array(
@@ -84,3 +76,5 @@ function sendMail($to_email, $to_name, $subject, $body)
     );
     return $mail->send();
 }
+
+?>

@@ -48,7 +48,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                             <td>
                                 <?php
                                 if (isset($_REQUEST) && isset($_REQUEST["with"])) {
-                                    echo "<img src='../View Image/?u=" . $_REQUEST["with"] . "' width='50px' height='50px' style='border-radius:50%'/>";
+                                    echo "<img src='../View_Image/?u=" . $_REQUEST["with"] . "' width='50px' height='50px' style='border-radius:50%'/>";
                                 }
                                 ?>
                             </td>

@@ -76,8 +76,7 @@ CREATE TABLE `users` (
   `password` varchar(1000) NOT NULL,
   `picture` varchar(1000) NOT NULL,
   `available` varchar(1) NOT NULL,
-  `email` varchar(1000) NOT NULL,
-  `view_image_token` varchar(200) DEFAULT NULL
+  `email` varchar(1000) NOT NULL
 ) ENGINE=InnoDB;
 
 --

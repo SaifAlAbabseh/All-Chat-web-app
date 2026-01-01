@@ -9,7 +9,7 @@ if (isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_R
     if ($check_result && mysqli_num_rows($check_result)) {
         $row = mysqli_fetch_row($check_result);
         $temp = "" . $row[0];
-        $path = "../../Extra/styles/images/groups images/" . $temp;
+        $path = "../../Extra/styles/images/groups_images/" . $temp;
         header('Content-Type: image/png');
         readfile($path);
     } else {

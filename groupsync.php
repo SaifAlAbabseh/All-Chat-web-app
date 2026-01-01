@@ -19,7 +19,7 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
                     echo "
                                     
                                     <tr>
-                                        <td><img src='View Group Image/?group_id=" . $group_id . "' width='50px' height='50px' style='border-radius:50%'/></td>
+                                        <td><img src='View_Group_Image/?group_id=" . $group_id . "' width='50px' height='50px' style='border-radius:50%'/></td>
                                         <td><h2 style='color:white'>" . $group_name . "</h2></td>
                                         <td>
                                             <a href='Group/?group_id=" . $group_id . "' class='link'>Enter</a>

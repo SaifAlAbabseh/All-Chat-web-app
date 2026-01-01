@@ -166,19 +166,9 @@ if (isset($_POST) && isset($_POST["addFriendButton"])) {
                                 //Send email to receiver
 
                                 require_once(dirname(__DIR__, 2) . '/common.php');
-                                $everythingIsOk = false;
-                                $result = updateUserImageToken($conn, $fusername);
-                                if ($result[0]) {
-                                    require_once(dirname(__DIR__, 2) . '/mail.php');
-                                    $userEmail = mysqli_fetch_assoc($isUserExistsResult)["email"];
-                                    if (sendFriendRequestMail($urlMainPath, $userEmail, $fusername, $_SESSION["who"], $result[1])) {
-                                        $everythingIsOk = true;
-                                    }
-                                }
-
-                                //Change token so it can't be used again
-                                if($everythingIsOk)
-                                    updateUserImageToken($conn, $fusername);
+                                require_once(dirname(__DIR__, 2) . '/mail.php');
+                                $userEmail = mysqli_fetch_assoc($isUserExistsResult)["email"];
+                                sendFriendRequestMail($conn, $urlMainPath, $userEmail, $fusername, $_SESSION["who"]);
 
                                 ////////
 

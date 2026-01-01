@@ -47,9 +47,9 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
     <div id="mainDialogBox">
         <button id="exit">X</button>
         <div id="main-dialog-inner">
-            <a class="otherPlatformDownloadLink" download href="Extra/Other Platforms/All Chat.exe">Desktop Version Download</a>
+            <a class="otherPlatformDownloadLink" download href="Extra/other_platforms/All Chat.exe">Desktop Version Download</a>
             <br>
-            <a class="otherPlatformDownloadLink" download href="Extra/Other Platforms/All Chat.apk">Android Version Download</a>
+            <a class="otherPlatformDownloadLink" download href="Extra/other_platforms/All Chat.apk">Android Version Download</a>
         </div>
     </div>
     <div class="outer_reqs_box" onclick="hide()">

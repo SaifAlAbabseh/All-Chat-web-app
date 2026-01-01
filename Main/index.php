@@ -240,7 +240,7 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                     ?>
                             <tr>
                                 <td>
-                                    <img src="View Image/?u=<?php echo $row[1]; ?>" alt="requester profile image" class="notificationUserImage">
+                                    <img src="View_Image/?u=<?php echo $row[1]; ?>" alt="requester profile image" class="notificationUserImage">
                                     <h4 class="notificationUsername"> <?php echo $row[1]; ?> </h4>
                                 </td>
                                 <td>
@@ -277,7 +277,7 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                     echo
                     "
                     <div class='profileBox'>
-                        <img src='View Image/?u=" . $_SESSION["who"] . "' width='100px' height='100px' style='border-radius:50%'/>
+                        <img src='View_Image/?u=" . $_SESSION["who"] . "' width='100px' height='100px' style='border-radius:50%'/>
                         <br />
                         <h2 style='color:yellow'>" . $_SESSION["who"] . "</h2>
                         <br />
@@ -379,11 +379,11 @@ function createGroup($conn, $group_name)
     $tmp_name = $_FILES["image"]["tmp_name"];
     $image_name = "i" . $group_id . ".png";
 
-    if (!is_dir("../Extra/styles/images/groups images")) {
-        mkdir("../Extra/styles/images/groups images", 0777);
+    if (!is_dir("../Extra/styles/images/groups_images")) {
+        mkdir("../Extra/styles/images/groups_images", 0777);
     }
 
-    $path = "../Extra/styles/images/groups images/$image_name";
+    $path = "../Extra/styles/images/groups_images/$image_name";
     move_uploaded_file($tmp_name, $path);
 
     $insert_query = "INSERT INTO all_chat_groups VALUES ('" . $group_id . "', '" . $group_name . "', '" . $_SESSION["who"] . "', '" . $image_name . "')";

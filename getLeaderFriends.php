@@ -21,7 +21,7 @@ if (isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_R
                         echo "
                                     
                                     <tr>
-                                        <td><img src='../View Image/?u=" . $row2[0] . "' width='50px' height='50px' style='border-radius:50%'/></td>
+                                        <td><img src='../View_Image/?u=" . $row2[0] . "' width='50px' height='50px' style='border-radius:50%'/></td>
                                         <td><h2 style='color:white'>" . $row2[0] . "</h2></td>
                                         <td>
                                             <a style='border-color:green;' href='../../addMemberToGroup.php?group_id=" . $_REQUEST["group_id"] . "&user=".$row2[0]."' id='addlink' class='link'>Add</a>

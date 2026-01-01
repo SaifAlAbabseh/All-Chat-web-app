@@ -18,7 +18,7 @@ else{
         $second_query = "DROP TABLE IF EXISTS $first_group_table_name, $second_group_table_name";
         $second_result = mysqli_query($conn, $second_query);
         if($second_result){
-            $image_path = "../../../Extra/styles/images/groups images/i" . $group_id . ".png";
+            $image_path = "../../../Extra/styles/images/groups_images/i" . $group_id . ".png";
             if(unlink($image_path)){
                 header("Location:../../");
             }
