@@ -8,7 +8,7 @@ function sendFriendRequestMail($urlMainPath, $to_email, $to_name, $requester_use
 
 
     require_once "DB.php";
-    $query = "SELECT picture FROM users WHERE BINARY username='" . $username . "'";
+    $query = "SELECT picture FROM users WHERE BINARY username='" . $to_name . "'";
     $result = mysqli_query($conn, $query);
     mysqli_close($conn);
     $temp = "user";
