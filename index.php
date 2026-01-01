@@ -338,7 +338,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                 $_SESSION["u_password"] = $password;
                                 
                                 require_once "mail.php";
-                                if (sendMail($signupemail, $un, $_SESSION["signup_code"])) {
+                                if (sendVerificationCodeMail($signupemail, $un, $_SESSION["signup_code"])) {
                                     echo
                                     "<div id='email_verification_box_parent'>
                                     <div id='email_verification_box'>
