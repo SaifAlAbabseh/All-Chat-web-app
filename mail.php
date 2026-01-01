@@ -9,7 +9,7 @@ function sendFriendRequestMail($to_email, $to_name, $requester_username) {
         [$requester_username, date('Y'), $site_name],
         $template
     );
-    sendMail($to_email, $to_name, $subject, $body);
+    return sendMail($to_email, $to_name, $subject, $body);
 }
 
 function sendVerificationCodeMail($to_email, $to_name, $code) {
@@ -21,7 +21,7 @@ function sendVerificationCodeMail($to_email, $to_name, $code) {
         [$code, date('Y'), $site_name],
         $template
     );
-    sendMail($to_email, $to_name, $subject, $body);
+    return sendMail($to_email, $to_name, $subject, $body);
 }
 
 use PHPMailer\PHPMailer\PHPMailer;
