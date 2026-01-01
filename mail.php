@@ -62,7 +62,7 @@ function sendMail($to_email, $to_name, $subject, $body)
 
     $mail = new PHPMailer;
     $mail->isSMTP();
-    $mail->SMTPDebug = 0; // 0 = off (for production use) - 1 = client messages - 2 = client and server messages
+    $mail->SMTPDebug = 2; // 0 = off (for production use) - 1 = client messages - 2 = client and server messages
     $mail->Host = "smtp.gmail.com"; // use $mail->Host = gethostbyname('smtp.gmail.com'); // if your network does not support SMTP over IPv6
     $mail->Port = 465; // TLS only
     $mail->SMTPSecure = 'ssl'; // ssl is deprecated
