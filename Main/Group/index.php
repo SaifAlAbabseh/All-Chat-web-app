@@ -25,7 +25,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
         Group Chat
     </title>
     <meta name="viewport" content="width=device-width" />
-    <link rel="stylesheet" href="../../Extra/styles/cssFiles/themes.css" />
+    <link rel="stylesheet" href="<?= asset('../../Extra/styles/cssFiles/themes.css') ?>" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style>
         body {
@@ -37,7 +37,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
             height: 100%;
         }
     </style>
-    <script src="../../scripts/commonMethods.js"></script>
+    <script src="<?= asset('../../scripts/commonMethods.js') ?>"></script>
     <script>
 
         function showAddMemberBox() {
@@ -296,7 +296,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
             </div>
         </center>
     </div>
-    <script src="../../scripts/commonMethods.js"></script>
+    <script src="<?= asset('../../scripts/commonMethods.js') ?>"></script>
     <script>
         $(document).ready(function() {
             var oldpos = "<?php echo "" . $lastmessageindex; ?>";

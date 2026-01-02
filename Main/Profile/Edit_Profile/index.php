@@ -3,6 +3,7 @@ session_start();
 if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
     header("Location:../../../");
 }
+require_once(dirname(__DIR__, 3) . '/common.php');
 ?>
 <!DOCTYPE html>
 <html>
@@ -12,7 +13,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
         All Chat | Edit Profile | Change Picture
     </title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="stylesheet" href="../../../Extra/styles/cssFiles/themes.css" />
+    <link rel="stylesheet" href="<?= asset('../../../Extra/styles/cssFiles/themes.css') ?>" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style>
         body {
@@ -70,7 +71,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
             returnAfterLoading(box_id);
         }
     </script>
-    <script src="../../../scripts/commonMethods.js"></script>
+    <script src="<?= asset('../../../scripts/commonMethods.js') ?>"></script>
 </head>
 
 <body>

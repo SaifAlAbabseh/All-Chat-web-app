@@ -3,6 +3,7 @@ session_start();
 if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
     header("Location:../../");
 }
+require_once(dirname(__DIR__, 2) . '/common.php');
 ?>
 <!DOCTYPE html>
 <html>
@@ -12,10 +13,10 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
         All Chat | Add Friend
     </title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="stylesheet" href="../../Extra/styles/cssFiles/themes.css" />
+    <link rel="stylesheet" href="<?= asset('../../Extra/styles/cssFiles/themes.css') ?>" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="../../scripts/commonMethods.js"></script>
-    <script src="../../scripts/add_friend.js"></script>
+    <script src="<?= asset('../../scripts/commonMethods.js') ?>"></script>
+    <script src="<?= asset('../../scripts/add_friend.js') ?>"></script>
     <style>
         body {
             background-color: rgb(247, 247, 247);
@@ -165,7 +166,6 @@ if (isset($_POST) && isset($_POST["addFriendButton"])) {
 
                                 //Send email to receiver
 
-                                require_once(dirname(__DIR__, 2) . '/common.php');
                                 require_once(dirname(__DIR__, 2) . '/mail.php');
                                 $userEmail = mysqli_fetch_assoc($isUserExistsResult)["email"];
                                 sendFriendRequestMail($conn, $urlMainPath, $userEmail, $fusername, $_SESSION["who"]);

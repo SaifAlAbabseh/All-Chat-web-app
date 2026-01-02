@@ -25,7 +25,7 @@ else{
         ALL CHAT
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="Extra/styles/cssFiles/themes.css" />
+    <link rel="stylesheet" href="<?= asset('Extra/styles/cssFiles/themes.css') ?>" />
     <style>
         body,
         html {
@@ -39,7 +39,7 @@ else{
             align-items: center;
         }
     </style>
-    <script src="scripts/commonMethods.js"></script>
+    <script src="<?= asset('scripts/commonMethods.js') ?>"></script>
 </head>
 
 <body>

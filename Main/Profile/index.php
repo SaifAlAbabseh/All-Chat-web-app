@@ -3,6 +3,7 @@ session_start();
 if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
     header("Location:../../");
 }
+require_once(dirname(__DIR__, 2) . '/common.php');
 ?>
 <!DOCTYPE html>
 <html>
@@ -12,7 +13,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
         All Chat | Edit Profile
     </title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="stylesheet" href="../../Extra/styles/cssFiles/themes.css" />
+    <link rel="stylesheet" href="<?= asset('../../Extra/styles/cssFiles/themes.css') ?>" />
     <style>
         body {
             background-color: rgb(247, 247, 247);

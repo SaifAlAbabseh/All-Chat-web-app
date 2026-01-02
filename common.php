@@ -48,3 +48,8 @@ function getUserImageName($conn, $username) {
     }
     return $imageName;
 }
+
+function asset($filePath) {
+    $version = filemtime($filePath);
+    return $filePath . '?v=' . $version;
+}
