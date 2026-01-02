@@ -1,3 +1,5 @@
+const urlMainPath = "";
+
 function renderImage(){
     let fileField = document.getElementById("picField");
     let file = fileField.files[0];
@@ -13,7 +15,7 @@ function renderImage(){
 
 function generateURL(path){
     let origin = window.location.origin;
-    let fullLink = origin + "//";
+    let fullLink = `${origin}/${urlMainPath}/`;
     return fullLink + path;
 }
 
