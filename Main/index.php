@@ -10,15 +10,16 @@ if (isset($_POST) && isset($_POST["acceptFriendRequestButton"])) {
     extract($_POST);
     $query = "DELETE FROM friend_requests WHERE request_id='" . $acceptFriendRequestField . "'";
     $result = mysqli_query($conn, $query);
-
-    // Actually to be a freind
-    $query = "INSERT INTO friends VALUES ('" . $_SESSION["who"] . "','" . $acceptFriendRequestUsernameField . "')";
-    if (mysqli_query($conn, $query)) {
-        $tablename = "" . $_SESSION["who"] . "" . $acceptFriendRequestUsernameField;
-        $query = "CREATE TABLE " . $tablename . " (fromwho varchar(1000) , message varchar(1000),pos varchar(1000), whenSent DATETIME DEFAULT CURRENT_TIMESTAMP)";
-        mysqli_query($conn, $query);
-    } else {
-        echo "<script>alert('Connection Error.');</script>";
+    if ($result && mysqli_affected_rows($conn) > 0) {
+        // Actually to be a freind
+        $query = "INSERT INTO friends VALUES ('" . $_SESSION["who"] . "','" . $acceptFriendRequestUsernameField . "')";
+        if (mysqli_query($conn, $query)) {
+            $tablename = "" . $_SESSION["who"] . "" . $acceptFriendRequestUsernameField;
+            $query = "CREATE TABLE " . $tablename . " (fromwho varchar(1000) , message varchar(1000),pos varchar(1000), whenSent DATETIME DEFAULT CURRENT_TIMESTAMP)";
+            mysqli_query($conn, $query);
+        } else {
+            echo "<script>alert('Connection Error.');</script>";
+        }
     }
 }
 
@@ -211,79 +212,84 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
             <img style="cursor:pointer" id="m" width="40px" height="40px" src="../Extra/styles/images/menu.png" alt="menu icon">
         </div>
         <div class="mainHeaderImage" id="mainHeader">
-            <img src="../Extra/styles/images/main.png" alt="All Chat Image" width="100%" height="30%" />
-            <a href="Add/" class="link" id="addLink">Add New Friend</a>
-            <br /><br /><br /><br /><br /><br />
-            <a href="Profile/" class="link" id="editLink">Edit Profile</a>
-            <br /><br /><br /><br /><br /><br />
-            <div id="notificationsBox">
-                <button class="closeButtonForNotifications" onclick="showFriendRequests('none')">X</button>
-                <table>
-                    <tr>
-                        <th>
-                            Requester:
-                        </th>
-                        <th>
-                            Sent Date:
-                        </th>
-                        <th>
-                            Action:
-                        </th>
-                    </tr>
-                    <?php
-                    $query = "SELECT * FROM friend_requests WHERE requested_user='" . $_SESSION["who"] . "'";
-                    $result = mysqli_query($conn, $query);
-                    $hasNotifications = false;
-                    if ($result && mysqli_num_rows($result) > 0) {
-                        $hasNotifications = true;
-                        while ($row = mysqli_fetch_row($result)) {
-                    ?>
+            <div>
+                <img src="../Extra/styles/images/main.png" alt="All Chat Image" width="100%" height="100px" />
+                <hr class="hrLine">
+                <div class="menuContainer">
+                    <a href="Add/" class="link" id="addLink">Add New Friend</a>
+                    <a href="Profile/" class="link" id="editLink">Edit Profile</a>
+                    <div id="notificationsBox">
+                        <button class="closeButtonForNotifications" onclick="showFriendRequests('none')">X</button>
+                        <table>
                             <tr>
-                                <td>
-                                    <img src="View_Image/?u=<?php echo $row[1]; ?>" alt="requester profile image" class="notificationUserImage">
-                                    <h4 class="notificationUsername"> <?php echo $row[1]; ?> </h4>
-                                </td>
-                                <td>
-                                    <?php echo $row[3]; ?>
-                                </td>
-                                <td>
-                                    <form action="" method="POST">
-                                        <input type="hidden" name="acceptFriendRequestField" value="<?php echo $row[0]; ?>">
-                                        <input type="hidden" name="acceptFriendRequestUsernameField" value="<?php echo $row[1]; ?>">
-                                        <input type="submit" name="acceptFriendRequestButton" value="Accept" class="buttontag">
-                                    </form>
-                                    <form action="" method="POST">
-                                        <input type="hidden" name="rejectFriendRequestField" value="<?php echo $row[0]; ?>">
-                                        <input type="submit" name="rejectFriendRequestButton" value="Reject" class="buttontag">
-                                    </form>
-                                </td>
+                                <th>
+                                    Requester:
+                                </th>
+                                <th>
+                                    Sent Date:
+                                </th>
+                                <th>
+                                    Action:
+                                </th>
                             </tr>
-                    <?php
-                        }
-                    }
-                    ?>
-                </table>
+                            <?php
+                            $query = "SELECT * FROM friend_requests WHERE requested_user='" . $_SESSION["who"] . "'";
+                            $result = mysqli_query($conn, $query);
+                            $hasNotifications = false;
+                            if ($result && mysqli_num_rows($result) > 0) {
+                                $hasNotifications = true;
+                                while ($row = mysqli_fetch_row($result)) {
+                            ?>
+                                    <tr>
+                                        <td>
+                                            <img src="View_Image/?u=<?php echo $row[1]; ?>" alt="requester profile image" class="notificationUserImage">
+                                            <h4 class="notificationUsername"> <?php echo $row[1]; ?> </h4>
+                                        </td>
+                                        <td>
+                                            <?php echo $row[3]; ?>
+                                        </td>
+                                        <td>
+                                            <form action="" method="POST">
+                                                <input type="hidden" name="acceptFriendRequestField" value="<?php echo $row[0]; ?>">
+                                                <input type="hidden" name="acceptFriendRequestUsernameField" value="<?php echo $row[1]; ?>">
+                                                <input type="submit" name="acceptFriendRequestButton" value="Accept" class="buttontag">
+                                            </form>
+                                            <form action="" method="POST">
+                                                <input type="hidden" name="rejectFriendRequestField" value="<?php echo $row[0]; ?>">
+                                                <input type="submit" name="rejectFriendRequestButton" value="Reject" class="buttontag">
+                                            </form>
+                                        </td>
+                                    </tr>
+                            <?php
+                                }
+                            }
+                            ?>
+                        </table>
+                    </div>
+                </div>
             </div>
-
-            <button <?php if ($hasNotifications) { ?> onclick="showFriendRequests('flex')" <?php } ?> title="Notifications" class="notificationsButton <?php if (!$hasNotifications) echo "notificationsButtonDisabled"; ?>"> &#128276; <?php if ($hasNotifications) { ?> <span class="hasNotifications"></span> <?php } ?> </button>
-            <br /><br /><br /><br />
-            <hr class="hrLine" />
             <?php
             $query = "SELECT picture FROM users WHERE BINARY username='" . $_SESSION["who"] . "'";
             $result = mysqli_query($conn, $query);
             if ($result) {
                 if (mysqli_num_rows($result)) {
                     $row = mysqli_fetch_row($result);
-                    echo
-                    "
+            ?>
+
                     <div class='profileBox'>
-                        <img src='View_Image/?u=" . $_SESSION["who"] . "' width='100px' height='100px' style='border-radius:50%'/>
-                        <br />
-                        <h2 style='color:yellow'>" . $_SESSION["who"] . "</h2>
-                        <br />
-                        <button onclick=startLoadingToLogout('whole_box_id'); class='link' style='cursor:pointer;font-size:1.5rem;font-weight:bold'>Logout</button>
+                        <button <?php if ($hasNotifications) { ?> onclick="showFriendRequests('flex')" <?php } ?> title="Notifications" class="notificationsButton <?php if (!$hasNotifications) echo "notificationsButtonDisabled"; ?>">
+                            &#128276;
+                            <?php if ($hasNotifications) { ?>
+                                <span class="hasNotifications"></span>
+                            <?php } ?>
+                        </button>
+                        <img src='View_Image/?u=<?php echo $_SESSION["who"]; ?>' width='100px' height='100px' style='border-radius:50%' />
+                        <h2 style='color:yellow'><?php echo $_SESSION["who"]; ?></h2>
+                        <button onclick="startLoadingToLogout('whole_box_id')" class='link' style='cursor:pointer;font-size:1.5rem;font-weight:bold'>Logout</button>
                     </div>
-                    ";
+
+            <?php
+
                 } else {
                     destroy();
                 }
@@ -295,8 +301,8 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                 session_destroy();
                 header("Location:../");
             }
+
             ?>
-            <br />
             <div id="exit_menu_button_box">
                 <div id="exit_menu_button">X</div>
             </div>

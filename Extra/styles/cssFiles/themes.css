@@ -130,6 +130,9 @@ body {
     width: max-content;
     text-align: center;
     overflow: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .whole-box {
@@ -175,6 +178,10 @@ body {
     text-align: center;
     background-color: #034780;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
 .friendsListBox {
@@ -242,12 +249,12 @@ body {
 #exit_menu_button_box {
     display: none;
     width: 100%;
+    margin-top: 10px;
 }
 
 #exit_menu_button {
     background-color: red;
     color: white;
-    border-radius: 50%;
     width: 50px;
     height: 50px;
     cursor: pointer;
@@ -274,7 +281,7 @@ body {
 
     .mainHeaderImage {
         position: absolute;
-        height: 50%;
+        height: max-content;
         width: 50%;
         text-align: center;
         z-index: 1000;
@@ -814,7 +821,9 @@ body {
     border: none;
     cursor: pointer;
     font-size: 1.5rem;
+    width: max-content;
     position: relative;
+    margin-right: auto;
 }
 
 .notificationsButtonDisabled {
@@ -839,7 +848,7 @@ body {
 #notificationsBox {
     display: none;
     overflow: auto;
-    width: 70%;
+    width: max-content;
     height: 70%;
     background-color: red;
     color: white;
@@ -850,4 +859,11 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.menuContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 20px;
 }
