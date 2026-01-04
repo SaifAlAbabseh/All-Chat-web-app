@@ -18,27 +18,16 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
                 $result2 = mysqli_query($conn, $get);
                 if (mysqli_num_rows($result2)) {
                     while ($row2 = mysqli_fetch_row($result2)) {
-                        $ava;
-                        if ($row2[3] == "0") {
-                            $ava = "<div style='border-radius:50%;background-color:red;width:10px;height:10px'></div>";
-                        } else if ($row2[3] == "1") {
-                            $ava = "<div style='border-radius:50%;background-color:lightgreen;width:10px;height:10px'></div>";
-                        }
+                        $ava = $row2[3];
                         echo "
-                                    
-                                    <tr>
-                                        <td><img src='View_Image/?u=" . $row2[0] . "' width='50px' height='50px' style='border-radius:50%'/> <sup>" . $ava . "</sup></td>
-                                        <td><h2 style='color:white'>" . $row2[0] . "</h2></td>
-                                        <td>
-                                            <a href='Chat/?with=" . $row2[0] . "' class='link'>Chat</a>
-                                        </td>
-                                        <td>
-                                            <a href='Delete_Friend/?name=" . $row2[0] . "' class='link'>Delete</a>
-                                        </td>
-                                    </tr>
+                                    <div class='friendRow'>
+                                        <img src='View_Image/?u=" . $row2[0] . "' width='50px' height='50px' style='border-radius:50%;border:solid 4px ". (($ava == "0") ? "red" : "green") ."'/>
+                                        <h2 class='friendUsername'>" . $row2[0] . "</h2> 
+                                        <a href='Chat/?with=" . $row2[0] . "' class='link'>Chat</a>
+                                        <a href='Delete_Friend/?name=" . $row2[0] . "' class='link'>Delete</a>
+                                    </div>
 
-
-                                    ";
+                            ";
                     }
                 }
             }

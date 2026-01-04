@@ -325,17 +325,11 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
         </div>
 
         <div class="friendsListBox" id="friendBox">
-            <table>
-                <thead>
-                    <tr>
-                        <th colspan="3" style="color:red">
-                            > Your Friends :
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="innerData">
-                </tbody>
-            </table>
+            <h4 style="color:red">
+                > Your Friends :
+            </h4>
+            <div id="innerData">
+            </div>
         </div>
     </div>
 </body>
