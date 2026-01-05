@@ -1,12 +1,12 @@
-function toggle(){
+function toggle() {
     if ($("#m").hasClass("menuC1")) {
-            $("#m").toggleClass("menuC2");
-        } else if ($("#m").hasClass("menuC2")) {
-            $("#m").toggleClass("menuC1");
-        } else {
-            $("#m").toggleClass("menuC1");
-        }
-        $("#mainHeader").slideToggle();
+        $("#m").toggleClass("menuC2");
+    } else if ($("#m").hasClass("menuC2")) {
+        $("#m").toggleClass("menuC1");
+    } else {
+        $("#m").toggleClass("menuC1");
+    }
+    $("#mainHeader").slideToggle();
 }
 
 function hide() {
@@ -16,7 +16,7 @@ function hide() {
 }
 
 
-$(document).ready(function() {
+$(document).ready(function () {
     $("#userreq").click(function () {
         $(".outer_reqs_box").show();
         $("#username_reqs").show();
@@ -28,22 +28,26 @@ $(document).ready(function() {
         $("#image_reqs").show();
     });
     $("#exit").click(exitDialog);
-    $("#exit_menu_button").click(function(){
+    $("#exit_menu_button").click(function () {
         toggle();
-        $("#friendBox").css({"pointer-events": "initial","opacity": "1","user-select": "auto"});
-        $("#groupsBox").css({"pointer-events": "initial","opacity": "1","user-select": "auto"});
+        $("#friendBox").css({ "pointer-events": "initial", "opacity": "1", "user-select": "auto" });
+        $("#groupsBox").css({ "pointer-events": "initial", "opacity": "1", "user-select": "auto" });
     });
-    $("#m").click(function(){
+    $("#m").click(function () {
         toggle();
-        $("#friendBox").css({"pointer-events": "none","opacity": "0.2","user-select": "none"});
-        $("#groupsBox").css({"pointer-events": "none","opacity": "0.2","user-select": "none"});
+        $("#friendBox").css({ "pointer-events": "none", "opacity": "0.2", "user-select": "none" });
+        $("#groupsBox").css({ "pointer-events": "none", "opacity": "0.2", "user-select": "none" });
     });
-    var friends_url = generateURL("friendsync.php");
-    var groups_url = generateURL("groupsync.php");
-    setInterval(function() {
-        $("#innerData").load(friends_url);
-        $("#groupsInnerData").load(groups_url);
-    }, 2000);
+    generateURL("friendsync.php", 1).then(url => {
+        const friends_url = url;
+        generateURL("groupsync.php", 1).then(url => {
+            const groups_url = url;
+            setInterval(function () {
+                $("#innerData").load(friends_url);
+                $("#groupsInnerData").load(groups_url);
+            }, 2000);
+        });
+    });
 });
 
 function exitDialog() {

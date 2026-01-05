@@ -168,7 +168,7 @@ if (isset($_POST) && isset($_POST["addFriendButton"])) {
 
                                 require_once(dirname(__DIR__, 2) . '/mail.php');
                                 $userEmail = mysqli_fetch_assoc($isUserExistsResult)["email"];
-                                sendFriendRequestMail($conn, $urlMainPath, $userEmail, $fusername, $_SESSION["who"]);
+                                sendFriendRequestMail($conn, $userEmail, $fusername, $_SESSION["who"]);
 
                                 ////////
 

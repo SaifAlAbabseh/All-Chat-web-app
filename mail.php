@@ -1,6 +1,6 @@
 <?php
 
-function sendFriendRequestMail($conn, $urlMainPath, $to_email, $to_name, $requester_username)
+function sendFriendRequestMail($conn, $to_email, $to_name, $requester_username)
 {
     require_once "server_info.php";
     require_once "common.php";
@@ -42,20 +42,22 @@ function sendMail($to_email, $to_name, $subject, $body)
     require 'mail/Exception.php';
     require 'mail/PHPMailer.php';
     require 'mail/SMTP.php';
+    require_once("env.php");
 
-    $from_email = "allchatbot1@gmail.com";
+    $sender_email = getVarFromEnv("MAIL_USERNAME");
+    $sender_password = getVarFromEnv("MAIL_PASSWORD");
     $from_name = "All Chat";
 
     $mail = new PHPMailer;
     $mail->isSMTP();
-    $mail->SMTPDebug = 0; // 0 = off (for production use) - 1 = client messages - 2 = client and server messages
+    $mail->SMTPDebug = 2; // 0 = off (for production use) - 1 = client messages - 2 = client and server messages
     $mail->Host = "smtp.gmail.com"; // use $mail->Host = gethostbyname('smtp.gmail.com'); // if your network does not support SMTP over IPv6
     $mail->Port = 465; // TLS only
     $mail->SMTPSecure = 'ssl'; // ssl is deprecated
     $mail->SMTPAuth = true;
-    $mail->Username = 'allchatbot1@gmail.com'; // email
-    $mail->Password = ''; // password
-    $mail->setFrom($from_email, $from_name); // From email and name
+    $mail->Username = $sender_email; // email
+    $mail->Password = $sender_password; // password
+    $mail->setFrom($sender_email, $from_name); // From email and name
     $mail->addAddress($to_email, $to_name); // to email and name
     $mail->Subject = $subject;
     $mail->msgHTML($body, __DIR__); //$mail->msgHTML(file_get_contents('contents.html'), __DIR__); //Read an HTML message body from an external file, convert referenced images to embedded,

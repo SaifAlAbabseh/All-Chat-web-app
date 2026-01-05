@@ -39,7 +39,6 @@ require_once(dirname(__DIR__, 2) . '/common.php');
     </style>
     <script src="<?= asset('../../scripts/commonMethods.js') ?>"></script>
     <script>
-
         function showAddMemberBox() {
             $("#main_box_parent").css({
                 "pointer-events": "none",
@@ -48,8 +47,9 @@ require_once(dirname(__DIR__, 2) . '/common.php');
             });
             $("#addfriendBox").show();
             var group_id = "<?php echo "" . $_REQUEST["group_id"]; ?>";
-            var url = generateURL("getLeaderFriends.php?group_id=" + group_id);
-            $("#innerData").load(url);
+            generateURL("getLeaderFriends.php?group_id=" + group_id, 2).then(url => {
+                $("#innerData").load(url);
+            });
         }
 
         function showGroupInfoBox() {
@@ -60,8 +60,9 @@ require_once(dirname(__DIR__, 2) . '/common.php');
             });
             $("#mainDialogBox").show();
             var group_id = "<?php echo "" . $_REQUEST["group_id"]; ?>";
-            var url = generateURL("getGroupInfo.php?group_id=" + group_id);
-            $("#group_users_box").load(url);
+            generateURL("getGroupInfo.php?group_id=" + group_id, 2).then(url => {
+                $("#group_users_box").load(url);
+            });
         }
 
         function exitDialog() {
@@ -82,7 +83,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
             $("#addfriendBox").hide();
         }
 
-        function showEditGroupPicBox(){
+        function showEditGroupPicBox() {
             $("#main_box_parent").css({
                 "pointer-events": "none",
                 "opacity": "0.5",
@@ -96,7 +97,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
             $("#groupEditBox").show();
         }
 
-        function editExitDialog(){
+        function editExitDialog() {
             $("#mainDialogBox").css({
                 "pointer-events": "initial",
                 "opacity": "1",
@@ -108,11 +109,11 @@ require_once(dirname(__DIR__, 2) . '/common.php');
 </head>
 
 <body>
-    <?php 
+    <?php
 
-        if ($check_result_row[1] == $_SESSION["who"]) {
-            echo 
-            "
+    if ($check_result_row[1] == $_SESSION["who"]) {
+        echo
+        "
             <div id='groupEditBox' class='friendsListBox'>
                 <button onclick='editExitDialog()' id='exit'>X</button>
                 <center>
@@ -141,7 +142,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                 </center>
             </div>
             ";
-        }
+    }
 
     ?>
     <div class="friendsListBox" id="addfriendBox">
@@ -166,12 +167,12 @@ require_once(dirname(__DIR__, 2) . '/common.php');
             <?php
             if ($check_result_row[1] == $_SESSION["who"]) {
                 echo "
-                <a href='Destroy_Group/?group_id=" . $_REQUEST["group_id"] . "' class='link leaveGroupLink'>Destroy_Group</a>
+                <a href='Destroy_Group/?group_id=" . $_REQUEST["group_id"] . "' class='link leaveGroupLink'>Destroy Group</a>
                 &nbsp;
                 <a href='#' class='link leaveGroupLink' onclick='showEditGroupPicBox()'>Edit Picture</a>
                 ";
             } else {
-                echo "<a href='Leave_Group/?group_id=" . $_REQUEST["group_id"] . "' class='link leaveGroupLink'>Leave_Group</a>";
+                echo "<a href='Leave_Group/?group_id=" . $_REQUEST["group_id"] . "' class='link leaveGroupLink'>Leave Group</a>";
             }
             ?>
             <br /><br /><br />
@@ -238,11 +239,11 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                                                         $you = $_SESSION["who"];
                                                         if ($from == $you) {
                                                             echo "
-                                                            <tr style='text-align:right' class='chat".$OddOrEvenMessage."Message'>
+                                                            <tr style='text-align:right' class='chat" . $OddOrEvenMessage . "Message'>
                                                             <td class='messageDate'> " . $date . " </td>
                                                             <td style='color:gold'> YOU </td>
                                                             </tr>
-                                                            <tr class='chat".$OddOrEvenMessage."Message'>
+                                                            <tr class='chat" . $OddOrEvenMessage . "Message'>
                                                             <td style='color:white;' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;text-align:right;float:right;'>
                                                                 " . nl2br(formatMessage(htmlspecialchars(urldecode($messageitself)))) . "
                                                                 </p>
@@ -251,11 +252,11 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                                                         ";
                                                         } else {
                                                             echo "
-                                                            <tr style='text-align:left' class='chat".$OddOrEvenMessage."Message'>
+                                                            <tr style='text-align:left' class='chat" . $OddOrEvenMessage . "Message'>
                                                             <td style='color:yellow'>From :  " . $from . " </td>
                                                             <td class='messageDate'> " . $date . " </td>
                                                             </tr>
-                                                            <tr class='chat".$OddOrEvenMessage."Message'>
+                                                            <tr class='chat" . $OddOrEvenMessage . "Message'>
                                                             <td style='color:white' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;text-align:left;'>
                                                                 " . nl2br(formatMessage(htmlspecialchars(urldecode($messageitself)))) . "
                                                                 </p>
@@ -349,7 +350,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                             if (oldpos != pos) {
                                 var newrow1 = document.createElement("tr");
                                 var newrow2 = document.createElement("tr");
-                                const newMessageOddOrEven = ( oldpos % 2 === 0 ) ? "Even" : "Odd";
+                                const newMessageOddOrEven = (oldpos % 2 === 0) ? "Even" : "Odd";
                                 newrow1.classList.add("chat" + newMessageOddOrEven + "Message");
                                 newrow2.classList.add("chat" + newMessageOddOrEven + "Message");
                                 if (lastwho == you) {
@@ -399,7 +400,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
             }, 1000);
         });
 
-        function disableInputMessageFields(){
+        function disableInputMessageFields() {
             $("#messageField").prop("disabled", true);
             $("#sendButton").prop("disabled", true);
         }
@@ -419,15 +420,14 @@ if (isset($_POST) && isset($_POST["changePicButton"])) {
             if ($size <= 1) {
                 $tmp_name = $_FILES["pic"]["tmp_name"];
                 $path = "../../Extra/styles/images/groups_images/i" . $_REQUEST["group_id"] . ".png";
-                if(move_uploaded_file($tmp_name, $path)){
+                if (move_uploaded_file($tmp_name, $path)) {
                     echo
                     "
                         <script>
                             alert('Successfully Changed');
                         </script>
                         ";
-                }
-                else{
+                } else {
                     echo
                     "
                         <script>

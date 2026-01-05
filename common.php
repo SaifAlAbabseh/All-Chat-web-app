@@ -1,6 +1,8 @@
 <?php
 
-$urlMainPath = "";
+require_once 'env.php';
+
+$urlMainPath = getVarFromEnv("PUBLIC_SITE_URL");
 
 function formatMessage($message)
 {
