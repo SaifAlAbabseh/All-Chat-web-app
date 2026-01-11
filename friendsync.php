@@ -32,13 +32,13 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
                 }
             }
         } else {
-            echo "<tr><th><h2 style='color:white'>No friends to show..</h2></th></tr>";
+            echo "<h2 style='color:white'>No friends to show..</h2>";
         }
     } else {
-        echo "<tr><th><h2 style='color:white'>Error..</h2></th></tr>";
+        echo "<h2 style='color:white'>Error..</h2>";
     }
 } else {
     session_destroy();
-    echo "<tr><th><h2 style='color:white'>Error..</h2></th></tr>";
+    echo "<h2 style='color:white'>Error..</h2>";
 }
 ?>
