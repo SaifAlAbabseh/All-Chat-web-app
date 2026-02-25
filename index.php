@@ -222,11 +222,14 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
             mysqli_stmt_execute($stmt);
             $result = mysqli_stmt_get_result($stmt);
             if (mysqli_num_rows($result)) {
+                    mysqli_free_result($result);
+                    mysqli_stmt_close($stmt);
                     $_SESSION["who"] = $un;
                     $av = "UPDATE users SET available='1' WHERE BINARY username=?";
                     $stmt = mysqli_prepare($conn, $av);
                     mysqli_stmt_bind_param($stmt, "s", $un);
                     mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
                     if (isset($rememberCred)) {
                         echo "
                             <script>
@@ -288,16 +291,23 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                 $cpass = md5($cpass);
                 if ($password == $cpass) {
                     $query = "SELECT username FROM users WHERE BINARY username=?";
-                    $query_email_check = "SELECT email FROM users WHERE BINARY email=?";
                     $stmt = mysqli_prepare($conn, $query);
-                    $stmt2 = mysqli_prepare($conn, $query_email_check);
                     mysqli_stmt_bind_param($stmt, "s", $un);
-                    mysqli_stmt_bind_param($stmt2, "s", $signupemail);
                     mysqli_stmt_execute($stmt);
-                    mysqli_stmt_execute($stmt2);
                     $result = mysqli_stmt_get_result($stmt);
+                    $username_exists = mysqli_num_rows($result) > 0;
+                    mysqli_free_result($result);
+                    mysqli_stmt_close($stmt);
+                    
+                    $query_email_check = "SELECT email FROM users WHERE BINARY email=?";
+                    $stmt2 = mysqli_prepare($conn, $query_email_check);
+                    mysqli_stmt_bind_param($stmt2, "s", $signupemail);
+                    mysqli_stmt_execute($stmt2);
                     $result_email_check = mysqli_stmt_get_result($stmt2);
-                    if (mysqli_num_rows($result)) {
+                    $email_exists = mysqli_num_rows($result_email_check) > 0;
+                    mysqli_free_result($result_email_check);
+                    mysqli_stmt_close($stmt2);
+                    if ($username_exists) {
                             echo
                             "<script>
                                 switchToSignupForm(true);
@@ -305,7 +315,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                 invalidfield.style.display='block';
                                 invalidforsignup.innerHTML='Username is already in use';
                             </script>";
-                        } else if (mysqli_num_rows($result_email_check)) {
+                        } else if ($email_exists) {
                             echo
                             "<script>
                                 switchToSignupForm(true);
@@ -387,6 +397,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
             $ava = '0';
             mysqli_stmt_bind_param($stmt, "sssss", $_SESSION["u_username"], $_SESSION["u_password"], $pic, $ava, $_SESSION["u_email"]);
             if (mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_close($stmt);
                 echo
                 "<script>
                 switchToSignupForm(true);
@@ -396,6 +407,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                 invalidforsignup.innerHTML='Successful';
             </script>";
             } else {
+                mysqli_stmt_close($stmt);
                 echo
                 "<script>
                 switchToSignupForm(true);
