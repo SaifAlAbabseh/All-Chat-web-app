@@ -10,8 +10,11 @@ else{
     $password=$_REQUEST["password"];
 
     require("DB.php");
-    $query="SELECT * FROM users WHERE BINARY username='".$username."' AND password='".$password."'";
-    $result=mysqli_query($conn,$query);
+    $query="SELECT * FROM users WHERE BINARY username=? AND password=?";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "ss", $username, $password);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     if(mysqli_num_rows($result)==0){
         header("Location:../".$GLOBALS['urlMainPath']."/");
     }
@@ -91,8 +94,11 @@ if (isset($_POST) && isset($_POST["changeButtonjava"])) {
             $size = round((($_FILES["imagejava"]["size"]) / MB), 0);
             if ($size <= 1) {
                 require_once("DB.php");
-                $query = "UPDATE users SET picture='" . $_REQUEST["username"] . "' WHERE BINARY username='" . $_REQUEST["username"] . "'";
-                if (mysqli_query($conn, $query)) {
+                $query = "UPDATE users SET picture=? WHERE BINARY username=?";
+                $stmt = mysqli_prepare($conn, $query);
+                $pic_name = $_REQUEST["username"];
+                mysqli_stmt_bind_param($stmt, "ss", $pic_name, $username);
+                if (mysqli_stmt_execute($stmt)) {
                     echo
                     "
                         <script>

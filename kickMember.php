@@ -14,8 +14,10 @@ else{
 
     require_once("DB.php");
     $group_table_name = "g".$group_id."_users"; 
-    $remove_query = "DELETE FROM $group_table_name WHERE BINARY username='".$member_to_kick."'";
-    $remove_result = mysqli_query($conn, $remove_query);
+    $remove_query = "DELETE FROM $group_table_name WHERE BINARY username=?";
+    $stmt = mysqli_prepare($conn, $remove_query);
+    mysqli_stmt_bind_param($stmt, "s", $member_to_kick);
+    $remove_result = mysqli_stmt_execute($stmt);
     mysqli_close($conn);
     header("Location:Main/Group/?group_id=".$_REQUEST["group_id"]);
 }

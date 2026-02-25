@@ -75,12 +75,14 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                                         require_once("../../DB.php");
                                         function getname($you, $withwho, $conn)
                                         {
-                                            $query = "SELECT user1 FROM friends WHERE BINARY user1='" . $you . "' AND BINARY user2='" . $withwho . "' OR BINARY user1='" . $withwho . "' AND BINARY user2='" . $you . "'";
-                                            $result = mysqli_query($conn, $query);
+                                            $query = "SELECT user1 FROM friends WHERE BINARY user1=? AND BINARY user2=? OR BINARY user1=? AND BINARY user2=?";
+                                            $stmt = mysqli_prepare($conn, $query);
+                                            mysqli_stmt_bind_param($stmt, "ssss", $you, $withwho, $withwho, $you);
+                                            mysqli_stmt_execute($stmt);
+                                            $result = mysqli_stmt_get_result($stmt);
                                             $after = "";
                                             $res = "";
-                                            if ($result) {
-                                                if (mysqli_num_rows($result)) {
+                                            if (mysqli_num_rows($result)) {
                                                     $row = mysqli_fetch_row($result);
                                                     $after .= $row[0];
                                                 }
@@ -89,7 +91,6 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                                                 } else {
                                                     $res .= $withwho . "" . $you;
                                                 }
-                                            }
                                             return $res;
                                         }
                                         $you = $_SESSION["who"];
@@ -97,54 +98,64 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                                             $withwho = $_REQUEST["with"];
                                         }
 
-                                        $tablename = getname($you, $withwho, $conn);
-                                        $tname = $tablename;
+                                        try {
+                                            $tablename = getname($you, $withwho, $conn);
+                                            $tname = $tablename;
 
-
-                                        $query = "SELECT * FROM " . $tablename . "";
-                                        $result = mysqli_query($conn, $query);
-                                        if ($result) {
-                                            if (mysqli_num_rows($result)) {
-                                                while ($row = mysqli_fetch_row($result)) {
-                                                    $from = "" . $row[0];
-                                                    $messageitself = "" . $row[1];
-                                                    $lastmessageindex++;
-                                                    $date = "" . $row[3];
-                                                    $OddOrEvenMessage = ($lastmessageindex % 2 == 0) ? "Odd" : "Even";
-                                                    if ($from == $you) {
-                                                        echo "
-                                                            <tr style='text-align:right' class='chat".$OddOrEvenMessage."Message'>
-                                                            <td class='messageDate'> " . $date . " </td>
-                                                            <td style='color:gold'> YOU </td>
-                                                            </tr>
-                                                            <tr class='chat".$OddOrEvenMessage."Message'>
-                                                            <td style='color:white;' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;text-align:right;float:right;'>
-                                                                " . nl2br(formatMessage(htmlspecialchars(urldecode($messageitself)))) . "
-                                                                </p>
-                                                            </td>
-                                                            </tr>
-                                                        ";
-                                                    } else {
-                                                        echo "
-                                                            <tr style='text-align:left' class='chat".$OddOrEvenMessage."Message'>
-                                                            <td style='color:yellow'>From :  " . $from . " </td>
-                                                            <td class='messageDate'> " . $date . " </td>
-                                                            </tr>
-                                                            <tr class='chat".$OddOrEvenMessage."Message'>
-                                                            <td style='color:white' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;text-align:left;'>
-                                                                " . nl2br(formatMessage(htmlspecialchars(urldecode($messageitself)))) . "
-                                                                </p>
-                                                            </td>
-                                                            </tr>
-                                                        ";
-                                                    }
-                                                }
-                                                echo "
-                                                <script>
-                                                var box=document.getElementById('messages');
-                                                box.scrollTop=box.scrollHeight;
-                                                </script>";
+                                            $query = "SELECT * FROM " . $tablename . "";
+                                            $stmt = mysqli_prepare($conn, $query);
+                                            
+                                            if ($stmt === false) {
+                                                echo "<script>window.location.href = '../';</script>";
+                                                exit();
                                             }
+                                            
+                                            mysqli_stmt_execute($stmt);
+                                            $result = mysqli_stmt_get_result($stmt);
+                                            if (mysqli_num_rows($result)) {
+                                                    while ($row = mysqli_fetch_row($result)) {
+                                                        $from = "" . $row[0];
+                                                        $messageitself = "" . $row[1];
+                                                        $lastmessageindex++;
+                                                        $date = "" . $row[3];
+                                                        $OddOrEvenMessage = ($lastmessageindex % 2 == 0) ? "Odd" : "Even";
+                                                        if ($from == $you) {
+                                                            echo "
+                                                                <tr style='text-align:right' class='chat".$OddOrEvenMessage."Message'>
+                                                                <td class='messageDate'> " . $date . " </td>
+                                                                <td style='color:gold'> YOU </td>
+                                                                </tr>
+                                                                <tr class='chat".$OddOrEvenMessage."Message'>
+                                                                <td style='color:white;' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;text-align:right;float:right;'>
+                                                                    " . nl2br(formatMessage(htmlspecialchars(urldecode($messageitself)))) . "
+                                                                    </p>
+                                                                </td>
+                                                                </tr>
+                                                            ";
+                                                        } else {
+                                                            echo "
+                                                                <tr style='text-align:left' class='chat".$OddOrEvenMessage."Message'>
+                                                                <td style='color:yellow'>From :  " . $from . " </td>
+                                                                <td class='messageDate'> " . $date . " </td>
+                                                                </tr>
+                                                                <tr class='chat".$OddOrEvenMessage."Message'>
+                                                                <td style='color:white' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;text-align:left;'>
+                                                                    " . nl2br(formatMessage(htmlspecialchars(urldecode($messageitself)))) . "
+                                                                    </p>
+                                                                </td>
+                                                                </tr>
+                                                            ";
+                                                        }
+                                                    }
+                                                    echo "
+                                                    <script>
+                                                    var box=document.getElementById('messages');
+                                                    box.scrollTop=box.scrollHeight;
+                                                    </script>";
+                                                }
+                                        } catch (Exception $e) {
+                                            echo "<script>window.location.href = '../';</script>";
+                                            exit();
                                         }
                                         ?>
                                     </table>

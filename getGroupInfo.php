@@ -8,14 +8,19 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
 
     require_once("DB.php");
     $group_table_name = "g" . $group_id . "_users";
-    $check_query = "SELECT user_type FROM $group_table_name WHERE BINARY username='" . $username . "'";
-    $check_result = mysqli_query($conn, $check_query);
+    $check_query = "SELECT user_type FROM $group_table_name WHERE BINARY username=?";
+    $stmt = mysqli_prepare($conn, $check_query);
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $check_result = mysqli_stmt_get_result($stmt);
     if ($check_query) {
         if (mysqli_num_rows($check_result)) {
-            $query = "SELECT * FROM $group_table_name WHERE NOT BINARY username='" . $username . "'";
-            $result = mysqli_query($conn, $query);
-            if ($result) {
-                if (mysqli_num_rows($result)) {
+            $query = "SELECT * FROM $group_table_name WHERE NOT BINARY username=?";
+            $stmt = mysqli_prepare($conn, $query);
+            mysqli_stmt_bind_param($stmt, "s", $username);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            if (mysqli_num_rows($result)) {
                     $temp_row = mysqli_fetch_row($check_result);
                     while ($row = mysqli_fetch_row($result)) {
                         if ($temp_row[0] == "leader") {
@@ -57,9 +62,6 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                 } else {
                     echo "<tr><td><h1 style='color:white'>There are no members yet..</h1></td></tr>";
                 }
-            } else {
-                echo "<tr><td><h1 style='color:white'>Error..</h1></td></tr>";
-            }
         } else {
             echo "<tr><td><h1 style='color:white'>Youre not in this group..</h1></td></tr>";
         }

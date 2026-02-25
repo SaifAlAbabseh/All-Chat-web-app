@@ -36,25 +36,25 @@ require_once(dirname(__DIR__, 2) . '/common.php');
             <table>
                 <?php
                 require_once("../../DB.php");
-                $query = "SELECT picture FROM users WHERE BINARY username='" . $_SESSION["who"] . "'";
-                $result = mysqli_query($conn, $query);
-                if ($result) {
-                    if (mysqli_num_rows($result)) {
-                        $row = mysqli_fetch_row($result);
-                        echo
-                        "
+                $query = "SELECT picture FROM users WHERE BINARY username=?";
+                $stmt = mysqli_prepare($conn, $query);
+                $who = $_SESSION["who"];
+                mysqli_stmt_bind_param($stmt, "s", $who);
+                mysqli_stmt_execute($stmt);
+                $result = mysqli_stmt_get_result($stmt);
+                if (mysqli_num_rows($result)) {
+                    $row = mysqli_fetch_row($result);
+                    echo
+                    "
                         <tr>
                         <td>
-                        <img src='../View_Image/?u=".$_SESSION["who"]."' width='100px' height='100px' style='border-radius:50%'/>
+                        <img src='../View_Image/?u=" . $_SESSION["who"] . "' width='100px' height='100px' style='border-radius:50%'/>
                         </td>
                         <td>
                         <h2 style='color:yellow'>" . $_SESSION["who"] . "</h2>
                         </td>
                         </tr>
                        ";
-                    } else {
-                        destroy();
-                    }
                 } else {
                     destroy();
                 }

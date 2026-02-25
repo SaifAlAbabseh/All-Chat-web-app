@@ -5,15 +5,38 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
 } else {
     require_once("../../DB.php");
     $group_table_name = "g" . $_REQUEST["group_id"] . "_users";
-    $check_query = "SELECT g.group_name, g.leader_username FROM all_chat_groups g INNER JOIN $group_table_name gu WHERE BINARY gu.username='" . $_SESSION["who"] . "' AND g.group_id='" . $_REQUEST["group_id"] . "'";
-    $check_result = mysqli_query($conn, $check_query);
-    if (!($check_result && mysqli_num_rows($check_result))) {
-        header("Location:../../");
+    
+    try {
+        $check_query = "SELECT g.group_name, g.leader_username FROM all_chat_groups g INNER JOIN $group_table_name gu WHERE BINARY gu.username=? AND g.group_id=?";
+        $stmt = mysqli_prepare($conn, $check_query);
+        
+        if ($stmt === false) {
+            header("Location:../");
+            exit();
+        }
+        
+        $who = $_SESSION["who"];
+        $gid = $_REQUEST["group_id"];
+        mysqli_stmt_bind_param($stmt, "ss", $who, $gid);
+        
+        if (!mysqli_stmt_execute($stmt)) {
+            header("Location:../");
+            exit();
+        }
+        
+        $check_result = mysqli_stmt_get_result($stmt);
+        if (!mysqli_num_rows($check_result)) {
+            header("Location:../");
+            exit();
+        }
+        $_SESSION["isGood" . $_REQUEST["group_id"]] = true;
+        $check_result_row = mysqli_fetch_row($check_result);
+        $lastmessageindex = 0;
+        $tname = "";
+    } catch (Exception $e) {
+        header("Location:../");
+        exit();
     }
-    $_SESSION["isGood" . $_REQUEST["group_id"]] = true;
-    $check_result_row = mysqli_fetch_row($check_result);
-    $lastmessageindex = 0;
-    $tname = "";
 }
 require_once(dirname(__DIR__, 2) . '/common.php');
 ?>
@@ -227,18 +250,19 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                                             <?php
                                             $group_table_id = "g" . $_REQUEST["group_id"];
                                             $query = "SELECT * FROM " . $group_table_id . "";
-                                            $result = mysqli_query($conn, $query);
-                                            if ($result) {
-                                                if (mysqli_num_rows($result)) {
-                                                    while ($row = mysqli_fetch_row($result)) {
-                                                        $from = "" . $row[0];
-                                                        $messageitself = "" . $row[1];
-                                                        $lastmessageindex++;
-                                                        $date = "" . $row[3];
-                                                        $OddOrEvenMessage = ($lastmessageindex % 2 == 0) ? "Odd" : "Even";
-                                                        $you = $_SESSION["who"];
-                                                        if ($from == $you) {
-                                                            echo "
+                                            $stmt = mysqli_prepare($conn, $query);
+                                            mysqli_stmt_execute($stmt);
+                                            $result = mysqli_stmt_get_result($stmt);
+                                            if (mysqli_num_rows($result)) {
+                                                while ($row = mysqli_fetch_row($result)) {
+                                                    $from = "" . $row[0];
+                                                    $messageitself = "" . $row[1];
+                                                    $lastmessageindex++;
+                                                    $date = "" . $row[3];
+                                                    $OddOrEvenMessage = ($lastmessageindex % 2 == 0) ? "Odd" : "Even";
+                                                    $you = $_SESSION["who"];
+                                                    if ($from == $you) {
+                                                        echo "
                                                             <tr style='text-align:right' class='chat" . $OddOrEvenMessage . "Message'>
                                                             <td class='messageDate'> " . $date . " </td>
                                                             <td style='color:gold'> YOU </td>
@@ -250,8 +274,8 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                                                             </td>
                                                             </tr>
                                                         ";
-                                                        } else {
-                                                            echo "
+                                                    } else {
+                                                        echo "
                                                             <tr style='text-align:left' class='chat" . $OddOrEvenMessage . "Message'>
                                                             <td style='color:yellow'>From :  " . $from . " </td>
                                                             <td class='messageDate'> " . $date . " </td>
@@ -263,14 +287,13 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                                                             </td>
                                                             </tr>
                                                         ";
-                                                        }
                                                     }
-                                                    echo "
+                                                }
+                                                echo "
                                                 <script>
                                                 var box=document.getElementById('messages');
                                                 box.scrollTop=box.scrollHeight;
                                                 </script>";
-                                                }
                                             }
                                             ?>
                                         </table>

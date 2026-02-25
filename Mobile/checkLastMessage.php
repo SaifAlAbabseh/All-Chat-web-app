@@ -7,16 +7,20 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
 
     require_once("../DB.php");
 
-    $check_query = "SELECT * FROM users WHERE BINARY username='" . $you . "' AND password='" . $password . "'";
-    $check_result = mysqli_query($conn, $check_query);
+    $check_query = "SELECT * FROM users WHERE BINARY username=? AND password=?";
+    $stmt = mysqli_prepare($conn, $check_query);
+    mysqli_stmt_bind_param($stmt, "ss", $you, $password);
+    mysqli_stmt_execute($stmt);
+    $check_result = mysqli_stmt_get_result($stmt);
     if ($check_result) {
         if (mysqli_num_rows($check_result) == 0) {
             echo "Unknown Error";
         } else {
             $query = "SELECT * FROM " . $tablename . "";
-            $result = mysqli_query($conn, $query);
-            if ($result) {
-                if (mysqli_num_rows($result)) {
+            $stmt2 = mysqli_prepare($conn, $query);
+            mysqli_stmt_execute($stmt2);
+            $result = mysqli_stmt_get_result($stmt2);
+            if (mysqli_num_rows($result)) {
                     $actualLast = mysqli_num_rows($result);
                     if ($actualLast == $lastIndex) {
                         echo "no";
@@ -36,9 +40,6 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
                 } else {
                     echo "No Messages";
                 }
-            } else {
-                echo "Unknown Error";
-            }
         }
     } else {
         echo "Unknown Error";

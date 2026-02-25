@@ -6,33 +6,30 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
 
     require_once("../DB.php");
 
-    $query = "SELECT * FROM users WHERE BINARY username='" . $username . "' AND password='" . $password . "'";
-    $result = mysqli_query($conn, $query);
-    if ($result) {
-        if (mysqli_num_rows($result) == 0) {
-            echo "Unknown Error";
-        } else {
-            $query = "SELECT * FROM " . $tablename . "";
-            $result = mysqli_query($conn, $query);
-            if ($result) {
-                if (mysqli_num_rows($result)) {
-                    $res = array();
+    $query = "SELECT * FROM users WHERE BINARY username=? AND password=?";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "ss", $username, $password);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result) == 0) {
+        echo "Unknown Error";
+    } else {
+        $query = "SELECT * FROM " . $tablename . "";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        if (mysqli_num_rows($result)) {
+            $res = array();
 
-                    while ($row = mysqli_fetch_row($result)) {
-                        $json = array("fromwho" => $row[0], "message" => $row[1]);
-                        array_push($res, $json);
-                    }
-                    echo json_encode($res);
-                } else {
-                    echo "No Messages";
-                }
-            } else {
-                echo "Unknown Error";
+            while ($row = mysqli_fetch_row($result)) {
+                $json = array("fromwho" => $row[0], "message" => $row[1]);
+                array_push($res, $json);
             }
+            echo json_encode($res);
+        } else {
+            echo "Unknown Error";
         }
     }
-
-    mysqli_close($conn);
-} else {
-    echo "Unknown Error";
 }
+
+mysqli_close($conn);

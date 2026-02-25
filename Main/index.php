@@ -9,15 +9,22 @@ require_once(dirname(__DIR__, 1) . '/common.php');
 
 if (isset($_POST) && isset($_POST["acceptFriendRequestButton"])) {
     extract($_POST);
-    $query = "DELETE FROM friend_requests WHERE request_id='" . $acceptFriendRequestField . "'";
-    $result = mysqli_query($conn, $query);
+    $query = "DELETE FROM friend_requests WHERE request_id=?";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "i", $acceptFriendRequestField);
+    $result = mysqli_stmt_execute($stmt);
     if ($result && mysqli_affected_rows($conn) > 0) {
         // Actually to be a freind
-        $query = "INSERT INTO friends VALUES ('" . $_SESSION["who"] . "','" . $acceptFriendRequestUsernameField . "')";
-        if (mysqli_query($conn, $query)) {
+        $query = "INSERT INTO friends VALUES (?,?)";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "ss", $_SESSION["who"], $acceptFriendRequestUsernameField);
+        if (mysqli_stmt_execute($stmt)) {
             $tablename = "" . $_SESSION["who"] . "" . $acceptFriendRequestUsernameField;
             $query = "CREATE TABLE " . $tablename . " (fromwho varchar(1000) , message varchar(1000),pos varchar(1000), whenSent DATETIME DEFAULT CURRENT_TIMESTAMP)";
-            mysqli_query($conn, $query);
+            $stmt = mysqli_prepare($conn, $query);
+            if ($stmt) {
+                mysqli_stmt_execute($stmt);
+            }
         } else {
             echo "<script>alert('Connection Error.');</script>";
         }
@@ -26,8 +33,10 @@ if (isset($_POST) && isset($_POST["acceptFriendRequestButton"])) {
 
 if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
     extract($_POST);
-    $query = "DELETE FROM friend_requests WHERE request_id='" . $rejectFriendRequestField . "'";
-    $result = mysqli_query($conn, $query);
+    $query = "DELETE FROM friend_requests WHERE request_id=?";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "i", $rejectFriendRequestField);
+    $result = mysqli_stmt_execute($stmt);
 }
 
 ?>
@@ -234,8 +243,12 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                                 </th>
                             </tr>
                             <?php
-                            $query = "SELECT * FROM friend_requests WHERE requested_user='" . $_SESSION["who"] . "'";
-                            $result = mysqli_query($conn, $query);
+                            $query = "SELECT * FROM friend_requests WHERE requested_user=?";
+                            $stmt = mysqli_prepare($conn, $query);
+                            $who = $_SESSION["who"];
+                            mysqli_stmt_bind_param($stmt, "s", $who);
+                            mysqli_stmt_execute($stmt);
+                            $result = mysqli_stmt_get_result($stmt);
                             $hasNotifications = false;
                             if ($result && mysqli_num_rows($result) > 0) {
                                 $hasNotifications = true;
@@ -270,30 +283,30 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                 </div>
             </div>
             <?php
-            $query = "SELECT picture FROM users WHERE BINARY username='" . $_SESSION["who"] . "'";
-            $result = mysqli_query($conn, $query);
-            if ($result) {
-                if (mysqli_num_rows($result)) {
-                    $row = mysqli_fetch_row($result);
+            $query = "SELECT picture FROM users WHERE BINARY username=?";
+            $stmt = mysqli_prepare($conn, $query);
+            $who = $_SESSION["who"];
+            mysqli_stmt_bind_param($stmt, "s", $who);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            if (mysqli_num_rows($result)) {
+                $row = mysqli_fetch_row($result);
             ?>
 
-                    <div class='profileBox'>
-                        <button <?php if ($hasNotifications) { ?> onclick="showFriendRequests('flex')" <?php } ?> title="Notifications" class="notificationsButton <?php if (!$hasNotifications) echo "notificationsButtonDisabled"; ?>">
-                            &#128276;
-                            <?php if ($hasNotifications) { ?>
-                                <span class="hasNotifications"></span>
-                            <?php } ?>
-                        </button>
-                        <img src='View_Image/?u=<?php echo $_SESSION["who"]; ?>' width='100px' height='100px' style='border-radius:50%' />
-                        <h2 style='color:yellow'><?php echo $_SESSION["who"]; ?></h2>
-                        <button onclick="startLoadingToLogout('whole_box_id')" class='link' style='cursor:pointer;font-size:1.5rem;font-weight:bold'>Logout</button>
-                    </div>
+                <div class='profileBox'>
+                    <button <?php if ($hasNotifications) { ?> onclick="showFriendRequests('flex')" <?php } ?> title="Notifications" class="notificationsButton <?php if (!$hasNotifications) echo "notificationsButtonDisabled"; ?>">
+                        &#128276;
+                        <?php if ($hasNotifications) { ?>
+                            <span class="hasNotifications"></span>
+                        <?php } ?>
+                    </button>
+                    <img src='View_Image/?u=<?php echo $_SESSION["who"]; ?>' width='100px' height='100px' style='border-radius:50%' />
+                    <h2 style='color:yellow'><?php echo $_SESSION["who"]; ?></h2>
+                    <button onclick="startLoadingToLogout('whole_box_id')" class='link' style='cursor:pointer;font-size:1.5rem;font-weight:bold'>Logout</button>
+                </div>
 
             <?php
 
-                } else {
-                    destroy();
-                }
             } else {
                 destroy();
             }
@@ -360,7 +373,9 @@ function checkGroupName($group_name)
 function generateGroupID($conn)
 {
     $id_query = "SELECT group_id FROM all_chat_groups ORDER BY group_id DESC LIMIT 1";
-    $id_result = mysqli_query($conn, $id_query);
+    $stmt = mysqli_prepare($conn, $id_query);
+    mysqli_stmt_execute($stmt);
+    $id_result = mysqli_stmt_get_result($stmt);
     if ($id_result) {
         $new_id = 1;
         if (mysqli_num_rows($id_result)) {
@@ -387,8 +402,14 @@ function createGroup($conn, $group_name)
     $path = "../Extra/styles/images/groups_images/$image_name";
     move_uploaded_file($tmp_name, $path);
 
-    $insert_query = "INSERT INTO all_chat_groups VALUES ('" . $group_id . "', '" . $group_name . "', '" . $_SESSION["who"] . "', '" . $image_name . "')";
-    $insert_result = mysqli_query($conn, $insert_query);
+    $insert_query = "INSERT INTO all_chat_groups VALUES (?,?,?,?)";
+    $stmt = mysqli_prepare($conn, $insert_query);
+    $img_name = $image_name;
+    $gname = $group_name;
+    $who = $_SESSION["who"];
+    $gid = $group_id;
+    mysqli_stmt_bind_param($stmt, "isss", $gid, $gname, $who, $img_name);
+    $insert_result = mysqli_stmt_execute($stmt);
 
     if ($insert_result) {
         createTables($conn, $group_id, $group_name);
@@ -405,10 +426,15 @@ function createTables($conn, $group_id, $group_name)
         user_type VARCHAR(255)
     )
     ";
-    $leader_insertion_result = mysqli_query($conn, $users_table_query);
+    $stmt = mysqli_prepare($conn, $users_table_query);
+    $leader_insertion_result = ($stmt && mysqli_stmt_execute($stmt)) ? true : false;
     if ($leader_insertion_result) {
-        $users2_query = "INSERT INTO $users_table_name VALUES ('" . $_SESSION["who"] . "', 'leader')";
-        $users2_result = mysqli_query($conn, $users2_query);
+        $users2_query = "INSERT INTO $users_table_name VALUES (?,?)";
+        $stmt = mysqli_prepare($conn, $users2_query);
+        $utype = 'leader';
+        $who = $_SESSION["who"];
+        mysqli_stmt_bind_param($stmt, "ss", $who, $utype);
+        $users2_result = mysqli_stmt_execute($stmt);
         if ($users2_result) {
             $normal_group_table_name = "g" . $group_id;
             $normal_group_table_query = "CREATE TABLE " . $normal_group_table_name . " (
@@ -417,7 +443,8 @@ function createTables($conn, $group_id, $group_name)
             pos VARCHAR(255),
             whenSent DATETIME DEFAULT CURRENT_TIMESTAMP
             ) ";
-            $normal_group_query_result = mysqli_query($conn, $normal_group_table_query);
+            $stmt = mysqli_prepare($conn, $normal_group_table_query);
+            $normal_group_query_result = ($stmt && mysqli_stmt_execute($stmt)) ? true : false;
             if ($normal_group_query_result) {
                 echo
                 "

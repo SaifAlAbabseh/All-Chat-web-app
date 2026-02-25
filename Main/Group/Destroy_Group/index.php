@@ -12,11 +12,15 @@ else{
     $first_group_table_name = "g".$group_id."_users"; 
     $second_group_table_name = "g".$group_id; 
 
-    $first_query = "DELETE FROM all_chat_groups WHERE BINARY leader_username='".$username."' AND group_id='".$group_id."'";
-    $first_result = mysqli_query($conn, $first_query);
+    $first_query = "DELETE FROM all_chat_groups WHERE BINARY leader_username=? AND group_id=?";
+    $stmt = mysqli_prepare($conn, $first_query);
+    $gid = (int)$group_id;
+    mysqli_stmt_bind_param($stmt, "si", $username, $gid);
+    $first_result = mysqli_stmt_execute($stmt);
     if($first_result){
         $second_query = "DROP TABLE IF EXISTS $first_group_table_name, $second_group_table_name";
-        $second_result = mysqli_query($conn, $second_query);
+        $stmt = mysqli_prepare($conn, $second_query);
+        $second_result = ($stmt && mysqli_stmt_execute($stmt)) ? true : false;
         if($second_result){
             $image_path = "../../../Extra/styles/images/groups_images/i" . $group_id . ".png";
             if(unlink($image_path)){

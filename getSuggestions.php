@@ -5,29 +5,29 @@ if (isset($_REQUEST) && isset($_REQUEST["value"]) && isset($_REQUEST["exact"]) &
         require_once("DB.php");
         $value = $_REQUEST["value"];
         $if_exact = $_REQUEST["exact"];
-        $query = "SELECT * FROM users WHERE username LIKE '%" . $value . "%' AND username NOT LIKE '%" . $_SESSION["who"] . "%'";
-        $result = mysqli_query($conn, $query);
-        if ($result) {
-            if (mysqli_num_rows($result)) {
-                $output = "";
-                $counter = 1;
-                while ($row = mysqli_fetch_row($result)) {
-                    $output .= "<div onclick=fill_result_username('r" . $counter . "') class='sug_row'><img src='../View_Image/?u=" . $row[0] . "' width='50px' height='50px' style='border-radius:50%'/><h3 id='r" . $counter . "' style='color:red'>" . $row[0] . "</h3></div>";
-                    $counter++;
-                }
-                echo $output;
-            } else {
-                echo "<h2 class='no_sug_label' id='no_sug_label_box'>No Suggestions.</h2>";
+        $query = "SELECT * FROM users WHERE username LIKE ? AND username NOT LIKE ?";
+        $stmt = mysqli_prepare($conn, $query);
+        $value_like = '%' . $value . '%';
+        $not_like = '%' . $_SESSION["who"] . '%';
+        mysqli_stmt_bind_param($stmt, "ss", $value_like, $not_like);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        if (mysqli_num_rows($result)) {
+            $output = "";
+            $counter = 1;
+            while ($row = mysqli_fetch_row($result)) {
+                $output .= "<div onclick=fill_result_username('r" . $counter . "') class='sug_row'><img src='../View_Image/?u=" . $row[0] . "' width='50px' height='50px' style='border-radius:50%'/><h3 id='r" . $counter . "' style='color:red'>" . $row[0] . "</h3></div>";
+                $counter++;
             }
+            echo $output;
         } else {
-            echo "<h2 class='no_sug_label' style='color:red'>Error!</h2>";
+            echo "<h2 class='no_sug_label' id='no_sug_label_box'>No Suggestions.</h2>";
         }
-    }
-    else {
-        echo "<h2 class='no_sug_label' style='color:red'>Invalid Characters</h2>";
+    } else {
+        echo "<h2 class='no_sug_label' style='color:red'>Error!</h2>";
     }
 } else {
-    echo "<h2 class='no_sug_label' style='color:red'>Error!</h2>";
+    echo "<h2 class='no_sug_label' style='color:red'>Invalid Characters</h2>";
 }
 
 
@@ -42,5 +42,3 @@ function checkInput($un)
     }
     return $everythingIsGood;
 }
-
-?>

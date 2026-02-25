@@ -4,8 +4,11 @@ if(isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"]=="fromMob
     $password=$_REQUEST["password"];
     
     require_once("../DB.php");
-    $query="SELECT * FROM users WHERE BINARY username='".$username."' AND password='".$password."'";
-    $result=mysqli_query($conn,$query);
+    $query="SELECT * FROM users WHERE BINARY username=? AND password=?";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "ss", $username, $password);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     if($result){
         if(mysqli_num_rows($result)){
             echo "ok";   

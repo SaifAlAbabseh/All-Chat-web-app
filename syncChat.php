@@ -7,12 +7,19 @@ if(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_RE
     $fName=$_REQUEST["f"];
     $you=$_SESSION["who"];
     $tablename=$_REQUEST["tname"];
-    $query="SELECT * FROM friends WHERE BINARY user1='" . $you . "' AND BINARY user2='" . $fName . "' OR BINARY user1='" . $fName . "' AND BINARY user2='" . $you . "'";
-    $result=mysqli_query($conn,$query);
+    $query="SELECT * FROM friends WHERE BINARY user1=? AND BINARY user2=? OR BINARY user1=? AND BINARY user2=?";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "ssss", $you, $fName, $fName, $you);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     if($result){
         if(mysqli_num_rows($result)){
-            $query2="SELECT available FROM users WHERE BINARY username='".$_REQUEST["f"]."'";
-            $result2=mysqli_query($conn,$query2);
+            $query2="SELECT available FROM users WHERE BINARY username=?";
+            $stmt2 = mysqli_prepare($conn, $query2);
+            $f = $_REQUEST["f"];
+            mysqli_stmt_bind_param($stmt2, "s", $f);
+            mysqli_stmt_execute($stmt2);
+            $result2 = mysqli_stmt_get_result($stmt2);
             if($result2){
                 if(mysqli_num_rows($result2)){
                     $row=mysqli_fetch_row($result2);
@@ -20,7 +27,9 @@ if(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_RE
 
 
                     $query3="SELECT * FROM ".$tablename."";
-                    $result3=mysqli_query($conn,$query3);
+                    $stmt3 = mysqli_prepare($conn, $query3);
+                    mysqli_stmt_execute($stmt3);
+                    $result3 = mysqli_stmt_get_result($stmt3);
                     if($result3){
                         if(mysqli_num_rows($result3)){
                             $date="";

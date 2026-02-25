@@ -126,8 +126,12 @@ if (isset($_POST) && isset($_POST["changeButton"])) {
             $size = round((($_FILES["image"]["size"]) / MB), 0);
             if ($size <= 1) {
                 require_once("../../../DB.php");
-                $query = "UPDATE users SET picture='" . $_SESSION["who"] . "' WHERE BINARY username='" . $_SESSION["who"] . "'";
-                if (mysqli_query($conn, $query)) {
+                $query = "UPDATE users SET picture=? WHERE BINARY username=?";
+                $stmt = mysqli_prepare($conn, $query);
+                $pic = $_SESSION["who"];
+                $who = $_SESSION["who"];
+                mysqli_stmt_bind_param($stmt, "ss", $pic, $who);
+                if (mysqli_stmt_execute($stmt)) {
                     echo
                     "
                         <script>

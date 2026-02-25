@@ -215,13 +215,18 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
         $password = trim($userpassword);
         if (trim($un) != "" && $password != "") {
 
-            $query = "SELECT * FROM users WHERE BINARY username='" . $un . "' AND BINARY password='" . md5($password) . "'";
-            $result = mysqli_query($conn, $query);
-            if ($result) {
-                if (mysqli_num_rows($result)) {
+            $query = "SELECT * FROM users WHERE BINARY username=? AND BINARY password=?";
+            $stmt = mysqli_prepare($conn, $query);
+            $pwd = md5($password);
+            mysqli_stmt_bind_param($stmt, "ss", $un, $pwd);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            if (mysqli_num_rows($result)) {
                     $_SESSION["who"] = $un;
-                    $av = "UPDATE users SET available='1' WHERE BINARY username='" . $un . "'";
-                    mysqli_query($conn, $av);
+                    $av = "UPDATE users SET available='1' WHERE BINARY username=?";
+                    $stmt = mysqli_prepare($conn, $av);
+                    mysqli_stmt_bind_param($stmt, "s", $un);
+                    mysqli_stmt_execute($stmt);
                     if (isset($rememberCred)) {
                         echo "
                             <script>
@@ -244,20 +249,12 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                 window.location.replace('Main/');
                             </script>";
                     }
-                } else {
-                    echo
-                    "<script>
-                         var invalidfield=document.getElementById('invalidforlogin');
-                         invalidfield.style.display='block';
-                    </script>";
-                }
             } else {
                 echo
                 "<script>
-                         var invalidfield=document.getElementById('invalidforlogin');
-                         invalidfield.style.display='block';
-                         invalidforsignup.innerHTML='Connection Error';
-                    </script>";
+                     var invalidfield=document.getElementById('invalidforlogin');
+                     invalidfield.style.display='block';
+                </script>";
             }
         } else {
             echo
@@ -290,12 +287,17 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                 $password = md5($password);
                 $cpass = md5($cpass);
                 if ($password == $cpass) {
-                    $query = "SELECT username FROM users WHERE BINARY username='" . $un . "'";
-                    $query_email_check = "SELECT email FROM users WHERE BINARY email='" . $signupemail . "'";
-                    $result = mysqli_query($conn, $query);
-                    $result_email_check = mysqli_query($conn, $query_email_check);
-                    if ($result && $result_email_check) {
-                        if (mysqli_num_rows($result)) {
+                    $query = "SELECT username FROM users WHERE BINARY username=?";
+                    $query_email_check = "SELECT email FROM users WHERE BINARY email=?";
+                    $stmt = mysqli_prepare($conn, $query);
+                    $stmt2 = mysqli_prepare($conn, $query_email_check);
+                    mysqli_stmt_bind_param($stmt, "s", $un);
+                    mysqli_stmt_bind_param($stmt2, "s", $signupemail);
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_execute($stmt2);
+                    $result = mysqli_stmt_get_result($stmt);
+                    $result_email_check = mysqli_stmt_get_result($stmt2);
+                    if (mysqli_num_rows($result)) {
                             echo
                             "<script>
                                 switchToSignupForm(true);
@@ -349,15 +351,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                     invalidforsignup.innerHTML='Invalid captcha code, try again';
                                 </script>";
                             }
-                        }
-                    } else {
-                        echo
-                        "<script>
-                            switchToSignupForm(true);
-                            var invalidfield=document.getElementById('invalidforsignup');
-                            invalidfield.style.display='block';
-                            invalidforsignup.innerHTML='Connection Error';
-                        </script>";
+
                     }
                 } else {
                     echo
@@ -387,8 +381,12 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
         }
     } else if (isset($verification_button) && isset($_SESSION) && isset($_SESSION["u_email"]) && isset($_SESSION["u_username"]) && isset($_SESSION["u_password"]) && isset($verification_code_field)) {
         if ($verification_code_field == $_SESSION["signup_code"]) {
-            $squery = "INSERT INTO users(username, password, picture, available, email) VALUES ('" . $_SESSION["u_username"] . "','" . $_SESSION["u_password"] . "','user','0', '" . $_SESSION["u_email"] . "')";
-            if (mysqli_query($conn, $squery)) {
+            $squery = "INSERT INTO users(username, password, picture, available, email) VALUES (?,?,?,?,?)";
+            $stmt = mysqli_prepare($conn, $squery);
+            $pic = 'user';
+            $ava = '0';
+            mysqli_stmt_bind_param($stmt, "sssss", $_SESSION["u_username"], $_SESSION["u_password"], $pic, $ava, $_SESSION["u_email"]);
+            if (mysqli_stmt_execute($stmt)) {
                 echo
                 "<script>
                 switchToSignupForm(true);

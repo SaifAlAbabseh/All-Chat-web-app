@@ -123,12 +123,18 @@ if (isset($_POST) && isset($_POST["addFriendButton"])) {
     $you = $_SESSION["who"];
     if (trim($fusername) != "" && $fusername != $you) {
         require_once("../../DB.php");
-        $query = "SELECT * FROM users WHERE BINARY username='" . $fusername . "'";
-        $isUserExistsResult = mysqli_query($conn, $query);
+        $query = "SELECT * FROM users WHERE BINARY username=?";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "s", $fusername);
+        mysqli_stmt_execute($stmt);
+        $isUserExistsResult = mysqli_stmt_get_result($stmt);
         if ($isUserExistsResult) {
             if (mysqli_num_rows($isUserExistsResult)) {
-                $query2 = "SELECT * FROM friends WHERE BINARY user1='" . $you . "' AND BINARY user2='" . $fusername . "' OR BINARY user1='" . $fusername . "' AND BINARY user2='" . $you . "'";
-                $result2 = mysqli_query($conn, $query2);
+                $query2 = "SELECT * FROM friends WHERE BINARY user1=? AND BINARY user2=? OR BINARY user1=? AND BINARY user2=?";
+                $stmt2 = mysqli_prepare($conn, $query2);
+                mysqli_stmt_bind_param($stmt2, "ssss", $you, $fusername, $fusername, $you);
+                mysqli_stmt_execute($stmt2);
+                $result2 = mysqli_stmt_get_result($stmt2);
                 if ($result2) {
                     if (mysqli_num_rows($result2)) {
                         echo
@@ -140,8 +146,13 @@ if (isset($_POST) && isset($_POST["addFriendButton"])) {
                         </script>
                         ";
                     } else {
-                        $query = "SELECT * FROM friend_requests WHERE requester='" . $_SESSION["who"] . "' AND requested_user='" . $fusername . "'";
-                        $result = mysqli_query($conn, $query);
+                        $query = "SELECT * FROM friend_requests WHERE requester=? AND requested_user=?";
+                        $stmt = mysqli_prepare($conn, $query);
+                        $req = $_SESSION["who"];
+                        $treq = $fusername;
+                        mysqli_stmt_bind_param($stmt, "ss", $req, $treq);
+                        mysqli_stmt_execute($stmt);
+                        $result = mysqli_stmt_get_result($stmt);
                         if ($result && mysqli_num_rows($result)) {
                             echo
                             "
@@ -152,9 +163,12 @@ if (isset($_POST) && isset($_POST["addFriendButton"])) {
                             </script>
                             ";
                         } else {
-                            $query = "INSERT INTO friend_requests(requester, requested_user) VALUES ('" . $_SESSION["who"] . "', '" . $fusername . "')";
-                            $result = mysqli_query($conn, $query);
-                            if ($result) {
+                            $query = "INSERT INTO friend_requests(requester, requested_user) VALUES (?,?)";
+                            $stmt = mysqli_prepare($conn, $query);
+                            $req = $_SESSION["who"];
+                            $treq = $fusername;
+                            mysqli_stmt_bind_param($stmt, "ss", $req, $treq);
+                            if (mysqli_stmt_execute($stmt)) {
                                 echo
                                 "
                                 <script>

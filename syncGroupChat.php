@@ -7,45 +7,43 @@ if (isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_R
     $you = $_SESSION["who"];
     $group_id = $_REQUEST["group_id"];
     $check_table_name = "g" . $group_id . "_users";
-    $query = "SELECT * FROM $check_table_name WHERE BINARY username='" . $you . "'";
-    $result = mysqli_query($conn, $query);
-    if ($result) {
-        if (mysqli_num_rows($result)) {
-            $group_table_name = "g" . $group_id;
-            $query3 = "SELECT * FROM " . $group_table_name . "";
-            $result3 = mysqli_query($conn, $query3);
-            if ($result3) {
-                if (mysqli_num_rows($result3)) {
-                    $date = "";
-                    $pos = "";
-                    $message = "";
-                    $lastwho = "";
-                    while ($row2 = mysqli_fetch_row($result3)) {
-                        $date="".$row2[3];
-                        $pos = "" . $row2[2];
-                        $message = "" . $row2[1];
-                        $lastwho = "" . $row2[0];
-                    }
-                    $messageDecoded = nl2br(formatMessage(htmlspecialchars(urldecode($message))));
-                    $arr = array("date" => $date, "pos" => $pos, "message" => $messageDecoded, "lastwho" => $lastwho);
-                    echo json_encode($arr);
-                    exit;
+    $query = "SELECT * FROM $check_table_name WHERE BINARY username=?";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "s", $you);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result)) {
+        $group_table_name = "g" . $group_id;
+        $query3 = "SELECT * FROM " . $group_table_name . "";
+        $stmt3 = mysqli_prepare($conn, $query3);
+        mysqli_stmt_execute($stmt3);
+        $result3 = mysqli_stmt_get_result($stmt3);
+        if ($result3) {
+            if (mysqli_num_rows($result3)) {
+                $date = "";
+                $pos = "";
+                $message = "";
+                $lastwho = "";
+                while ($row2 = mysqli_fetch_row($result3)) {
+                    $date = "" . $row2[3];
+                    $pos = "" . $row2[2];
+                    $message = "" . $row2[1];
+                    $lastwho = "" . $row2[0];
                 }
-                else{
-                    echo "empty";
-                    exit;
-                }
+                $messageDecoded = nl2br(formatMessage(htmlspecialchars(urldecode($message))));
+                $arr = array("date" => $date, "pos" => $pos, "message" => $messageDecoded, "lastwho" => $lastwho);
+                echo json_encode($arr);
+                exit;
             } else {
-                echo "error";
+                echo "empty";
                 exit;
             }
         } else {
-            echo "nomore";
+            echo "error";
             exit;
         }
-    }
-    else {
-        echo "error";
+    } else {
+        echo "nomore";
         exit;
     }
 } else {

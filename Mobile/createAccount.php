@@ -4,15 +4,22 @@ if(isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"]=="fromMob
     $password=$_REQUEST["password"];
     
     require_once("../DB.php");
-    $query="SELECT * FROM users WHERE BINARY username='".$username."'";
-    $result=mysqli_query($conn,$query);
+    $query="SELECT * FROM users WHERE BINARY username=?";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     if($result){
         if(mysqli_num_rows($result)){
             echo "Username is already in use";
         }
         else{
-            $query2="INSERT INTO users VALUES ('".$username."','".$password."','defaultUser','0')";
-            if(mysqli_query($conn,$query2)){
+            $query2="INSERT INTO users VALUES (?,?,?,?)";
+            $stmt2 = mysqli_prepare($conn, $query2);
+            $pic = 'defaultUser';
+            $ava = '0';
+            mysqli_stmt_bind_param($stmt2, "ssss", $username, $password, $pic, $ava);
+            if(mysqli_stmt_execute($stmt2)){
                 echo "Successfully created account";
             }
             else{

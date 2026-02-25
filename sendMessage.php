@@ -25,13 +25,28 @@ function sendMessage($message,$you,$tname,$lastI){
     $lastI++;
     require_once("DB.php");
     $messageEncoded=urlencode($message);
-    $query="INSERT INTO ".$tname."(fromwho, message, pos) VALUES ('".$you."','".$messageEncoded."','".$lastI."')";
-    if(mysqli_query($conn,$query)){
-        echo "ok";
+    
+    try {
+        $query="INSERT INTO ".$tname."(fromwho, message, pos) VALUES (?,?,?)";
+        $stmt = mysqli_prepare($conn, $query);
+        if ($stmt === false) {
+            echo "Error: " . mysqli_error($conn);
+            mysqli_close($conn);
+            return;
+        }
+        mysqli_stmt_bind_param($stmt, "sss", $you, $messageEncoded, $lastI);
+        if(mysqli_stmt_execute($stmt)){
+            echo "ok";
+        }
+        else{
+            echo "Error: " . mysqli_stmt_error($stmt);
+        }
+        mysqli_close($conn);
+    } catch (Exception $e) {
+        echo "Error:  Does not exist anymore";
+        if(isset($conn)) {
+            mysqli_close($conn);
+        }
     }
-    else{
-        echo "Connection Error";
-    }
-    mysqli_close($conn);
 }
 ?>

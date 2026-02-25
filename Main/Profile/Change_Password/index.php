@@ -89,13 +89,20 @@ if (isset($_POST) && isset($_POST["changePassButton"])) {
             if (!(strpos($newPass, " ") || !(strlen($newPass) >= 8 && strlen($newPass) <= 16))) {
                 if ($newPass == $confirmNewPass) {
                     require_once("../../../DB.php");
-                    $checkCurrentPassQuery = "SELECT * FROM users WHERE username = '" . $_SESSION["who"] . "' AND password = '" . md5($currentPass) . "'";
-                    $result = mysqli_query($conn, $checkCurrentPassQuery);
-                    if ($result) {
-                        if (mysqli_num_rows($result) > 0) {
-                            $changePassQuery = "UPDATE users SET password='" . md5($newPass) . "' WHERE username='" . $_SESSION["who"] . "'";
-                            $result = mysqli_query($conn, $changePassQuery);
-                            if ($result) {
+                    $checkCurrentPassQuery = "SELECT * FROM users WHERE username = ? AND password = ?";
+                    $stmt = mysqli_prepare($conn, $checkCurrentPassQuery);
+                    $who = $_SESSION["who"];
+                    $pwd = md5($currentPass);
+                    mysqli_stmt_bind_param($stmt, "ss", $who, $pwd);
+                    mysqli_stmt_execute($stmt);
+                    $result = mysqli_stmt_get_result($stmt);
+                    if (mysqli_num_rows($result) > 0) {
+                            $changePassQuery = "UPDATE users SET password=? WHERE username=?";
+                            $stmt = mysqli_prepare($conn, $changePassQuery);
+                            $pwd = md5($newPass);
+                            $who = $_SESSION["who"];
+                            mysqli_stmt_bind_param($stmt, "ss", $pwd, $who);
+                            if (mysqli_stmt_execute($stmt)) {
                                 echo "<script>alert('Successfully changed password :)');</script>";
                             } else {
                                 echo "<script>alert('Invalid Error..');</script>";
@@ -103,9 +110,6 @@ if (isset($_POST) && isset($_POST["changePassButton"])) {
                         } else {
                             echo "<script>alert('Invalid current password..');</script>";
                         }
-                    } else {
-                        echo "<script>alert('Unknown Error..');</script>";
-                    }
                     mysqli_close($conn);
                 } else {
                     echo "<script>alert('New password and confirmed one are not identical.. please try again');</script>";

@@ -37,17 +37,17 @@ function generateRandomChar()
 }
 
 function getUserImageName($conn, $username) {
-    $query = "SELECT picture FROM users WHERE BINARY username='" . $username . "'";
-    $result = mysqli_query($conn, $query);
+    $query = "SELECT picture FROM users WHERE BINARY username=?";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $imageName = "user";
-    if ($result) {
-        if (mysqli_num_rows($result)) {
+    if (mysqli_num_rows($result)) {
             $row = mysqli_fetch_row($result);
             $imageName = $row[0];
-        }
-        else 
+        } else 
             return null;
-    }
     return $imageName;
 }
 
