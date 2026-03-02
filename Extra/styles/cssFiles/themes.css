@@ -831,6 +831,13 @@ body {
     cursor: not-allowed;
 }
 
+#bellImage {
+    width: 32px;
+    height: 32px;
+    stroke:#000;
+    stroke-width: 1px;
+}
+
 .hasNotifications {
     border-radius: 50%;
     width: 10px;
