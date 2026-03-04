@@ -11,50 +11,82 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
     mysqli_stmt_bind_param($stmt, "ss", $you, $password);
     mysqli_stmt_execute($stmt);
     $check_result = mysqli_stmt_get_result($stmt);
-    if ($check_result) {
-        if (mysqli_num_rows($check_result) == 0) {
-            echo "Unknown Error";
-        } else {
-            $query = "SELECT * FROM users WHERE BINARY username=?";
-            $stmt = mysqli_prepare($conn, $query);
-            mysqli_stmt_bind_param($stmt, "s", $fusername);
-            mysqli_stmt_execute($stmt);
-            $result = mysqli_stmt_get_result($stmt);
-            if (mysqli_num_rows($result)) {
-                    $query2 = "SELECT * FROM friends WHERE BINARY user1=? AND BINARY user2=? OR BINARY user1=? AND BINARY user2=?";
-                    $stmt2 = mysqli_prepare($conn, $query2);
-                    mysqli_stmt_bind_param($stmt2, "ssss", $you, $fusername, $fusername, $you);
-                    mysqli_stmt_execute($stmt2);
-                    $result2 = mysqli_stmt_get_result($stmt2);
-                    if ($result2) {
-                        if (mysqli_num_rows($result2)) {
-                            echo "Already a friend";
+    if (mysqli_num_rows($check_result) == 0) {
+        echo "Unknown Error";
+    } else {
+        $query = "SELECT * FROM users WHERE BINARY username=?";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "s", $fusername);
+        mysqli_stmt_execute($stmt);
+        $isUserExistsResult = mysqli_stmt_get_result($stmt);
+        if (mysqli_num_rows($isUserExistsResult)) {
+            $query2 = "SELECT * FROM friends WHERE BINARY user1=? AND BINARY user2=? OR BINARY user1=? AND BINARY user2=?";
+            $stmt2 = mysqli_prepare($conn, $query2);
+            mysqli_stmt_bind_param($stmt2, "ssss", $you, $fusername, $fusername, $you);
+            mysqli_stmt_execute($stmt2);
+            $result2 = mysqli_stmt_get_result($stmt2);
+            if ($result2) {
+                if (mysqli_num_rows($result2)) {
+                    echo "Already a friend";
+                } else {
+                    $query = "SELECT * FROM friend_requests WHERE requester=? AND requested_user=?";
+                        $stmt = mysqli_prepare($conn, $query);
+                        $req = $_SESSION["who"];
+                        $treq = $fusername;
+                        mysqli_stmt_bind_param($stmt, "ss", $req, $treq);
+                        mysqli_stmt_execute($stmt);
+                        $result = mysqli_stmt_get_result($stmt);
+                        if ($result && mysqli_num_rows($result)) {
+                            echo
+                            "
+                            <script>
+                                var errorfield=document.getElementById('addfriendLabel');
+                                errorfield.style.color='white';
+                                errorfield.innerHTML='Already sent friend request';
+                            </script>
+                            ";
                         } else {
-                            $query3 = "INSERT INTO friends VALUES (?,?)";
-                            $stmt3 = mysqli_prepare($conn, $query3);
-                            mysqli_stmt_bind_param($stmt3, "ss", $you, $fusername);
-                            if (mysqli_stmt_execute($stmt3)) {
-                                $tablename = "" . $you . "" . $fusername;
-                                $query4 = "CREATE TABLE " . $tablename . " (fromwho varchar(1000) , message varchar(1000),pos varchar(1000))";
-                                $stmt4 = mysqli_prepare($conn, $query4);
-                                if ($stmt4 && mysqli_stmt_execute($stmt4)) {
-                                    echo "ok";
-                                } else {
-                                    echo "Unknown Error";
-                                }
+                            $query = "INSERT INTO friend_requests(requester, requested_user) VALUES (?,?)";
+                            $stmt = mysqli_prepare($conn, $query);
+                            $req = $_REQUEST["username"];
+                            $treq = $fusername;
+                            mysqli_stmt_bind_param($stmt, "ss", $req, $treq);
+                            if (mysqli_stmt_execute($stmt)) {
+                                echo
+                                "
+                                <script>
+                                    var errorfield=document.getElementById('addfriendLabel');
+                                    errorfield.style.color='white';
+                                    errorfield.innerHTML='Sent Friend Request';
+                                </script>
+                                ";
+
+                                //Send email to receiver
+
+                                require_once(dirname(__DIR__, 1) . '/mail.php');
+                                $userEmail = mysqli_fetch_assoc($isUserExistsResult)["email"];
+                                sendFriendRequestMail($conn, $userEmail, $fusername, $req);
+
+                                ////////
+
                             } else {
-                                echo "Unknown Error";
+                                echo
+                                "
+                                <script>
+                                    var errorfield=document.getElementById('addfriendLabel');
+                                    errorfield.style.color='white';
+                                    errorfield.innerHTML='Unknown Error..';
+                                </script>
+                                ";
                             }
                         }
-                    } else {
-                        echo "Unknown Error";
-                    }
-                } else {
-                    echo "Username not found";
                 }
+            } else {
+                echo "Unknown Error";
+            }
+        } else {
+            echo "Username not found";
         }
-    } else {
-        echo "Unknown Error";
     }
 
     mysqli_close($conn);
