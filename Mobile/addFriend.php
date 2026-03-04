@@ -36,7 +36,7 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
                     mysqli_stmt_bind_param($stmt, "ss", $req, $treq);
                     mysqli_stmt_execute($stmt);
                     $result = mysqli_stmt_get_result($stmt);
-                    if ($result && mysqli_num_rows($result)) {
+                    if (mysqli_num_rows($result)) {
                         echo "Already sent friend request";
                     } else {
                         $query = "INSERT INTO friend_requests(requester, requested_user) VALUES (?,?)";
@@ -50,7 +50,7 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
 
                         require_once(dirname(__DIR__, 1) . '/mail.php');
                         $userEmail = mysqli_fetch_assoc($isUserExistsResult)["email"];
-                        sendFriendRequestMail($conn, $userEmail, $fusername, $req);
+                        $temp = sendFriendRequestMail($conn, $userEmail, $fusername, $req);
 
                         ////////
 
