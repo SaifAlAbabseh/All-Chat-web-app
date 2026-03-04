@@ -12,37 +12,33 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
     mysqli_stmt_bind_param($stmt, "ss", $you, $password);
     mysqli_stmt_execute($stmt);
     $check_result = mysqli_stmt_get_result($stmt);
-    if ($check_result) {
-        if (mysqli_num_rows($check_result) == 0) {
-            echo "Unknown Error";
-        } else {
-            $query = "SELECT * FROM " . $tablename . "";
-            $stmt2 = mysqli_prepare($conn, $query);
-            mysqli_stmt_execute($stmt2);
-            $result = mysqli_stmt_get_result($stmt2);
-            if (mysqli_num_rows($result)) {
-                    $actualLast = mysqli_num_rows($result);
-                    if ($actualLast == $lastIndex) {
-                        echo "no";
-                    } else {
-                        $row;
-                        $tempIndex = 1;
-                        while ($tempIndex <= $actualLast) {
-                            $row = mysqli_fetch_row($result);
-                            $tempIndex++;
-                        }
-                        $fromwho = $row[0];
-                        $message = $row[1];
-
-                        $res = array("fromwho" => $fromwho, "message" => $message);
-                        echo json_encode($res);
-                    }
-                } else {
-                    echo "No Messages";
-                }
-        }
-    } else {
+    if (mysqli_num_rows($check_result) == 0) {
         echo "Unknown Error";
+    } else {
+        $query = "SELECT * FROM " . $tablename . "";
+        $stmt2 = mysqli_prepare($conn, $query);
+        mysqli_stmt_execute($stmt2);
+        $result = mysqli_stmt_get_result($stmt2);
+        if (mysqli_num_rows($result)) {
+            $actualLast = mysqli_num_rows($result);
+            if ($actualLast == $lastIndex) {
+                echo "no";
+            } else {
+                $row;
+                $tempIndex = 1;
+                while ($tempIndex <= $actualLast) {
+                    $row = mysqli_fetch_row($result);
+                    $tempIndex++;
+                }
+                $fromwho = $row[0];
+                $message = $row[1];
+
+                $res = array("fromwho" => $fromwho, "message" => $message);
+                echo json_encode($res);
+            }
+        } else {
+            echo "No Messages";
+        }
     }
     mysqli_close($conn);
 } else {
