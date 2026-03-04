@@ -45,7 +45,6 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
                         $treq = $fusername;
                         mysqli_stmt_bind_param($stmt, "ss", $req, $treq);
                         mysqli_stmt_execute($stmt);
-                        echo "Sent Friend Request";
 
                         //Send email to receiver
 
@@ -54,6 +53,8 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
                         sendFriendRequestMail($conn, $userEmail, $fusername, $req);
 
                         ////////
+
+                        echo "Sent Friend Request";
 
                     }
                 }
