@@ -15,15 +15,13 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
         $query = "DELETE FROM friends WHERE BINARY user1=? AND BINARY user2=? OR BINARY user1=? AND BINARY user2=?";
         $stmt = mysqli_prepare($conn, $query);
         mysqli_stmt_bind_param($stmt, "ssss", $you, $fusername, $fusername, $you);
-        if (mysqli_stmt_execute($stmt)) {
-            $r1 = "" . $you . "" . $fusername;
-            $r2 = "" . $fusername . "" . $you;
-            $query2 = "DROP TABLE IF EXISTS " . $r1 . "," . $r2 . "";
-            $stmt = mysqli_prepare($conn, $query2);
-            if ($stmt && mysqli_stmt_execute($stmt)) {
-                echo "Deleted Friend";
-            }
-        }
+        mysqli_stmt_execute($stmt);
+        $r1 = "" . $you . "" . $fusername;
+        $r2 = "" . $fusername . "" . $you;
+        $query2 = "DROP TABLE IF EXISTS " . $r1 . "," . $r2 . "";
+        $stmt = mysqli_prepare($conn, $query2);
+        mysqli_stmt_execute($stmt);
+        echo "Deleted Friend";
         mysqli_close($conn);
     }
 }
