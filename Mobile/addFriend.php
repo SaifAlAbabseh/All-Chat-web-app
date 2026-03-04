@@ -30,42 +30,32 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
                     echo "Already a friend";
                 } else {
                     $query = "SELECT * FROM friend_requests WHERE requester=? AND requested_user=?";
+                    $stmt = mysqli_prepare($conn, $query);
+                    $req = $_SESSION["who"];
+                    $treq = $fusername;
+                    mysqli_stmt_bind_param($stmt, "ss", $req, $treq);
+                    mysqli_stmt_execute($stmt);
+                    $result = mysqli_stmt_get_result($stmt);
+                    if ($result && mysqli_num_rows($result)) {
+                        echo "Already sent friend request";
+                    } else {
+                        $query = "INSERT INTO friend_requests(requester, requested_user) VALUES (?,?)";
                         $stmt = mysqli_prepare($conn, $query);
-                        $req = $_SESSION["who"];
+                        $req = $_REQUEST["username"];
                         $treq = $fusername;
                         mysqli_stmt_bind_param($stmt, "ss", $req, $treq);
                         mysqli_stmt_execute($stmt);
-                        $result = mysqli_stmt_get_result($stmt);
-                        if ($result && mysqli_num_rows($result)) {
-                            echo "Already sent friend request";
-                        } else {
-                            $query = "INSERT INTO friend_requests(requester, requested_user) VALUES (?,?)";
-                            $stmt = mysqli_prepare($conn, $query);
-                            $req = $_REQUEST["username"];
-                            $treq = $fusername;
-                            mysqli_stmt_bind_param($stmt, "ss", $req, $treq);
-                            if (mysqli_stmt_execute($stmt)) {
-                                echo "Sent Friend Request";
+                        echo "Sent Friend Request";
 
-                                //Send email to receiver
+                        //Send email to receiver
 
-                                require_once(dirname(__DIR__, 1) . '/mail.php');
-                                $userEmail = mysqli_fetch_assoc($isUserExistsResult)["email"];
-                                sendFriendRequestMail($conn, $userEmail, $fusername, $req);
+                        require_once(dirname(__DIR__, 1) . '/mail.php');
+                        $userEmail = mysqli_fetch_assoc($isUserExistsResult)["email"];
+                        sendFriendRequestMail($conn, $userEmail, $fusername, $req);
 
-                                ////////
+                        ////////
 
-                            } else {
-                                echo
-                                "
-                                <script>
-                                    var errorfield=document.getElementById('addfriendLabel');
-                                    errorfield.style.color='white';
-                                    errorfield.innerHTML='Unknown Error..';
-                                </script>
-                                ";
-                            }
-                        }
+                    }
                 }
             } else {
                 echo "Unknown Error";
