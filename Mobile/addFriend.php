@@ -37,14 +37,7 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
                         mysqli_stmt_execute($stmt);
                         $result = mysqli_stmt_get_result($stmt);
                         if ($result && mysqli_num_rows($result)) {
-                            echo
-                            "
-                            <script>
-                                var errorfield=document.getElementById('addfriendLabel');
-                                errorfield.style.color='white';
-                                errorfield.innerHTML='Already sent friend request';
-                            </script>
-                            ";
+                            echo "Already sent friend request";
                         } else {
                             $query = "INSERT INTO friend_requests(requester, requested_user) VALUES (?,?)";
                             $stmt = mysqli_prepare($conn, $query);
@@ -52,14 +45,7 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
                             $treq = $fusername;
                             mysqli_stmt_bind_param($stmt, "ss", $req, $treq);
                             if (mysqli_stmt_execute($stmt)) {
-                                echo
-                                "
-                                <script>
-                                    var errorfield=document.getElementById('addfriendLabel');
-                                    errorfield.style.color='white';
-                                    errorfield.innerHTML='Sent Friend Request';
-                                </script>
-                                ";
+                                echo "Sent Friend Request";
 
                                 //Send email to receiver
 
