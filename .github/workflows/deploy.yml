@@ -1,4 +1,4 @@
-name: Deploy to InfinityFree
+name: Deploy to AlwaysData
 
 on:
   push:
