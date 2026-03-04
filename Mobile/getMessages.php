@@ -27,7 +27,7 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
             }
             echo json_encode($res);
         } else {
-            echo "Unknown Error";
+            echo "No Messages";
         }
     }
 }
