@@ -31,7 +31,7 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
                 } else {
                     $query = "SELECT * FROM friend_requests WHERE requester=? AND requested_user=?";
                     $stmt = mysqli_prepare($conn, $query);
-                    $req = $_SESSION["who"];
+                    $req = $_REQUEST["username"];
                     $treq = $fusername;
                     mysqli_stmt_bind_param($stmt, "ss", $req, $treq);
                     mysqli_stmt_execute($stmt);
@@ -41,8 +41,6 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
                     } else {
                         $query = "INSERT INTO friend_requests(requester, requested_user) VALUES (?,?)";
                         $stmt = mysqli_prepare($conn, $query);
-                        $req = $_REQUEST["username"];
-                        $treq = $fusername;
                         mysqli_stmt_bind_param($stmt, "ss", $req, $treq);
                         mysqli_stmt_execute($stmt);
 
