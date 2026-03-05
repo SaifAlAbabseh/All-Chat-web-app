@@ -12,6 +12,7 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
     mysqli_stmt_bind_param($stmt, "ss", $you, $password);
     mysqli_stmt_execute($stmt);
     $check_result = mysqli_stmt_get_result($stmt);
+    mysqli_close($conn);
     if (mysqli_num_rows($check_result) == 0) {
         echo "Unknown Error";
     } else {
@@ -21,8 +22,6 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
         mysqli_stmt_execute($stmt);
         echo "Password updated successfully";
     }
-
-    mysqli_close($conn);
 } else {
     echo "Unknown Error";
 }
