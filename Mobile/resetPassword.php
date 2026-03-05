@@ -1,7 +1,6 @@
 <?php
 if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "fromMobile1090" && isset($_REQUEST["username"]) && isset($_REQUEST["password"]) && isset($_REQUEST["newPassword"])) {
     $you = $_REQUEST["username"];
-    $fusername = $_REQUEST["friendUsername"];
     $password = $_REQUEST["password"];
     $newPassword = $_REQUEST["newPassword"];
 
