@@ -3,7 +3,7 @@
 require_once("./common.php");
 
 if (!(isset($_REQUEST) && isset($_REQUEST["username"]) && isset($_REQUEST["password"]) && isset($_REQUEST["temp"]) && $_REQUEST["temp"] == "javaToWeb1090")) {
-    header("Location:../".$GLOBALS['urlMainPath']."/");
+    header("Location:./index.php");
 }
 else{
     $username=$_REQUEST["username"];
@@ -16,7 +16,7 @@ else{
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     if(mysqli_num_rows($result)==0){
-        header("Location:../".$GLOBALS['urlMainPath']."/");
+        header("Location:./index.php");
     }
 }
 ?>

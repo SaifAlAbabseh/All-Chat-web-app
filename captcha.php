@@ -23,5 +23,5 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
     readfile($image_path);
 
 } else {
-    header("Location:../".$GLOBALS['urlMainPath']);
+    header("Location:./index.php");
 }

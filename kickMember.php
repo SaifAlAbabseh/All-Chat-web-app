@@ -5,7 +5,7 @@ require_once("./common.php");
 session_start();
 if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_REQUEST["group_id"]) && isset($_REQUEST["member"]) && isset($_SESSION["isGood".$_REQUEST["group_id"]]) && $_SESSION["isGood".$_REQUEST["group_id"]])) {
     session_destroy();
-    header("Location:../".$GLOBALS['urlMainPath']."/");
+    header("Location:./index.php");
 }
 else{
     $group_id = $_REQUEST["group_id"];
