@@ -1,7 +1,25 @@
 <?php
 
-require_once "../env.php";
 require_once "../DB.php";
+
+if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "fromMobile1090" && isset($_REQUEST["username"]) && isset($_REQUEST["password"])) {
+    $you = $_REQUEST["username"];
+    $password = $_REQUEST["password"];
+
+    $check_query = "SELECT * FROM users WHERE BINARY username=? AND password=?";
+    $stmt = mysqli_prepare($conn, $check_query);
+    mysqli_stmt_bind_param($stmt, "ss", $you, $password);
+    mysqli_stmt_execute($stmt);
+    $check_result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($check_result) == 0) {
+        header("Location:../index.php");
+    }
+}
+else {
+    header("Location:../index.php");
+}
+
+require_once "../env.php";
 require_once "../common.php";
 
 session_start();
@@ -28,7 +46,7 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
         <h1 class="boxupperlabel">
             Sign Up
         </h1>
-        <form action="?t=0" method="post" autocomplete="off" class="forms signupForm">
+        <form action="" method="post" autocomplete="off" class="forms signupForm">
             <table>
                 <tr>
                     <td colspan="2">
