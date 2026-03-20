@@ -291,8 +291,8 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                 <img src="../Extra/styles/images/main.png" alt="All Chat Image" width="100%" height="100px" />
                 <hr class="hrLine">
                 <div class="menuContainer">
-                    <a href="Add/" class="link">Add New Friend</a>
-                    <a href="Profile/" class="link">Edit Profile</a>
+                    <a href="Add/" class="link" id="addLink">Add New Friend</a>
+                    <a href="Profile/" class="link" id="editLink">Edit Profile</a>
                 </div>
             </div>
             <?php
