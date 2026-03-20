@@ -28,3 +28,10 @@ function showBlurOnTop() {
     const messagesBox = document.getElementById("messages");
     messagesBox.classList.toggle("at-top", messagesBox.scrollTop === 0);
 }
+
+function checkChatIfEmpty(messagesContainer) {
+    const messsages = document.getElementsByClassName("message-container-outer");
+    if (messsages.length === 0) {
+        messagesContainer.innerHTML = "";
+    }
+}

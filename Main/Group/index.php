@@ -350,6 +350,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                     if (this.readyState == 4 && this.status == 200) {
                         var res = this.responseText;
                         if (res != "nomore" && res != "error" && res != "empty") {
+                            checkChatIfEmpty(msg);
                             var arr = JSON.parse(res);
                             var pos = arr.pos;
                             var messageDate = arr.date;
