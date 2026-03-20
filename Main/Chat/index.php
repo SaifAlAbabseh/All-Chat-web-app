@@ -241,9 +241,15 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                                 msg.innerHTML = "<div style='color:red'><h1>Not A Friend</h1></div>";
                             } else if (res == "error") {
                                 msg.innerHTML = "<div style='color:red'><h1>Connection Error</h1></div>";
+                            } else if (res.includes("nomore*")) {
+                                msg.innerHTML = "<div style='color:red'><h1>No Messages</h1></div>";
+                                $("#ava").css({
+                                    "border-color": `${res.split("*")[1] == "1" ? "green" : "red"}`
+                                });
+                            } else {
+                                clearInterval(loo);
+                                window.location.replace('../');
                             }
-                            clearInterval(loo);
-                            window.location.replace('../');
                         }
                     }
                 };
