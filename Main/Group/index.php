@@ -5,25 +5,25 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
 } else {
     require_once("../../DB.php");
     $group_table_name = "g" . $_REQUEST["group_id"] . "_users";
-    
+
     try {
         $check_query = "SELECT g.group_name, g.leader_username FROM all_chat_groups g INNER JOIN $group_table_name gu WHERE BINARY gu.username=? AND g.group_id=?";
         $stmt = mysqli_prepare($conn, $check_query);
-        
+
         if ($stmt === false) {
             header("Location:../");
             exit();
         }
-        
+
         $who = $_SESSION["who"];
         $gid = $_REQUEST["group_id"];
         mysqli_stmt_bind_param($stmt, "ss", $who, $gid);
-        
+
         if (!mysqli_stmt_execute($stmt)) {
             header("Location:../");
             exit();
         }
-        
+
         $check_result = mysqli_stmt_get_result($stmt);
         if (!mysqli_num_rows($check_result)) {
             header("Location:../");
@@ -241,83 +241,68 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                         </table>
                     </div>
                     <div id="chatBox">
-                        <table>
-                            <tr>
-                                <td colspan="2">
-                                    <div id="messages" class="at-top" onscroll="showBlurOnTop()">
-                                        <div class="blur-top"></div>
-                                        <table id="msg" style="width:100%">
-                                            <?php
-                                            $group_table_id = "g" . $_REQUEST["group_id"];
-                                            $query = "SELECT * FROM " . $group_table_id . "";
-                                            $stmt = mysqli_prepare($conn, $query);
-                                            mysqli_stmt_execute($stmt);
-                                            $result = mysqli_stmt_get_result($stmt);
-                                            if (mysqli_num_rows($result)) {
-                                                while ($row = mysqli_fetch_row($result)) {
-                                                    $from = "" . $row[0];
-                                                    $messageitself = "" . $row[1];
-                                                    $lastmessageindex++;
-                                                    $date = "" . $row[3];
-                                                    $OddOrEvenMessage = ($lastmessageindex % 2 == 0) ? "Odd" : "Even";
-                                                    $you = $_SESSION["who"];
-                                                    if ($from == $you) {
-                                                        echo "
-                                                            <tr style='text-align:right' class='chat" . $OddOrEvenMessage . "Message'>
-                                                            <td class='messageDate'> " . $date . " </td>
-                                                            <td style='color:gold'> YOU </td>
-                                                            </tr>
-                                                            <tr class='chat" . $OddOrEvenMessage . "Message'>
-                                                            <td style='color:white;' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;text-align:right;float:right;'>
-                                                                " . nl2br(formatMessage(htmlspecialchars(urldecode($messageitself)))) . "
-                                                                </p>
-                                                            </td>
-                                                            </tr>
-                                                        ";
-                                                    } else {
-                                                        echo "
-                                                            <tr style='text-align:left' class='chat" . $OddOrEvenMessage . "Message'>
-                                                            <td style='color:yellow'>From :  " . $from . " </td>
-                                                            <td class='messageDate'> " . $date . " </td>
-                                                            </tr>
-                                                            <tr class='chat" . $OddOrEvenMessage . "Message'>
-                                                            <td style='color:white' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;text-align:left;'>
-                                                                " . nl2br(formatMessage(htmlspecialchars(urldecode($messageitself)))) . "
-                                                                </p>
-                                                            </td>
-                                                            </tr>
-                                                        ";
-                                                    }
-                                                }
-                                                echo "
-                                                <script>
-                                                var box=document.getElementById('messages');
-                                                box.scrollTop=box.scrollHeight;
-                                                </script>";
-                                            }
-                                            ?>
-                                        </table>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <textarea name="messageField" id="messageField" placeholder="Type A Message.." class="messageField"></textarea>
-                                </td>
-                                <td>
-                                    <input name="sendButton" id="sendButton" type="button" value="Send" class="buttontag" style="background-color:red" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <th colspan="2">
-                                    <h2 id="ErrorField" style="color:red">
-                                    </h2>
-                                </th>
-                            </tr>
-                        </table>
+                        <div id="messages" class="at-top" onscroll="showBlurOnTop()">
+                            <div class="blur-top"></div>
+                            <div id="msg">
+                                <?php
+                                try {
+                                    $group_table_id = "g" . $_REQUEST["group_id"];
+                                    $query = "SELECT * FROM " . $group_table_id . "";
+                                    $stmt = mysqli_prepare($conn, $query);
+                                    mysqli_stmt_execute($stmt);
+                                    $result = mysqli_stmt_get_result($stmt);
+                                    if (mysqli_num_rows($result)) {
+                                        while ($row = mysqli_fetch_row($result)) {
+                                            $from = "" . $row[0];
+                                            $messageitself = "" . $row[1];
+                                            $lastmessageindex++;
+                                            $date = "" . $row[3];
+                                            $you = $_SESSION["who"];
+                                ?>
+
+                                            <div class='message-container-outer'>
+                                                <div class='message-container <?php echo ($from == $you) ? "right-message" : "left-message"; ?>' title='<?php echo $date; ?>'>
+                                                    <div class='message-header'>
+                                                        <div class='message-from'>
+                                                            <?php echo ($from == $you) ? "YOU" : "From: " . $from; ?>
+                                                        </div>
+                                                    </div>
+                                                    <div class='message-text'>
+                                                        <?php echo nl2br(formatMessage((urldecode($messageitself)))); ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                <?php
+                                        }
+                                        echo "
+                                                    <script>
+                                                    var box=document.getElementById('messages');
+                                                    box.scrollTop=box.scrollHeight;
+                                                    </script>";
+                                    }
+                                } catch (Exception $e) {
+                                    echo "<script>window.location.href = '../';</script>";
+                                    exit();
+                                }
+                                ?>
+                            </div>
+                        </div>
+                        <div class="message-fields">
+                            <div class="input-wrapper">
+                                <textarea name="messageField" id="messageField" placeholder="Type a message..."></textarea>
+
+                                <div class="input-actions">
+                                    <button class="icon-btn">😊</button>
+                                    <button class="icon-btn">📎</button>
+                                </div>
+                            </div>
+                            <button class="send-btn" name="sendButton" id="sendButton">
+                                ➤
+                            </button>
+                        </div>
+                        <h2 id="ErrorField" style="color:red"></h2>
                     </div>
                 </div>
-            </div>
         </center>
     </div>
     <script src="<?= asset('../../scripts/commonMethods.js') ?>"></script>
@@ -361,6 +346,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                     xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
                 }
                 xmlhttp.onreadystatechange = function() {
+                    let msg = document.getElementById("msg");
                     if (this.readyState == 4 && this.status == 200) {
                         var res = this.responseText;
                         if (res != "nomore" && res != "error" && res != "empty") {
@@ -371,49 +357,34 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                             var lastwho = arr.lastwho;
                             var you = "<?php echo "" . $_SESSION["who"]; ?>";
                             if (oldpos != pos) {
-                                var newrow1 = document.createElement("tr");
-                                var newrow2 = document.createElement("tr");
-                                const newMessageOddOrEven = (oldpos % 2 === 0) ? "Even" : "Odd";
-                                newrow1.classList.add("chat" + newMessageOddOrEven + "Message");
-                                newrow2.classList.add("chat" + newMessageOddOrEven + "Message");
-                                if (lastwho == you) {
-                                    newrow1.setAttribute("style", "text-align:right");
-                                    newrow1.innerHTML = "<td class='messageDate'> " + messageDate + " </td><td style='color:gold'> YOU </td>";
-                                    newrow2.innerHTML = "<td style='color:white' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;text-align:right;float:right;'>" + mess + "</p></td>";
-                                } else {
-                                    newrow1.setAttribute("style", "text-align:left");
-                                    newrow1.innerHTML = "<td style='color:yellow'>From : " + lastwho + "</td><td class='messageDate'> " + messageDate + " </td>";
-                                    newrow2.innerHTML = "<td style='color:white' colspan='2'><p style='inline-size: 150px;overflow-wrap: break-word;text-align:left;'>" + mess + "</p></td>";
-                                }
-                                var msg = document.getElementById("msg");
-                                msg.append(newrow1);
-                                msg.append(newrow2);
-                                var box = document.getElementById("messages");
+                                const messageElement = document.createElement("div");
+                                messageElement.classList.add("message-container-outer");
+                                messageElement.innerHTML = `
+                                    <div class='message-container ${(lastwho == you) ? "right-message" : "left-message"}' title='${messageDate}'>
+                                        <div class='message-header'>
+                                            <div class='message-from'>
+                                                    ${(lastwho == you) ? "YOU" : "From: " + lastwho}
+                                                </div>
+                                            </div>
+                                            <div class='message-text'>
+                                                ${mess}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                msg.appendChild(messageElement);
+                                const box = document.getElementById("messages");
                                 box.scrollTop = box.scrollHeight;
                                 oldpos++;
                             }
                         } else {
                             if (res == "nomore") {
-                                disableInputMessageFields();
-                                var newrow1 = document.createElement("tr");
-                                newrow1.setAttribute("style", "text-align:center");
-                                newrow1.innerHTML = "<td style='color:red'><h1>Youre not in the group anymore or the group is deleted.</h1></td>";
-                                var msg = document.getElementById("msg");
-                                msg.append(newrow1);
-                                clearInterval(loo);
-                                window.location.replace('../');
+                                msg.innerHTML = "<div style='color:red'><h1>Not A Friend</h1></div>";
                             } else if (res == "error") {
-                                disableInputMessageFields();
-                                var newrow1 = document.createElement("tr");
-                                newrow1.setAttribute("style", "text-align:center");
-                                newrow1.innerHTML = "<td style='color:red'><h1>Connection Error</h1></td>";
-                                var msg = document.getElementById("msg");
-                                msg.append(newrow1);
-                                clearInterval(loo);
-                                window.location.replace('../');
-                            } else if (res == "empty") {} else {
-                                window.location.replace('../../');
+                                msg.innerHTML = "<div style='color:red'><h1>Connection Error</h1></div>";
                             }
+                            clearInterval(loo);
+                            window.location.replace('../');
                         }
                     }
                 };
@@ -422,11 +393,6 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                 xmlhttp.send();
             }, 1000);
         });
-
-        function disableInputMessageFields() {
-            $("#messageField").prop("disabled", true);
-            $("#sendButton").prop("disabled", true);
-        }
     </script>
 </body>
 

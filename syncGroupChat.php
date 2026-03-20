@@ -30,7 +30,7 @@ if (isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_R
                     $message = "" . $row2[1];
                     $lastwho = "" . $row2[0];
                 }
-                $messageDecoded = nl2br(formatMessage(htmlspecialchars(urldecode($message))));
+                $messageDecoded = nl2br(formatMessage(urldecode($message)));
                 $arr = array("date" => $date, "pos" => $pos, "message" => $messageDecoded, "lastwho" => $lastwho);
                 echo json_encode($arr);
                 exit;

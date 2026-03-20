@@ -149,12 +149,25 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                 });
                 $("#createGroupBox").show();
             });
-        });
 
-        function showFriendRequests(state) {
-            const notificationsBox = document.getElementById("notificationsBox");
-            notificationsBox.style.display = state;
-        }
+            $("#notificationsButton").click(function() {
+                $("#whole_box_id").css({
+                    "pointer-events": "none",
+                    "opacity": "0.2",
+                    "user-select": "none"
+                });
+                $("#notificationsBox").show();
+            });
+
+            $("#closeNotificationsButton").click(function() {
+                $("#whole_box_id").css({
+                    "pointer-events": "all",
+                    "opacity": "1",
+                    "user-select": "none"
+                });
+                $("#notificationsBox").hide();
+            });
+        });
     </script>
 </head>
 
@@ -217,6 +230,58 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
             </form>
         </div>
     </div>
+    <div id="notificationsBox">
+        <button class="closeButtonForNotifications" id="closeNotificationsButton">X</button>
+        <table class="notificationsInnerBox">
+            <tr>
+                <th>
+                    Requester:
+                </th>
+                <th>
+                    Sent Date:
+                </th>
+                <th>
+                    Action:
+                </th>
+            </tr>
+            <?php
+            $query = "SELECT * FROM friend_requests WHERE requested_user=?";
+            $stmt = mysqli_prepare($conn, $query);
+            $who = $_SESSION["who"];
+            mysqli_stmt_bind_param($stmt, "s", $who);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            $hasNotifications = false;
+            if ($result && mysqli_num_rows($result) > 0) {
+                $hasNotifications = true;
+                while ($row = mysqli_fetch_row($result)) {
+            ?>
+                    <tr>
+                        <td>
+                            <img src="View_Image/?u=<?php echo $row[1]; ?>" alt="requester profile image" class="notificationUserImage">
+                            <h4 class="notificationUsername"> <?php echo $row[1]; ?> </h4>
+                        </td>
+                        <td>
+                            <?php echo $row[3]; ?>
+                        </td>
+                        <td>
+                            <form action="" method="POST">
+                                <input type="hidden" name="acceptFriendRequestField" value="<?php echo $row[0]; ?>">
+                                <input type="hidden" name="acceptFriendRequestUsernameField" value="<?php echo $row[1]; ?>">
+                                <input type="submit" name="acceptFriendRequestButton" value="Accept" class="buttontag">
+                            </form>
+                            <form action="" method="POST">
+                                <input type="hidden" name="rejectFriendRequestField" value="<?php echo $row[0]; ?>">
+                                <input type="submit" name="rejectFriendRequestButton" value="Reject" class="buttontag">
+                            </form>
+                        </td>
+                    </tr>
+            <?php
+                }
+            }
+            ?>
+        </table>
+    </div>
     <div class="whole-box" id="whole_box_id">
         <div class="menuBar">
             <img style="cursor:pointer" id="m" width="40px" height="40px" src="../Extra/styles/images/menu.png" alt="menu icon">
@@ -226,60 +291,8 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                 <img src="../Extra/styles/images/main.png" alt="All Chat Image" width="100%" height="100px" />
                 <hr class="hrLine">
                 <div class="menuContainer">
-                    <a href="Add/" class="link" id="addLink">Add New Friend</a>
-                    <a href="Profile/" class="link" id="editLink">Edit Profile</a>
-                    <div id="notificationsBox">
-                        <button class="closeButtonForNotifications" onclick="showFriendRequests('none')">X</button>
-                        <table>
-                            <tr>
-                                <th>
-                                    Requester:
-                                </th>
-                                <th>
-                                    Sent Date:
-                                </th>
-                                <th>
-                                    Action:
-                                </th>
-                            </tr>
-                            <?php
-                            $query = "SELECT * FROM friend_requests WHERE requested_user=?";
-                            $stmt = mysqli_prepare($conn, $query);
-                            $who = $_SESSION["who"];
-                            mysqli_stmt_bind_param($stmt, "s", $who);
-                            mysqli_stmt_execute($stmt);
-                            $result = mysqli_stmt_get_result($stmt);
-                            $hasNotifications = false;
-                            if ($result && mysqli_num_rows($result) > 0) {
-                                $hasNotifications = true;
-                                while ($row = mysqli_fetch_row($result)) {
-                            ?>
-                                    <tr>
-                                        <td>
-                                            <img src="View_Image/?u=<?php echo $row[1]; ?>" alt="requester profile image" class="notificationUserImage">
-                                            <h4 class="notificationUsername"> <?php echo $row[1]; ?> </h4>
-                                        </td>
-                                        <td>
-                                            <?php echo $row[3]; ?>
-                                        </td>
-                                        <td>
-                                            <form action="" method="POST">
-                                                <input type="hidden" name="acceptFriendRequestField" value="<?php echo $row[0]; ?>">
-                                                <input type="hidden" name="acceptFriendRequestUsernameField" value="<?php echo $row[1]; ?>">
-                                                <input type="submit" name="acceptFriendRequestButton" value="Accept" class="buttontag">
-                                            </form>
-                                            <form action="" method="POST">
-                                                <input type="hidden" name="rejectFriendRequestField" value="<?php echo $row[0]; ?>">
-                                                <input type="submit" name="rejectFriendRequestButton" value="Reject" class="buttontag">
-                                            </form>
-                                        </td>
-                                    </tr>
-                            <?php
-                                }
-                            }
-                            ?>
-                        </table>
-                    </div>
+                    <a href="Add/" class="link">Add New Friend</a>
+                    <a href="Profile/" class="link">Edit Profile</a>
                 </div>
             </div>
             <?php
@@ -294,17 +307,17 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
             ?>
 
                 <div class='profileBox'>
-                    <button <?php if ($hasNotifications) { ?> onclick="showFriendRequests('flex')" <?php } ?> title="Notifications" class="notificationsButton <?php if (!$hasNotifications) echo "notificationsButtonDisabled"; ?>">
-                    <svg id="bellImage" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" id="Layer_1" width="800px" height="800px" viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve">
-                        <g>
-                            <path fill="#394240" d="M56,48c-3.313,0-6-2.687-6-6V22c0-8.577-6.004-15.74-14.035-17.548C35.984,4.304,36,4.154,36,4   c0-2.209-1.791-4-4-4s-4,1.791-4,4c0,0.154,0.016,0.304,0.035,0.452C20.004,6.26,14,13.423,14,22v20c0,3.313-2.687,6-6,6   c-2.209,0-4,1.791-4,4s1.791,4,4,4h16c0,4.418,3.582,8,8,8s8-3.582,8-8h16c2.209,0,4-1.791,4-4S58.209,48,56,48z M32,2   c1.104,0,2,0.896,2,2c0,0.04-0.014,0.075-0.017,0.115C33.332,4.043,32.671,4,32,4s-1.332,0.043-1.983,0.115   C30.014,4.075,30,4.04,30,4C30,2.896,30.896,2,32,2z M16,22c0-8.837,7.163-16,16-16s16,7.163,16,16v12H16V22z M16,36h32v4H16V36z    M32,62c-3.313,0-6-2.687-6-6h12C38,59.313,35.313,62,32,62z M56,54H8c-1.104,0-2-0.896-2-2s0.896-2,2-2c4.418,0,8-3.582,8-8h32   c0,4.418,3.582,8,8,8c1.104,0,2,0.896,2,2S57.104,54,56,54z"/>
-                            <path fill="#506C7F" d="M32,2c1.104,0,2,0.896,2,2c0,0.04-0.014,0.075-0.017,0.115C33.332,4.043,32.671,4,32,4   s-1.332,0.043-1.983,0.115C30.014,4.075,30,4.04,30,4C30,2.896,30.896,2,32,2z"/>
-                            <path fill="#F76D57" d="M16,22c0-8.837,7.163-16,16-16s16,7.163,16,16v12H16V22z"/>
-                            <rect x="16" y="36" fill="#F9EBB2" width="32" height="4"/>
-                            <path fill="#B4CCB9" d="M32,62c-3.313,0-6-2.687-6-6h12C38,59.313,35.313,62,32,62z"/>
-                            <path fill="#F76D57" d="M56,54H8c-1.104,0-2-0.896-2-2s0.896-2,2-2c4.418,0,8-3.582,8-8h32c0,4.418,3.582,8,8,8   c1.104,0,2,0.896,2,2S57.104,54,56,54z"/>
-                        </g>
-                    </svg>
+                    <button <?php if ($hasNotifications) { ?> <?php } ?> title="Notifications" id="notificationsButton" class="notificationsButton <?php if (!$hasNotifications) echo "notificationsButtonDisabled"; ?>">
+                        <svg id="bellImage" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" id="Layer_1" width="800px" height="800px" viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve">
+                            <g>
+                                <path fill="#394240" d="M56,48c-3.313,0-6-2.687-6-6V22c0-8.577-6.004-15.74-14.035-17.548C35.984,4.304,36,4.154,36,4   c0-2.209-1.791-4-4-4s-4,1.791-4,4c0,0.154,0.016,0.304,0.035,0.452C20.004,6.26,14,13.423,14,22v20c0,3.313-2.687,6-6,6   c-2.209,0-4,1.791-4,4s1.791,4,4,4h16c0,4.418,3.582,8,8,8s8-3.582,8-8h16c2.209,0,4-1.791,4-4S58.209,48,56,48z M32,2   c1.104,0,2,0.896,2,2c0,0.04-0.014,0.075-0.017,0.115C33.332,4.043,32.671,4,32,4s-1.332,0.043-1.983,0.115   C30.014,4.075,30,4.04,30,4C30,2.896,30.896,2,32,2z M16,22c0-8.837,7.163-16,16-16s16,7.163,16,16v12H16V22z M16,36h32v4H16V36z    M32,62c-3.313,0-6-2.687-6-6h12C38,59.313,35.313,62,32,62z M56,54H8c-1.104,0-2-0.896-2-2s0.896-2,2-2c4.418,0,8-3.582,8-8h32   c0,4.418,3.582,8,8,8c1.104,0,2,0.896,2,2S57.104,54,56,54z" />
+                                <path fill="#506C7F" d="M32,2c1.104,0,2,0.896,2,2c0,0.04-0.014,0.075-0.017,0.115C33.332,4.043,32.671,4,32,4   s-1.332,0.043-1.983,0.115C30.014,4.075,30,4.04,30,4C30,2.896,30.896,2,32,2z" />
+                                <path fill="#F76D57" d="M16,22c0-8.837,7.163-16,16-16s16,7.163,16,16v12H16V22z" />
+                                <rect x="16" y="36" fill="#F9EBB2" width="32" height="4" />
+                                <path fill="#B4CCB9" d="M32,62c-3.313,0-6-2.687-6-6h12C38,59.313,35.313,62,32,62z" />
+                                <path fill="#F76D57" d="M56,54H8c-1.104,0-2-0.896-2-2s0.896-2,2-2c4.418,0,8-3.582,8-8h32c0,4.418,3.582,8,8,8   c1.104,0,2,0.896,2,2S57.104,54,56,54z" />
+                            </g>
+                        </svg>
                         <?php if ($hasNotifications) { ?>
                             <span class="hasNotifications"></span>
                         <?php } ?>
@@ -331,19 +344,16 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
             </div>
         </div>
 
+
         <div class="groupsListBox" id="groupsBox">
-            <table>
-                <thead>
-                    <tr>
-                        <th colspan="3" style="color:red">
-                            > Groups :
-                            <button class="plus_button" id="create_group_button" title="Create Group">+</button>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="groupsInnerData">
-                </tbody>
-            </table>
+            <div class="groupContainerHeader">
+                <h4 style="color:red">
+                    > Groups :
+                </h4>
+                <button class="plus_button" id="create_group_button" title="Create Group">+</button>
+            </div>
+            <div id="groupsInnerData">
+            </div>
         </div>
 
         <div class="friendsListBox" id="friendBox">

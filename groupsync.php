@@ -22,26 +22,23 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
             if (mysqli_num_rows($groups_query_result)) {
                 $checkIfAtLeastOneGroupMatch = true;
                 echo "
-                                    
-                                    <tr>
-                                        <td><img src='View_Group_Image/?group_id=" . $group_id . "' width='50px' height='50px' style='border-radius:50%'/></td>
-                                        <td><h2 style='color:white'>" . $group_name . "</h2></td>
-                                        <td>
-                                            <a href='Group/?group_id=" . $group_id . "' class='link'>Enter</a>
-                                        </td>
-                                    </tr>
+                                    <div class='groupRow'>
+                                        <img src='View_Group_Image/?group_id=" . $group_id . "' width='50px' height='50px' style='border-radius:50%'/>
+                                        <h2 class='friendUsername'>" . $group_name . "</h2> 
+                                        <a href='Group/?group_id=" . $group_id . "' class='link'>Enter</a>
+                                    </div>
 
 
                                     ";
             }
         }
         if (!$checkIfAtLeastOneGroupMatch) {
-            echo "<tr><th><h2 style='color:white'>No groups to show..</h2></th></tr>";
+            echo "<h2 style='color:white'>No groups to show..</h2>";
         }
     } else {
-        echo "<tr><th><h2 style='color:white'>No groups to show..</h2></th></tr>";
+        echo "<h2 style='color:white'>No groups to show..</h2>";
     }
 } else {
     session_destroy();
-    echo "<tr><th><h2 style='color:white'>Error..</h2></th></tr>";
+    echo "<h2 style='color:white'>Error..</h2>";
 }
