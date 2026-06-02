@@ -405,7 +405,7 @@ wss.on('connection', async (ws, req) => {
     });
 });
 
-const PORT = 8080;
-server.listen(PORT, () => {
+const PORT = process.env.WS_PORT || 8300;
+server.listen(PORT, '::', () => {
     console.log(`WebSocket Server is listening on ws://localhost:${PORT}`);
 });
