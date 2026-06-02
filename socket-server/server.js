@@ -43,7 +43,7 @@ function formatMessageNode(msg) {
     try {
         // PHP's urldecode equivalent
         let decoded = decodeURIComponent((msg + '').replace(/\+/g, '%20'));
-        
+
         // PHP's htmlspecialchars(..., ENT_QUOTES) equivalent
         const escapeHtml = (text) => {
             const map = {
@@ -53,17 +53,17 @@ function formatMessageNode(msg) {
                 '"': '&quot;',
                 "'": '&#039;'
             };
-            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+            return text.replace(/[&<>"']/g, function (m) { return map[m]; });
         };
         decoded = escapeHtml(decoded);
-        
+
         // Format files: [FILE:path:name]
         decoded = decoded.replace(/\[FILE:\s*(.+?):\s*(.+?)\]/g, (match, filepath, name) => {
             const filename = path.basename(filepath);
             const extMatch = filename.match(/\.([^\.]+)$/);
             const ext = extMatch ? extMatch[1].toLowerCase() : '';
             const fullPath = `/All-Chat-web-app/serveFile.php?f=${encodeURIComponent(filename)}&n=${encodeURIComponent(name)}`;
-            
+
             if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
                 return `<br/><a href='${fullPath}' target='_blank'><img src='${fullPath}' onload='var b=document.getElementById("messages"); if(b) b.scrollTop=b.scrollHeight;' style='max-width:100%; height:auto; max-height:200px; border-radius:10px; margin-top:5px; display:block; box-sizing:border-box;' alt='${name}'/></a>`;
             } else if (['mp4', 'webm'].includes(ext)) {
@@ -74,17 +74,17 @@ function formatMessageNode(msg) {
                 return `<br/><a href='${fullPath}' target='_blank' class='chatFileLink' style='display:inline-block; margin-top:5px; background:rgba(255,255,255,0.2); padding:5px 10px; border-radius:10px; text-decoration:none; color:inherit;'>📎 ${name}</a>`;
             }
         });
-        
+
         // PHP's preg_replace for links
         const pattern = /(https?:\/\/[^\s]+)/g;
         const replacement = '<a href="$1" target="_blank" rel="noopener noreferrer" class="chatMessageLink">$1</a>';
         decoded = decoded.replace(pattern, replacement);
-        
+
         // PHP's nl2br
         decoded = decoded.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br />$2');
-        
+
         return decoded;
-    } catch(e) {
+    } catch (e) {
         return msg;
     }
 }
@@ -131,14 +131,14 @@ wss.on('connection', async (ws, req) => {
         ws.close();
         return;
     }
-    
+
     let username = null;
     try {
         const [rows] = await dbPool.query('SELECT username FROM ws_tokens WHERE token = ?', [token]);
         if (rows.length > 0) {
             username = rows[0].username;
         }
-    } catch(e) {
+    } catch (e) {
         console.error("Token verification error:", e);
     }
 
@@ -162,7 +162,7 @@ wss.on('connection', async (ws, req) => {
     ws.on('message', async (messageData) => {
         try {
             const data = JSON.parse(messageData);
-            
+
             if (!dbPool) {
                 console.error("No database connection");
                 return;
@@ -185,7 +185,7 @@ wss.on('connection', async (ws, req) => {
                 const [rows] = await dbPool.query(`SELECT * FROM \`${tname}\` WHERE pos = ?`, [nextPos]);
                 const insertedRow = rows[0];
                 const values = Object.values(insertedRow);
-                const date = values[3] || new Date().toISOString().replace('T', ' ').substring(0, 19); 
+                const date = values[3] || new Date().toISOString().replace('T', ' ').substring(0, 19);
 
                 const responseData = {
                     type: 'personal',
@@ -211,7 +211,7 @@ wss.on('connection', async (ws, req) => {
                         }
                     });
                 }
-            } 
+            }
             else if (data.type === 'group') {
                 const groupId = data.groupId;
                 const tname = data.tname;
@@ -228,7 +228,7 @@ wss.on('connection', async (ws, req) => {
                 const [rows] = await dbPool.query(`SELECT * FROM \`${tname}\` WHERE pos = ?`, [nextPos]);
                 const insertedRow = rows[0];
                 const values = Object.values(insertedRow);
-                const date = values[3] || new Date().toISOString().replace('T', ' ').substring(0, 19); 
+                const date = values[3] || new Date().toISOString().replace('T', ' ').substring(0, 19);
 
                 const responseData = {
                     type: 'group',
@@ -245,7 +245,7 @@ wss.on('connection', async (ws, req) => {
 
                 // First get all group members
                 const [groupMembers] = await dbPool.query(`SELECT username FROM \`${tname}_users\``);
-                
+
                 groupMembers.forEach(memberRow => {
                     const memberUsername = memberRow.username;
                     if (clients.has(memberUsername)) {
@@ -273,7 +273,7 @@ wss.on('connection', async (ws, req) => {
                             });
                         }
                     }
-                } catch(e) {
+                } catch (e) {
                     console.error("Error destroying group in WS", e);
                 }
             } else if (data.type === 'kick_user') {
@@ -309,12 +309,12 @@ wss.on('connection', async (ws, req) => {
                 const pos = data.pos;
                 const tname = data.tname;
                 const towho = data.to;
-                
+
                 const [msgRows] = await dbPool.query(`SELECT message FROM \`${tname}\` WHERE pos = ? AND fromwho = ?`, [pos, username]);
                 if (msgRows.length > 0) {
                     deleteFilesFromMessage(msgRows[0].message);
                 }
-                
+
                 const [result] = await dbPool.query(`DELETE FROM \`${tname}\` WHERE pos = ? AND fromwho = ?`, [pos, username]);
                 if (result.affectedRows > 0) {
                     const deleteMsg = JSON.stringify({ type: 'message_deleted', pos: pos, tname: tname });
@@ -330,12 +330,12 @@ wss.on('connection', async (ws, req) => {
             } else if (data.type === 'delete_group_message') {
                 const pos = data.pos;
                 const tname = data.tname;
-                
+
                 const [msgRows] = await dbPool.query(`SELECT message FROM \`${tname}\` WHERE pos = ? AND fromwho = ?`, [pos, username]);
                 if (msgRows.length > 0) {
                     deleteFilesFromMessage(msgRows[0].message);
                 }
-                
+
                 const [result] = await dbPool.query(`DELETE FROM \`${tname}\` WHERE pos = ? AND fromwho = ?`, [pos, username]);
                 if (result.affectedRows > 0) {
                     const deleteMsg = JSON.stringify({ type: 'message_deleted', pos: pos, tname: tname });
@@ -406,6 +406,6 @@ wss.on('connection', async (ws, req) => {
 });
 
 const PORT = process.env.WS_PORT || 8300;
-server.listen(PORT, '::', () => {
+server.listen(PORT, () => {
     console.log(`WebSocket Server is listening on ws://localhost:${PORT}`);
 });
