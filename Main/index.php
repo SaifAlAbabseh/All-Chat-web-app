@@ -333,7 +333,8 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
 
         var wsToken = "<?php echo isset($_SESSION['ws_token']) ? $_SESSION['ws_token'] : ''; ?>";
         var protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-        var wsUrl = protocol + window.location.hostname + ':8080?token=' + encodeURIComponent(wsToken);
+        var wsHost = "<?php echo getVarFromEnv('WS_URL') ?: (isset($_SERVER['HTTP_HOST']) ? explode(':', $_SERVER['HTTP_HOST'])[0] . ':8080' : 'localhost:8080'); ?>";
+        var wsUrl = protocol + wsHost + '?token=' + encodeURIComponent(wsToken);
         var wsMain = new WebSocket(wsUrl);
 
         function openDeleteModal(friendName) {
