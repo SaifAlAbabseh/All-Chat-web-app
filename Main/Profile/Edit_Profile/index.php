@@ -15,11 +15,16 @@ require_once(dirname(__DIR__, 3) . '/common.php');
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="stylesheet" href="<?= asset('../../../Extra/styles/cssFiles/themes.css') ?>" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <style>
-        body {
-            background-color: rgb(247, 247, 247);
+    <script>
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'light') {
+            document.documentElement.classList.add('light-mode');
+            document.addEventListener('DOMContentLoaded', () => {
+                document.body.classList.add('light-mode');
+            });
         }
-
+    </script>
+    <style>
         body,
         html {
             height: 100%;
@@ -76,8 +81,8 @@ require_once(dirname(__DIR__, 3) . '/common.php');
 
 <body>
     <div id="whole_box">
-        <div class="backButton">
-            <a href="../"><img class="backbuttonlink" src="../../../Extra/styles/images/backButton.png" alt="Back Button" width="50px" height="50px" /></a>
+        <div style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
+            <a href="../" class="backButton" style="text-decoration:none; font-size:1.5rem; color: #F76D57; font-weight:bold; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:20px; backdrop-filter:blur(5px); transition:all 0.3s ease;">🔙 Back</a>
         </div>
         <div class="outer">
             <div class="mainChangeBox">
@@ -100,7 +105,7 @@ require_once(dirname(__DIR__, 3) . '/common.php');
 
                             </tr>
                         </tbody>
-                        <tfoot class="footOfPic" style="background:red">
+                        <tfoot class="footOfPic">
                             <tr>
                                 <td>
                                     <input type="submit" value="OK" class="buttontag" name="changeButton" />

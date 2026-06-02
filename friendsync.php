@@ -32,7 +32,7 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
                                         <img src='View_Image/?u=" . $row2[0] . "' width='50px' height='50px' style='border-radius:50%;border:solid 4px " . (($ava == "0") ? "red" : "green") . "'/>
                                         <h2 class='friendUsername'>" . $row2[0] . "</h2> 
                                         <a href='Chat/?with=" . $row2[0] . "' class='link'>Chat</a>
-                                        <a href='Delete_Friend/?name=" . $row2[0] . "' class='link'>Delete</a>
+                                        <a href='javascript:void(0)' onclick='openDeleteModal(\"".$row2[0]."\")' class='link'>Delete</a>
                                     </div>
 
                             ";
@@ -40,9 +40,9 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
             }
         }
     } else {
-        echo "<h2 style='color:white'>No friends to show..</h2>";
+        echo "<h2 class='empty-state-msg'>No friends to show..</h2>";
     }
 } else {
     session_destroy();
-    echo "<h2 style='color:white'>Error..</h2>";
+    echo "<h2 class='empty-state-msg'>Error..</h2>";
 }

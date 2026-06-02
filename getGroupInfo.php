@@ -13,7 +13,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
     mysqli_stmt_bind_param($stmt, "s", $username);
     mysqli_stmt_execute($stmt);
     $check_result = mysqli_stmt_get_result($stmt);
-    if ($check_query) {
+    if ($check_result) {
         if (mysqli_num_rows($check_result)) {
             $query = "SELECT * FROM $group_table_name WHERE NOT BINARY username=?";
             $stmt = mysqli_prepare($conn, $query);
@@ -29,7 +29,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
                                         <tr>
                                             <td><img src='../View_Image/?u=" . $row[0] . "' width='50px' height='50px' style='border-radius:50%'/></td>
                                             <td><h2 style='color:white'>" . $row[0] . "</h2></td>
-                                            <td><a style='color:blue;border:blue 2px solid;' class='link' href='../../kickMember.php?group_id=" . $group_id . "&member=" . $row[0] . "' id='kicklink'>Kick</a></td>
+                                            <td><a class='link btn-danger' href='#' onclick='kickUser(\"" . $row[0] . "\")' id='kicklink'>Kick</a></td>
                                         </tr>
     
     

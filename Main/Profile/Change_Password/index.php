@@ -18,24 +18,28 @@ require_once(dirname(__DIR__, 3) . '/common.php');
     <style>
         body {
             display: flex;
-            align-self: center;
+            align-items: center;
             justify-content: center;
-            background-color: rgb(247, 247, 247);
-        }
-
-        .backButton {
-            position: absolute;
-            left: 0;
-            top: 0;
+            height: 100vh;
+            margin: 0;
         }
     </style>
+    <script>
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'light') {
+            document.documentElement.classList.add('light-mode');
+            document.addEventListener('DOMContentLoaded', () => {
+                document.body.classList.add('light-mode');
+            });
+        }
+    </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="<?= asset('../../../scripts/index.js') ?>"></script>
 </head>
 
 <body>
-    <div class="backButton">
-        <a href="../"><img class="backbuttonlink" src="../../../Extra/styles/images/backButton.png" alt="Back Button" width="50px" height="50px" /></a>
+    <div style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
+        <a href="../" class="backButton" style="text-decoration:none; font-size:1.5rem; color: #F76D57; font-weight:bold; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:20px; backdrop-filter:blur(5px); transition:all 0.3s ease;">🔙 Back</a>
     </div>
     <form action="" method="POST" class="changePasswordForm">
         <table>
@@ -89,20 +93,28 @@ if (isset($_POST) && isset($_POST["changePassButton"])) {
             if (!(strpos($newPass, " ") || !(strlen($newPass) >= 8 && strlen($newPass) <= 16))) {
                 if ($newPass == $confirmNewPass) {
                     require_once("../../../DB.php");
-                    $checkCurrentPassQuery = "SELECT * FROM users WHERE username = ? AND password = ?";
+                    $checkCurrentPassQuery = "SELECT password FROM users WHERE username = ?";
                     $stmt = mysqli_prepare($conn, $checkCurrentPassQuery);
                     $who = $_SESSION["who"];
-                    $pwd = md5($currentPass);
-                    mysqli_stmt_bind_param($stmt, "ss", $who, $pwd);
+                    mysqli_stmt_bind_param($stmt, "s", $who);
                     mysqli_stmt_execute($stmt);
                     $result = mysqli_stmt_get_result($stmt);
+                    
+                    $isPassValid = false;
                     if (mysqli_num_rows($result) > 0) {
+                        $row = mysqli_fetch_assoc($result);
+                        $db_pass = $row['password'];
+                        if (password_verify($currentPass, $db_pass) || md5($currentPass) === $db_pass) {
+                            $isPassValid = true;
+                        }
+                    }
+                    
+                    if ($isPassValid) {
                             $changePassQuery = "UPDATE users SET password=? WHERE username=?";
-                            $stmt = mysqli_prepare($conn, $changePassQuery);
-                            $pwd = md5($newPass);
-                            $who = $_SESSION["who"];
-                            mysqli_stmt_bind_param($stmt, "ss", $pwd, $who);
-                            if (mysqli_stmt_execute($stmt)) {
+                            $stmt2 = mysqli_prepare($conn, $changePassQuery);
+                            $pwd = password_hash($newPass, PASSWORD_BCRYPT);
+                            mysqli_stmt_bind_param($stmt2, "ss", $pwd, $who);
+                            if (mysqli_stmt_execute($stmt2)) {
                                 echo "<script>alert('Successfully changed password :)');</script>";
                             } else {
                                 echo "<script>alert('Invalid Error..');</script>";

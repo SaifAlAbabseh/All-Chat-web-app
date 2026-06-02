@@ -27,12 +27,6 @@ function exitDialog() {
     $("#mainDialogBox").hide();
 }
 
-function setSavedCreds() {
-    if (localStorage.getItem("all_chat-username") != null && localStorage.getItem("all_chat-password") != null) {
-        document.getElementById("username_inputfield").value = localStorage.getItem("all_chat-username");
-        document.getElementById("userpassword_field").value = localStorage.getItem("all_chat-password");
-    }
-}
 
 function hideMainBoxBeforeLoading(box_id) {
     $("#" + box_id + "").css({
@@ -85,11 +79,10 @@ function rememberCreds(username, password) {
 }
 
 function switchToSignupForm(doIt) {
-    const signupFormElement = document.getElementById("signup_box");
-    signupFormElement.style.opacity=doIt ? "1" : "0";
-    signupFormElement.style.width=doIt ? "100%" : "0px";
-    signupFormElement.style.pointerEvents=doIt ? "all" : "none";
-
-    const loginFormElement = document.getElementById("login_box"); 
-    loginFormElement.style.pointerEvents=doIt ? "none" : "all";
+    const wrapper = document.getElementById("forms_wrapper");
+    if (doIt) {
+        wrapper.classList.add("show-signup");
+    } else {
+        wrapper.classList.remove("show-signup");
+    }
 }

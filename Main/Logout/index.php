@@ -9,6 +9,7 @@ if(isset($_SESSION) && isset($_SESSION["who"])){
     mysqli_stmt_execute($stmt);
     mysqli_close($conn);
     session_destroy();
+    setcookie('remember_user', '', time() - 3600, '/');
 }
 header("Location:../../");
 ?>

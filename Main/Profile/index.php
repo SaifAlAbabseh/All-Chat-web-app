@@ -14,11 +14,16 @@ require_once(dirname(__DIR__, 2) . '/common.php');
     </title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="stylesheet" href="<?= asset('../../Extra/styles/cssFiles/themes.css') ?>" />
-    <style>
-        body {
-            background-color: rgb(247, 247, 247);
+    <script>
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'light') {
+            document.documentElement.classList.add('light-mode');
+            document.addEventListener('DOMContentLoaded', () => {
+                document.body.classList.add('light-mode');
+            });
         }
-
+    </script>
+    <style>
         body,
         html {
             height: 100%;
@@ -27,8 +32,8 @@ require_once(dirname(__DIR__, 2) . '/common.php');
 </head>
 
 <body>
-    <div class="backButton">
-        <a href="../"><img class="backbuttonlink" src="../../Extra/styles/images/backButton.png" alt="Back Button" width="50px" height="50px" /></a>
+    <div style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
+        <a href="../" class="backButton" style="text-decoration:none; font-size:1.5rem; color: #F76D57; font-weight:bold; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:20px; backdrop-filter:blur(5px); transition:all 0.3s ease;">🔙 Back</a>
     </div>
     <br /><br /><br />
     <div class="outer">
@@ -48,7 +53,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                         echo
                         "
                         <img src='../View_Image/?u=" . $_SESSION["who"] . "' width='100px' height='100px' style='border-radius:50%'/>
-                        <h2 style='color:yellow'>" . $_SESSION["who"] . "</h2>
+                        <h2 class='profileUsername'>" . $_SESSION["who"] . "</h2>
                        ";
                     } else {
                         destroy();
@@ -61,8 +66,8 @@ require_once(dirname(__DIR__, 2) . '/common.php');
                     ?>
                 </div>
                 <div class="profileLinks">
-                    <a class="link profileLink" href="Edit_Profile/">Change Picture</a>
-                    <a class="link profileLink" href="Change_Password/">Change Password</a>
+                    <a class="link btn-primary profileLink" href="Edit_Profile/">Change Picture</a>
+                    <a class="link btn-primary profileLink" href="Change_Password/">Change Password</a>
                 </div>
             </div>
         </div>

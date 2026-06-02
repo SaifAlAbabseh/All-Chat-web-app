@@ -5,40 +5,65 @@ html {
 
 body {
     margin: 0;
-    font-family: sans-serif;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #1f2229 0%, #111317 100%);
+    background-attachment: fixed;
+    color: #fff;
+}
+
+/* Custom modern scrollbar for sleek boxes */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
 }
 
 .main_box {
     display: flex;
-    background-color: red;
-    border-radius: 10px;
+    background: rgba(43, 48, 58, 0.8);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
     position: relative;
-    width: max-content;
+    width: 800px;
     height: 600px;
-    margin-left: -300px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
 }
 
 .login_box,
 .signup_box {
     height: 100%;
-    width: 100%;
+    width: 400px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: red;
+    background: transparent;
     text-align: center;
     position: absolute;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
+    right: 0;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
 }
 
 .allchat_image_box {
-    background-color: #0162AF;
-    border-radius: 10px 0 0 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 20px 0 0 20px;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 400px;
+    height: 100%;
 }
 
 .inputfield {
@@ -160,25 +185,35 @@ body {
 }
 
 .friendsListBox {
-    background-color: #0162AF;
-    width: 300px;
-    height: 400px;
+    background: rgba(43, 48, 58, 0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    width: 320px;
+    height: 450px;
     position: absolute;
-    top: 20%;
-    left: 60%;
-    overflow: auto;
-    padding: 10px;
+    top: 15%;
+    left: 55%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .groupsListBox {
-    background-color: #0162AF;
-    width: 300px;
-    height: 400px;
+    background: rgba(43, 48, 58, 0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    width: 320px;
+    height: 450px;
     position: absolute;
-    top: 20%;
-    left: 30%;
-    overflow: auto;
-    padding: 10px;
+    top: 15%;
+    left: 25%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 #addfriendBox {
@@ -189,16 +224,7 @@ body {
     border-radius: 10px;
 }
 
-.groupsListBox {
-    background-color: #0162AF;
-    width: 300px;
-    height: 400px;
-    position: absolute;
-    top: 20%;
-    left: 30%;
-    overflow: auto;
-    padding: 10px;
-}
+
 
 .add_box {
     position: relative;
@@ -206,16 +232,21 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: red;
-    border-radius: 10px;
+    background: rgba(43, 48, 58, 0.8);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
     width: 50%;
+    max-width: 600px;
+    padding: 20px;
 }
 
 .add_box_outer {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 90%;
+    height: 90vh;
 }
 
 .menuBar {
@@ -302,12 +333,11 @@ body {
 
 .editMainBox {
     width: 40%;
-    background-color: #0162AF;
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 50px 0px;
-    border-radius: 10px;
+    padding: 0px;
 }
 
 @media only screen and (max-width:550px) {
@@ -362,21 +392,62 @@ body {
 
 .main_chat_box {
     width: 100%;
-    height: 90%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .main_chat_inner_box {
-    width: 700px;
-    height: 80%;
-    background-color: #0162AF;
+    width: 90%;
+    max-width: 800px;
+    height: 85vh;
+    background: rgba(43, 48, 58, 0.8);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#chatBox {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
 }
 
 #messages {
-    background-color: #034780;
-    height: 500px;
-    width: 400px;
-    overflow: auto;
+    flex-grow: 1;
+    width: 100%;
+    padding: 20px;
+    overflow-y: auto;
+    background: transparent;
     position: relative;
+    box-sizing: border-box;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 100%);
+    transition: mask-image 0.3s ease, -webkit-mask-image 0.3s ease;
+}
+
+#messages.at-top {
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 100%);
+    mask-image: linear-gradient(to bottom, black 0%, black 100%);
 }
 
 .i {
@@ -417,15 +488,21 @@ body {
 #createGroupBox,
 #addMainDialogBox {
     display: none;
-    position: absolute;
-    left: 15%;
-    top: 15%;
-    width: 70%;
-    height: 70%;
-    background-color: red;
-    z-index: 1000;
-    border-radius: 10px;
-    padding: 10px;
+    width: 90%;
+    max-width: 500px;
+    height: auto;
+    background: rgba(43, 48, 58, 0.8);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    color: white;
+    position: fixed;
+    z-index: 10000;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 30px;
 }
 
 #email_verification_box_parent {
@@ -456,27 +533,57 @@ body {
     width: 50%;
 }
 
-#exit, .closeButtonForNotifications {
-    background-color: black;
-    border: solid 1px black;
-    color: white;
-    padding: 5px 10px;
+#exit {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    left: auto;
+    background: transparent;
+    border: none;
+    color: #F76D57;
+    font-size: 24px;
     font-weight: bold;
-    font-size: 4vh;
     cursor: pointer;
-    transition: all 0.5s;
-    border-radius: 10px;
+    transition: transform 0.3s ease, color 0.3s ease;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#exit:hover {
+    color: #ff523a;
+    transform: rotate(90deg) scale(1.1);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .closeButtonForNotifications {
     position: absolute;
-    top: 10px;
-    left: 20px;
+    top: 15px;
+    right: 15px;
+    left: auto;
+    background: transparent;
+    border: none;
+    color: #F76D57;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s ease, color 0.3s ease;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#exit:hover, .closeButtonForNotifications:hover {
-    background-color: white;
-    color: black;
+.closeButtonForNotifications:hover {
+    color: #ff523a;
+    transform: rotate(90deg) scale(1.1);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 #main-dialog-inner,
@@ -576,22 +683,24 @@ body {
 
 .plus_button {
     font-size: 1.5rem;
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: black;
+    background: linear-gradient(135deg, #F76D57 0%, #ff523a 100%);
     color: white;
     border-radius: 50%;
+    border: none;
     font-weight: bolder;
-    transition: all 0.5s;
+    transition: all 0.3s ease;
     cursor: pointer;
+    box-shadow: 0 4px 10px rgba(247, 109, 87, 0.3);
 }
 
 .plus_button:hover {
-    background-color: white;
-    color: black;
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 6px 15px rgba(247, 109, 87, 0.5);
 }
 
 .settingsIconClickable {
@@ -601,12 +710,6 @@ body {
 .settingsIcon {
     width: 40px;
     height: 40px;
-}
-
-.leaveGroupLink {
-    color: red;
-    background-color: white;
-    font-weight: bolder;
 }
 
 .main-dialog-inner {
@@ -752,29 +855,7 @@ body {
 }
 
 .blur-top {
-    position: sticky;
-    top: 0;
-    left: 0;
-    width: 100%;
-    margin: 0;
-    height: 40px;
-    filter: blur(15px);
-    background-color: black;
-    pointer-events: none;
-    opacity: 0;
-    display: none;
-    transition: opacity 0.2s;
-    z-index: 1;
-}
-
-#messages.at-top .blur-top {
-    display: none;
-    opacity: 0;
-}
-
-#messages:not(.at-top) .blur-top {
-    display: block;
-    opacity: 1;
+    display: none !important;
 }
 
 .chatMessageLink {
@@ -828,20 +909,23 @@ body {
 
 #notificationsBox {
     display: none;
+    width: 90%;
+    max-width: 600px;
+    height: auto;
+    max-height: 80vh;
     overflow: auto;
-    width: max-content;
-    height: 500px;
-    max-height: 500px;
-    overflow: auto;
-    background-color: red;
+    background: rgba(43, 48, 58, 0.8);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     color: white;
-    position: absolute;
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
+    position: fixed;
+    z-index: 10000;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    padding: 30px;
 }
 
 .menuContainer {
@@ -851,10 +935,11 @@ body {
     padding: 0 20px;
 }
 
-#innerData {
+#innerData, #groupsInnerData {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
+    padding: 10px 15px;
 }
 
 .friendRow, .groupRow {
@@ -897,11 +982,62 @@ body {
 }
 
 .message-fields {
-    width: 50%;
+    width: 100%;
+    padding: 20px;
     display: flex;
     flex-direction: row;
-    gap: 10px;
+    gap: 15px;
     align-items: center;
+    background: rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    box-sizing: border-box;
+}
+
+.input-wrapper {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 5px 15px;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+}
+
+#messageField {
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    padding: 10px;
+    outline: none;
+    resize: none;
+    height: 24px;
+    line-height: 24px;
+    font-family: inherit;
+}
+#messageField::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.input-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background 0.2s;
+    opacity: 0.7;
+}
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 1;
 }
 
 #chatBox {
@@ -925,21 +1061,22 @@ body {
     margin-left: 5px;
     margin-right: auto;
     align-self: flex-start;
-    background: #0f172a;
-    color: #67e8f9;
-    border: 1px solid #22d3ee;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-bottom-left-radius: 5px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    backdrop-filter: blur(5px);
 }
 
 .right-message {
     margin-right: 5px;
     margin-left: auto;
     align-self: flex-end;
-    background: linear-gradient(135deg, #126932, #22c55e);
+    background: linear-gradient(135deg, #F76D57 0%, #ff523a 100%);
     color: white;
     border-bottom-right-radius: 5px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 15px rgba(247, 109, 87, 0.3);
 }
 
 .message-text {
@@ -961,6 +1098,7 @@ body {
   border: none;
   cursor: pointer;
   font-size: 18px;
+  flex-shrink: 0;
   color: white;
   background: linear-gradient(135deg, #ee3f3f, #7c3aed);
   box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
@@ -1098,5 +1236,423 @@ body {
 }
 
 .notificationsInnerBox {
-    margin-top: 100px;
+    margin-top: 20px;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+.notificationsInnerBox th {
+    text-align: left;
+    padding: 10px 15px;
+    color: #F76D57;
+    font-size: 1.1rem;
+    border-bottom: 2px solid rgba(247, 109, 87, 0.3);
+}
+.notificationsInnerBox td {
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+}
+.notificationsInnerBox tr td:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+.notificationsInnerBox tr td:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.notificationUsername {
+    margin: 5px 0 0 0;
+    font-size: 1.1rem;
+}
+.accept-btn, .reject-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 2px 0;
+    width: 100%;
+}
+.accept-btn {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3);
+}
+.accept-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(34, 197, 94, 0.5);
+}
+.reject-btn {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+}
+.reject-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(239, 68, 68, 0.5);
+}
+
+/* Light Mode Overrides */
+body.light-mode {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #2B303A;
+}
+
+body.light-mode .friendsListBox,
+body.light-mode .groupsListBox {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .modern-box-header {
+    color: #034780;
+    border-bottom: 2px solid rgba(3, 71, 128, 0.2);
+    text-shadow: none;
+}
+
+body.light-mode .user-card {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .user-card-name {
+    color: #034780;
+    text-shadow: none;
+}
+
+body.light-mode .profile-img-styled {
+    border-color: #034780;
+    box-shadow: 0 4px 15px rgba(3, 71, 128, 0.3);
+}
+
+body.light-mode .user-card-logout {
+    background: linear-gradient(135deg, #034780 0%, #0162AF 100%);
+    box-shadow: 0 4px 10px rgba(3, 71, 128, 0.3);
+}
+
+body.light-mode .user-card-logout:hover {
+    box-shadow: 0 6px 15px rgba(3, 71, 128, 0.5);
+}
+
+/* Light mode for notifications */
+body.light-mode #notificationsBox {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    color: #2B303A;
+}
+body.light-mode .notificationsInnerBox td {
+    background: rgba(0, 0, 0, 0.05);
+}
+body.light-mode .notificationsInnerBox th {
+    color: #034780;
+    border-bottom: 2px solid rgba(3, 71, 128, 0.2);
+}
+
+/* Light mode custom scrollbar */
+body.light-mode ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+}
+body.light-mode ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+}
+body.light-mode ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* Dual Theme Buttons Styling */
+.theme-btn {
+    background: transparent;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+.theme-btn:hover {
+    transform: scale(1.1);
+}
+.theme-btn.active {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #F76D57;
+    box-shadow: 0 0 10px rgba(247, 109, 87, 0.4);
+}
+body.light-mode .theme-btn.active {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: #034780;
+    box-shadow: 0 0 10px rgba(3, 71, 128, 0.3);
+}
+
+/* Empty State Message */
+.empty-state-msg {
+    color: white;
+    text-align: center;
+    margin-top: 30px;
+}
+body.light-mode .empty-state-msg {
+    color: #64748b;
+}
+
+/* Fix Username and Button Styling inside Lists */
+body.light-mode .friendUsername {
+    color: #2B303A;
+}
+
+.friendsListBox .link,
+.groupsListBox .link {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border: none;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+    padding: 6px 12px;
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+}
+
+.friendsListBox .link:hover,
+.groupsListBox .link:hover {
+    transform: translateY(-2px);
+    color: white;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.5);
+}
+
+.friendsListBox .link.btn-danger,
+.groupsListBox .link.btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+}
+
+.friendsListBox .link.btn-danger:hover,
+.groupsListBox .link.btn-danger:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+    box-shadow: 0 6px 15px rgba(239, 68, 68, 0.5);
+}
+
+body.light-mode .friendsListBox .link,
+body.light-mode .groupsListBox .link {
+    background: linear-gradient(135deg, #034780 0%, #0162AF 100%);
+    box-shadow: 0 4px 10px rgba(3, 71, 128, 0.3);
+}
+
+body.light-mode .friendsListBox .link:hover,
+body.light-mode .groupsListBox .link:hover {
+    background: linear-gradient(135deg, #0162AF 0%, #004075 100%);
+    box-shadow: 0 6px 15px rgba(3, 71, 128, 0.5);
+}
+
+/* Light mode for Chat UI */
+body.light-mode .main_chat_inner_box {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: #2B303A;
+}
+body.light-mode .header {
+    background: rgba(255, 255, 255, 0.5);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    color: #034780;
+}
+body.light-mode .header h2 {
+    color: #034780 !important;
+}
+body.light-mode .message-fields {
+    background: rgba(255, 255, 255, 0.5);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+body.light-mode .input-wrapper {
+    background: rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+}
+body.light-mode #messageField {
+    color: #2B303A;
+}
+body.light-mode #messageField::placeholder {
+    color: rgba(43, 48, 58, 0.5);
+}
+body.light-mode .icon-btn {
+    color: #034780;
+}
+body.light-mode .icon-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+body.light-mode .left-message {
+    background: rgba(255, 255, 255, 0.8);
+    color: #2B303A;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+body.light-mode .message-from {
+    color: #034780;
+}
+
+/* Light Mode for new glassmorphism containers */
+body.light-mode .main_box,
+body.light-mode .add_box,
+body.light-mode .editProfileBox,
+body.light-mode .mainChangeBox,
+body.light-mode .changePasswordForm {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: #2B303A;
+}
+
+body.light-mode .inputfield {
+    color: #2B303A;
+    border-bottom: solid 5px #034780;
+}
+
+body.light-mode .inputfield::placeholder {
+    color: rgba(43, 48, 58, 0.6);
+}
+
+body.light-mode .inputfield:focus {
+    border-bottom-color: #0162AF;
+}
+
+body.light-mode .boxupperlabel,
+body.light-mode .orLabel,
+body.light-mode .small-labels,
+body.light-mode .secondaryButton,
+body.light-mode .goBackToLoginButton,
+body.light-mode caption,
+body.light-mode #addfriendLabel,
+body.light-mode .no_sug_label {
+    color: #2B303A !important;
+}
+
+body.light-mode .boxupperlabel {
+    -webkit-text-stroke: 1px transparent;
+}
+
+body.light-mode .allchat_image_box {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Profile and Form Boxes */
+.outer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 90vh;
+}
+
+.editProfileBox,
+.mainChangeBox,
+.changePasswordForm {
+    background: rgba(43, 48, 58, 0.8);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+}
+
+.profileUserInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profileLinks {
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+    width: 100%;
+}
+
+.profileLink {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border: none;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+    padding: 10px 20px;
+    color: white !important;
+    text-decoration: none;
+    border-radius: 20px;
+    text-align: center;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.profileLink:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.5);
+}
+
+body.light-mode .profileLink {
+    background: linear-gradient(135deg, #034780 0%, #0162AF 100%);
+    box-shadow: 0 4px 10px rgba(3, 71, 128, 0.3);
+}
+
+body.light-mode .profileLink:hover {
+    background: linear-gradient(135deg, #0162AF 0%, #004075 100%);
+    box-shadow: 0 6px 15px rgba(3, 71, 128, 0.5);
+}
+
+.changePasswordForm table,
+.mainChangeBox table {
+    width: 100%;
+}
+
+/* Chat Page Mobile Responsiveness */
+@media (max-width: 850px) {
+    .main_chat_inner_box {
+        width: 100vw !important;
+        height: 100vh !important;
+        border-radius: 0 !important;
+        border: none !important;
+    }
+    .main_chat_box {
+        padding: 0 !important;
+    }
+    .message-fields {
+        padding: 10px !important;
+        gap: 8px !important;
+    }
+    .send-btn {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    .input-wrapper {
+        padding: 5px 10px !important;
+    }
+    .input-actions {
+        gap: 2px !important;
+    }
+    .icon-btn {
+        padding: 2px !important;
+        font-size: 1.1rem !important;
+    }
+    .mobile-back-btn {
+        top: 15px !important;
+        left: 10px !important;
+        transform: scale(0.8);
+        transform-origin: top left;
+    }
+    .header {
+        padding-left: 110px !important;
+        justify-content: flex-start !important;
+    }
+    #groupEditBox, #addfriendBox, #mainDialogBox, #createGroupBox {
+        width: 90vw !important;
+        max-width: 400px !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        position: fixed !important;
+        margin: 0 !important;
+    }
 }

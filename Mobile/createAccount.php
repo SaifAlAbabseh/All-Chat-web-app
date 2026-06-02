@@ -132,9 +132,8 @@ if (isset($_POST["signupButton"]) || isset($_POST["verification_button"])) {
                 $everythingIsGood = false;
             }
             if ($everythingIsGood) {
-                $password = md5($password);
-                $cpass = md5($cpass);
-                if ($password == $cpass) {
+                if ($password === $cpass) {
+                    $password = password_hash($password, PASSWORD_BCRYPT);
                     $query = "SELECT username FROM users WHERE BINARY username=?";
                     $stmt = mysqli_prepare($conn, $query);
                     mysqli_stmt_bind_param($stmt, "s", $un);

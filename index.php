@@ -4,6 +4,25 @@ require_once("DB.php");
 require_once("common.php");
 
 session_start();
+
+// Secure Remember Me via HttpOnly Cookie
+if (!isset($_SESSION["who"]) && isset($_COOKIE['remember_user'])) {
+    $cookie_data = explode(':', $_COOKIE['remember_user']);
+    if (count($cookie_data) == 2) {
+        $un = $cookie_data[0];
+        $hash = $cookie_data[1];
+        if (hash_equals(hash_hmac('sha256', $un, getVarFromEnv('DB_PASSWORD')), $hash)) {
+            $_SESSION["who"] = $un;
+            $av = "UPDATE users SET available='1' WHERE BINARY username=?";
+            $stmt = mysqli_prepare($conn, $av);
+            mysqli_stmt_bind_param($stmt, "s", $un);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+            header("Location: Main/");
+            exit();
+        }
+    }
+}
 if (isset($_SESSION) && isset($_SESSION["code"])) {
     $old_code = $_SESSION["code"];
     unset($_SESSION["code"]);
@@ -20,8 +39,12 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
     <link rel="stylesheet" href="<?= asset('Extra/styles/cssFiles/themes.css') ?>" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
+        localStorage.setItem('theme', 'light');
+        document.documentElement.classList.add('light-mode');
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.add('light-mode');
+        });
         $(document).ready(function() {
-            setSavedCreds();
             var temp = 1;
             temp = parseInt("<?php if (isset($_REQUEST) && isset($_REQUEST["t"])) {echo "0";} ?>");
             if (isNaN(temp)) {
@@ -39,6 +62,206 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
             display: flex;
             justify-content: center;
             align-items: center;
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%) !important;
+        }
+        .main_box {
+            background: rgba(255, 255, 255, 0.7) !important;
+            backdrop-filter: blur(25px) !important;
+            -webkit-backdrop-filter: blur(25px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.6) !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+            overflow: hidden;
+            display: flex;
+            position: relative;
+        }
+        .allchat_image_box {
+            background: rgba(255, 255, 255, 0.4) !important;
+            z-index: 10;
+        }
+        .forms_wrapper {
+            position: absolute;
+            right: 0;
+            width: 400px;
+            height: 100%;
+            overflow: hidden;
+        }
+        .forms_slider {
+            display: flex;
+            width: 800px;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        #login_box, #signup_box {
+            width: 400px !important;
+            height: 100%;
+            position: relative !important;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.4s ease;
+        }
+        #signup_box {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        .forms_wrapper.show-signup .forms_slider {
+            transform: translateX(-400px);
+        }
+        .forms_wrapper.show-signup #login_box {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        .forms_wrapper.show-signup #signup_box {
+            opacity: 1 !important;
+            pointer-events: all !important;
+        }
+        .inputfield {
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            border-radius: 8px !important;
+            padding: 12px 15px !important;
+            color: #333 !important;
+            margin-bottom: 15px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: all 0.3s ease !important;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .inputfield::placeholder {
+            color: #888 !important;
+        }
+        .inputfield:focus {
+            background: #fff !important;
+            border-color: #0162AF !important;
+            box-shadow: 0 0 15px rgba(1, 98, 175, 0.15), inset 0 1px 3px rgba(0,0,0,0.05) !important;
+        }
+        .buttontag {
+            background: linear-gradient(135deg, #0162AF 0%, #004d8c 100%) !important;
+            border: none !important;
+            padding: 10px 25px !important;
+            border-radius: 8px !important;
+            color: white !important;
+            font-weight: bold !important;
+            box-shadow: 0 4px 15px rgba(1, 98, 175, 0.3) !important;
+            transition: transform 0.2s, box-shadow 0.2s !important;
+        }
+        .buttontag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(1, 98, 175, 0.5) !important;
+        }
+        .boxupperlabel {
+            color: #102a43 !important;
+            -webkit-text-stroke: 0 !important;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            text-shadow: none !important;
+            font-weight: 800;
+        }
+        .secondaryButton, .goBackToLoginButton {
+            color: #F76D57 !important;
+            border: 1px solid #F76D57 !important;
+            background: transparent !important;
+            padding: 10px 20px !important;
+            border-radius: 8px !important;
+            cursor: pointer;
+            transition: all 0.3s ease !important;
+            font-weight: bold;
+        }
+        .goBackToLoginButton {
+            position: absolute !important;
+            top: 15px !important;
+            left: 15px !important;
+            font-size: 0.85rem !important;
+            padding: 6px 12px !important;
+        }
+        #signup_box .boxupperlabel {
+            margin-top: 35px !important;
+        }
+        .secondaryButton:hover, .goBackToLoginButton:hover {
+            background: #F76D57 !important;
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(247, 109, 87, 0.3) !important;
+        }
+        .small-labels, .orLabel {
+            color: #486581 !important;
+            font-weight: 600;
+            -webkit-text-stroke: 0 !important;
+        }
+        .invalid {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(255,0,0,0.2);
+            background: #fff !important;
+            color: red !important;
+            margin: 0 !important;
+            z-index: 20;
+        }
+        .captchaInputField {
+            width: 120px !important;
+            margin-left: 10px !important;
+            margin-bottom: 0 !important;
+        }
+        .captchaOuterBoxParent {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 5px;
+            margin-bottom: 30px;
+        }
+
+        .mobile-logo {
+            display: none;
+            width: 150px;
+            height: 60px;
+            object-fit: contain;
+            margin-top: 45px;
+            margin-bottom: 5px;
+            border-radius: 10px;
+            mix-blend-mode: multiply;
+        }
+
+        /* Responsive Design for Mobile */
+        @media (max-width: 850px) {
+            .mobile-logo {
+                display: block !important;
+            }
+            .main_box {
+                width: 90vw !important;
+                max-width: 450px !important;
+                min-height: 600px !important;
+                border-radius: 20px !important;
+            }
+            .allchat_image_box {
+                display: none !important;
+            }
+            .forms_wrapper {
+                width: 100% !important;
+                position: relative !important;
+                border-radius: 20px !important;
+            }
+            .forms_slider {
+                width: 200% !important;
+            }
+            #login_box, #signup_box {
+                width: 50% !important;
+                border-radius: 20px !important;
+            }
+            .forms_wrapper.show-signup .forms_slider {
+                transform: translateX(-50%) !important;
+            }
+            .boxupperlabel {
+                font-size: 1.8rem !important;
+            }
+            .invalid {
+                font-size: 0.9rem !important;
+            }
         }
     </style>
 </head>
@@ -68,8 +291,10 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
         <div class="allchat_image_box">
             <img src="Extra/styles/images/main.png" alt="all_chat image" width="400px" height="400px" />
         </div>
-        <div>
+        <div class="forms_wrapper" id="forms_wrapper">
+            <div class="forms_slider" id="forms_slider">
             <div class="login_box" id="login_box">
+                <img src="Extra/styles/images/main.png" alt="All Chat Logo" class="mobile-logo" />
                 <h1 class="boxupperlabel">
                     Login
                 </h1>
@@ -117,6 +342,7 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                 <button class="goBackToLoginButton" onclick="switchToSignupForm(false)">
                     &lt; Go back to login
                 </button>
+                <img src="Extra/styles/images/main.png" alt="All Chat Logo" class="mobile-logo" />
                 <h1 class="boxupperlabel">
                     Sign Up
                 </h1>
@@ -186,6 +412,7 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                 </form>
             </div>
         </div>
+        </div>
     </div>
 
 
@@ -215,43 +442,46 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
         $password = trim($userpassword);
         if (trim($un) != "" && $password != "") {
 
-            $query = "SELECT * FROM users WHERE BINARY username=? AND BINARY password=?";
+            $query = "SELECT password FROM users WHERE BINARY username=?";
             $stmt = mysqli_prepare($conn, $query);
-            $pwd = md5($password);
-            mysqli_stmt_bind_param($stmt, "ss", $un, $pwd);
+            mysqli_stmt_bind_param($stmt, "s", $un);
             mysqli_stmt_execute($stmt);
             $result = mysqli_stmt_get_result($stmt);
+            $login_success = false;
+            
             if (mysqli_num_rows($result)) {
-                    mysqli_free_result($result);
-                    mysqli_stmt_close($stmt);
+                $row = mysqli_fetch_assoc($result);
+                $db_pass = $row['password'];
+                if (password_verify($password, $db_pass) || md5($password) === $db_pass) {
+                    $login_success = true;
+                    // Transparent migration from MD5 to BCrypt
+                    if (md5($password) === $db_pass) {
+                        $new_hash = password_hash($password, PASSWORD_BCRYPT);
+                        $upd = "UPDATE users SET password=? WHERE BINARY username=?";
+                        $upd_stmt = mysqli_prepare($conn, $upd);
+                        mysqli_stmt_bind_param($upd_stmt, "ss", $new_hash, $un);
+                        mysqli_stmt_execute($upd_stmt);
+                        mysqli_stmt_close($upd_stmt);
+                    }
+                }
+            }
+            mysqli_free_result($result);
+            mysqli_stmt_close($stmt);
+
+            if ($login_success) {
                     $_SESSION["who"] = $un;
                     $av = "UPDATE users SET available='1' WHERE BINARY username=?";
                     $stmt = mysqli_prepare($conn, $av);
                     mysqli_stmt_bind_param($stmt, "s", $un);
                     mysqli_stmt_execute($stmt);
                     mysqli_stmt_close($stmt);
+                    
                     if (isset($rememberCred)) {
-                        echo "
-                            <script>
-                                if(localStorage.getItem('all_chat-username') != null && localStorage.getItem('all_chat-password') != null){
-                                    localStorage.removeItem('all_chat-username');
-                                    localStorage.removeItem('all_chat-password');
-                                    localStorage.setItem('all_chat-username', '" . $un . "');
-                                    localStorage.setItem('all_chat-password', '" . $password . "');
-                                }
-                                else{
-                                    localStorage.setItem('all_chat-username', '" . $un . "');
-                                    localStorage.setItem('all_chat-password', '" . $password . "');
-                                }
-                                
-                                window.location.replace('Main/');
-                            </script>";
-                    } else {
-                        echo "
-                            <script>
-                                window.location.replace('Main/');
-                            </script>";
+                        $hash = hash_hmac('sha256', $un, getVarFromEnv('DB_PASSWORD'));
+                        $cookie_value = $un . ':' . $hash;
+                        setcookie('remember_user', $cookie_value, time() + (86400 * 30), "/", "", false, true);
                     }
+                    echo "<script>window.location.replace('Main/');</script>";
             } else {
                 echo
                 "<script>
@@ -287,9 +517,8 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                 $everythingIsGood = false;
             }
             if ($everythingIsGood) {
-                $password = md5($password);
-                $cpass = md5($cpass);
-                if ($password == $cpass) {
+                if ($password === $cpass) {
+                    $password = password_hash($password, PASSWORD_BCRYPT);
                     $query = "SELECT username FROM users WHERE BINARY username=?";
                     $stmt = mysqli_prepare($conn, $query);
                     mysqli_stmt_bind_param($stmt, "s", $un);

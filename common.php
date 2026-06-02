@@ -7,8 +7,32 @@ $urlMainPath = getVarFromEnv("PUBLIC_SITE_URL");
 function formatMessage($message)
 {
 
+    $urlMainPath = getVarFromEnv("PUBLIC_SITE_URL");
+
     // Format if there is links in it
     $message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+    
+    // Format files: [FILE:path:name]
+    $filePattern = '/\[FILE:\s*(.+?):\s*(.+?)\]/';
+    $message = preg_replace_callback($filePattern, function($matches) use ($urlMainPath) {
+        $path = $matches[1];
+        $name = $matches[2];
+        $filename = basename($path);
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        
+        $fullPath = "/" . $urlMainPath . "/serveFile.php?f=" . urlencode($filename) . "&n=" . urlencode($name);
+        
+        if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+            return "<br/><a href='" . $fullPath . "' target='_blank'><img src='" . $fullPath . "' onload='var b=document.getElementById(\"messages\"); if(b) b.scrollTop=b.scrollHeight;' style='max-width:100%; height:auto; max-height:200px; border-radius:10px; margin-top:5px; display:block; box-sizing:border-box;' alt='" . $name . "'/></a>";
+        } else if (in_array($ext, ['mp4', 'webm'])) {
+            return "<br/><video src='" . $fullPath . "' onloadeddata='var b=document.getElementById(\"messages\"); if(b) b.scrollTop=b.scrollHeight;' controls style='max-width:100%; height:auto; max-height:200px; border-radius:10px; margin-top:5px; display:block; box-sizing:border-box;'></video>";
+        } else if (in_array($ext, ['mp3', 'wav'])) {
+            return "<br/><audio src='" . $fullPath . "' controls style='max-width:100%; margin-top:5px; display:block; box-sizing:border-box;'></audio>";
+        } else {
+            return "<br/><a href='" . $fullPath . "' target='_blank' class='chatFileLink' style='display:inline-block; margin-top:5px; background:rgba(255,255,255,0.2); padding:5px 10px; border-radius:10px; text-decoration:none; color:inherit;'>📎 " . $name . "</a>";
+        }
+    }, $message);
+    
     $pattern = '/(https?:\/\/[^\s]+)/';
     $replacement = '<a href="$1" target="_blank" rel="noopener noreferrer" class="chatMessageLink">$1</a>';
     return preg_replace($pattern, $replacement, $message);

@@ -21,10 +21,19 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
             $groups_query_result = mysqli_stmt_get_result($stmt2);
             if (mysqli_num_rows($groups_query_result)) {
                 $checkIfAtLeastOneGroupMatch = true;
+                $user_row = mysqli_fetch_row($groups_query_result);
+                $user_type = $user_row[0];
+                $admin_badge = "";
+                if (strtolower($user_type) == "leader") {
+                    $admin_badge = "<div style='margin-top: 5px; padding: 2px 6px; font-size: 0.65rem; font-weight: 800; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.4); text-transform: uppercase; letter-spacing: 0.5px;'>Admin</div>";
+                }
                 echo "
-                                    <div class='groupRow'>
-                                        <img src='View_Group_Image/?group_id=" . $group_id . "' width='50px' height='50px' style='border-radius:50%'/>
-                                        <h2 class='friendUsername'>" . $group_name . "</h2> 
+                                    <div class='groupRow' style='align-items: center;'>
+                                        <div style='display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 60px;'>
+                                            <img src='View_Group_Image/?group_id=" . $group_id . "' width='50px' height='50px' style='border-radius:50%'/>
+                                            " . $admin_badge . "
+                                        </div>
+                                        <h2 class='friendUsername'>" . htmlspecialchars($group_name) . "</h2> 
                                         <a href='Group/?group_id=" . $group_id . "' class='link'>Enter</a>
                                     </div>
 
@@ -33,12 +42,12 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
             }
         }
         if (!$checkIfAtLeastOneGroupMatch) {
-            echo "<h2 style='color:white'>No groups to show..</h2>";
+            echo "<h2 class='empty-state-msg'>No groups to show..</h2>";
         }
     } else {
-        echo "<h2 style='color:white'>No groups to show..</h2>";
+        echo "<h2 class='empty-state-msg'>No groups to show..</h2>";
     }
 } else {
     session_destroy();
-    echo "<h2 style='color:white'>Error..</h2>";
+    echo "<h2 class='empty-state-msg'>Error..</h2>";
 }

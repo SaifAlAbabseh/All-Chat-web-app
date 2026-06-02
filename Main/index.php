@@ -66,6 +66,135 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                 display: none;
             }
         }
+
+        /* Modern Delete Friend Modal */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .custom-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        .custom-modal-content {
+            background: #2B303A;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+            min-width: 300px;
+            border: 1px solid #3d4554;
+        }
+        .custom-modal.show .custom-modal-content {
+            transform: scale(1);
+        }
+        .custom-modal-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        .custom-modal-actions button {
+            flex: 1;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        .btn-cancel {
+            background: #394240;
+            color: #fff;
+        }
+        .btn-cancel:hover {
+            background: #506C7F;
+        }
+        .btn-confirm {
+            background: #F76D57;
+            color: #fff;
+        }
+        .btn-confirm:hover {
+            background: #ff523a;
+            box-shadow: 0 0 15px rgba(247, 109, 87, 0.4);
+        }
+
+        /* Modern User Card */
+        .user-card {
+            background: rgba(43, 48, 58, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 15px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 10px;
+        }
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+        .user-card-name {
+            color: #F9EBB2;
+            margin: 0;
+            font-size: 1.6rem;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .user-card-logout {
+            background: linear-gradient(135deg, #F76D57 0%, #ff523a 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(247, 109, 87, 0.3);
+            text-decoration: none;
+        }
+        .user-card-logout:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(247, 109, 87, 0.5);
+        }
+        .profile-img-styled {
+            border-radius: 50%;
+            border: 3px solid #F76D57;
+            box-shadow: 0 4px 15px rgba(247, 109, 87, 0.4);
+            transition: transform 0.3s ease;
+        }
+        .profile-img-styled:hover {
+            transform: scale(1.05) rotate(5deg);
+        }
+
+        .modern-box-header {
+            font-size: 1.4rem;
+            color: #F76D57;
+            margin: 0 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(247, 109, 87, 0.3);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="<?= asset('../scripts/main.js') ?>"></script>
@@ -140,6 +269,39 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
         }
 
         $(document).ready(function() {
+            // Theme toggle logic
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            if (currentTheme === 'light') {
+                $('body').addClass('light-mode');
+            }
+
+            // Update button active states
+            function updateThemeButtons() {
+                if ($('body').hasClass('light-mode')) {
+                    $('#themeLightBtn').addClass('active');
+                    $('#themeDarkBtn').removeClass('active');
+                } else {
+                    $('#themeDarkBtn').addClass('active');
+                    $('#themeLightBtn').removeClass('active');
+                }
+            }
+
+            setTimeout(updateThemeButtons, 100);
+
+            $(document).on('click', '#themeLightBtn', function(e) {
+                e.preventDefault();
+                $('body').addClass('light-mode');
+                localStorage.setItem('theme', 'light');
+                updateThemeButtons();
+            });
+
+            $(document).on('click', '#themeDarkBtn', function(e) {
+                e.preventDefault();
+                $('body').removeClass('light-mode');
+                localStorage.setItem('theme', 'dark');
+                updateThemeButtons();
+            });
+
             startLoading('whole_box_id');
             $("#create_group_button").click(function() {
                 $("#whole_box_id").css({
@@ -168,10 +330,49 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                 $("#notificationsBox").hide();
             });
         });
+
+        var wsToken = "<?php echo isset($_SESSION['ws_token']) ? $_SESSION['ws_token'] : ''; ?>";
+        var protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        var wsUrl = protocol + window.location.hostname + ':8080?token=' + encodeURIComponent(wsToken);
+        var wsMain = new WebSocket(wsUrl);
+
+        function openDeleteModal(friendName) {
+            $("#deleteFriendName").text(friendName);
+            $("#confirmDeleteBtn").off("click").on("click", function() {
+                if (wsMain && wsMain.readyState === WebSocket.OPEN) {
+                    wsMain.send(JSON.stringify({
+                        type: 'delete_friend',
+                        target: friendName
+                    }));
+                }
+                setTimeout(() => {
+                    window.location.href = "Delete_Friend/?name=" + encodeURIComponent(friendName);
+                }, 100);
+            });
+            $("#deleteFriendModal").css("display", "flex");
+            setTimeout(() => $("#deleteFriendModal").addClass("show"), 10);
+        }
+
+        function closeDeleteModal() {
+            $("#deleteFriendModal").removeClass("show");
+            setTimeout(() => {
+                $("#deleteFriendModal").css("display", "none");
+            }, 300);
+        }
     </script>
 </head>
 
 <body>
+    <div id="deleteFriendModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <h3 style="color:#fff; margin-bottom: 20px;">Confirm Deletion</h3>
+            <p style="color:#ccc; margin-bottom: 30px;">Are you sure you want to delete your friend <span id="deleteFriendName" style="color:#F76D57; font-weight:bold;"></span>?</p>
+            <div class="custom-modal-actions">
+                <button onclick="closeDeleteModal()" class="btn-cancel">Cancel</button>
+                <button id="confirmDeleteBtn" class="btn-confirm">Delete</button>
+            </div>
+        </div>
+    </div>
     <div id="createGroupBox">
         <div class="outer_reqs_box" onclick="hide()">
             <div class="reqs" id="username_reqs">
@@ -265,14 +466,14 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                             <?php echo $row[3]; ?>
                         </td>
                         <td>
-                            <form action="" method="POST">
+                            <form action="" method="POST" style="margin-bottom:5px;">
                                 <input type="hidden" name="acceptFriendRequestField" value="<?php echo $row[0]; ?>">
                                 <input type="hidden" name="acceptFriendRequestUsernameField" value="<?php echo $row[1]; ?>">
-                                <input type="submit" name="acceptFriendRequestButton" value="Accept" class="buttontag">
+                                <input type="submit" name="acceptFriendRequestButton" value="Accept" class="accept-btn">
                             </form>
                             <form action="" method="POST">
                                 <input type="hidden" name="rejectFriendRequestField" value="<?php echo $row[0]; ?>">
-                                <input type="submit" name="rejectFriendRequestButton" value="Reject" class="buttontag">
+                                <input type="submit" name="rejectFriendRequestButton" value="Reject" class="reject-btn">
                             </form>
                         </td>
                     </tr>
@@ -288,7 +489,29 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
         </div>
         <div class="mainHeaderImage" id="mainHeader">
             <div>
-                <img src="../Extra/styles/images/main.png" alt="All Chat Image" width="100%" height="100px" />
+                <style>
+                    .brand-logo-img {
+                        width: 85%;
+                        height: 120px;
+                        object-fit: contain;
+                        margin: 20px auto 15px auto;
+                        display: block;
+                        border-radius: 20px;
+                        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+                        animation: floatLogo 4s ease-in-out infinite;
+                        transition: all 0.3s ease;
+                    }
+                    .brand-logo-img:hover {
+                        transform: scale(1.05) translateY(-5px);
+                        box-shadow: 0 12px 35px rgba(0,0,0,0.5);
+                    }
+                    @keyframes floatLogo {
+                        0% { transform: translateY(0px); }
+                        50% { transform: translateY(-8px); }
+                        100% { transform: translateY(0px); }
+                    }
+                </style>
+                <img src="../Extra/styles/images/main.png" alt="All Chat Brand Logo" class="brand-logo-img" />
                 <hr class="hrLine">
                 <div class="menuContainer">
                     <a href="Add/" class="link" id="addLink">Add New Friend</a>
@@ -322,9 +545,18 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                             <span class="hasNotifications"></span>
                         <?php } ?>
                     </button>
-                    <img src='View_Image/?u=<?php echo $_SESSION["who"]; ?>' width='100px' height='100px' style='border-radius:50%' />
-                    <h2 style='color:yellow'><?php echo $_SESSION["who"]; ?></h2>
-                    <button onclick="startLoadingToLogout('whole_box_id')" class='link' style='cursor:pointer;font-size:1.5rem;font-weight:bold'>Logout</button>
+                    <img src='View_Image/?u=<?php echo $_SESSION["who"]; ?>' width='100px' height='100px' class='profile-img-styled' />
+                    
+                    <div class="user-card">
+                        <h2 class="user-card-name" style="margin-bottom:5px; text-align:center;"><?php echo $_SESSION["who"]; ?></h2>
+                        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:15px; width:100%;">
+                            <button id="themeLightBtn" class="theme-btn" title="Light Mode">☀️</button>
+                            <button id="themeDarkBtn" class="theme-btn" title="Dark Mode">🌙</button>
+                        </div>
+                        <button onclick="startLoadingToLogout('whole_box_id')" class="user-card-logout">
+                            <span style="margin-right: 8px; font-size:1.2rem;">🚪</span> Logout
+                        </button>
+                    </div>
                 </div>
 
             <?php
@@ -346,10 +578,8 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
 
 
         <div class="groupsListBox" id="groupsBox">
-            <div class="groupContainerHeader">
-                <h4 style="color:red">
-                    > Groups :
-                </h4>
+            <div class="modern-box-header" style="margin-bottom: 15px;">
+                <span>👥 Groups</span>
                 <button class="plus_button" id="create_group_button" title="Create Group">+</button>
             </div>
             <div id="groupsInnerData">
@@ -357,9 +587,9 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
         </div>
 
         <div class="friendsListBox" id="friendBox">
-            <h4 style="color:red">
-                > Your Friends :
-            </h4>
+            <div class="modern-box-header">
+                <span>💬 Friends</span>
+            </div>
             <div id="innerData">
             </div>
         </div>
