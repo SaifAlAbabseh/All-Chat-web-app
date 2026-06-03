@@ -7,8 +7,9 @@ const fs = require('fs');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const server = http.createServer((req, res) => {
-    res.writeHead(200);
-    res.end('WebSocket Server is running\n');
+    // Return a blank 200 OK response for Render's health checks
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('');
 });
 
 const wss = new WebSocket.Server({ server });
