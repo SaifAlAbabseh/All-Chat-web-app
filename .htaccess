@@ -1,0 +1,6 @@
+RewriteEngine On
+
+# Proxy WebSocket connections to the local Node.js server
+RewriteCond %{HTTP:Upgrade} websocket [NC]
+RewriteCond %{HTTP:Connection} upgrade [NC]
+RewriteRule ^ws/?(.*)$ ws://127.0.0.1:8300/$1 [P,L]
