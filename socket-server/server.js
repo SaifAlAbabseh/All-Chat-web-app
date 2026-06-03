@@ -406,6 +406,6 @@ wss.on('connection', async (ws, req) => {
 });
 
 const PORT = process.env.WS_PORT || 8300;
-server.listen(PORT, '::', () => {
-    console.log(`WebSocket Server is listening on ws://localhost:${PORT}`);
+server.listen(PORT, '127.0.0.1', () => {
+    console.log(`WebSocket Server is listening on ws://127.0.0.1:${PORT}`);
 });
