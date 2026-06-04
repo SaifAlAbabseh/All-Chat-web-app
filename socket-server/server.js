@@ -63,7 +63,8 @@ function formatMessageNode(msg) {
             const filename = path.basename(filepath);
             const extMatch = filename.match(/\.([^\.]+)$/);
             const ext = extMatch ? extMatch[1].toLowerCase() : '';
-            const fullPath = `/All-Chat-web-app/serveFile.php?f=${encodeURIComponent(filename)}&n=${encodeURIComponent(name)}`;
+            const basePath = process.env.PUBLIC_SITE_URL ? `/${process.env.PUBLIC_SITE_URL}` : '';
+            const fullPath = `${basePath}/serveFile.php?f=${encodeURIComponent(filename)}&n=${encodeURIComponent(name)}`;
 
             if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
                 return `<br/><a href='${fullPath}' target='_blank'><img src='${fullPath}' onload='var b=document.getElementById("messages"); if(b) b.scrollTop=b.scrollHeight;' style='max-width:100%; height:auto; max-height:200px; border-radius:10px; margin-top:5px; display:block; box-sizing:border-box;' alt='${name}'/></a>`;

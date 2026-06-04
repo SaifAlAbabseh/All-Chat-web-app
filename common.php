@@ -20,7 +20,8 @@ function formatMessage($message)
         $filename = basename($path);
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         
-        $fullPath = "/" . $urlMainPath . "/serveFile.php?f=" . urlencode($filename) . "&n=" . urlencode($name);
+        $basePath = !empty($urlMainPath) ? "/" . $urlMainPath : "";
+        $fullPath = $basePath . "/serveFile.php?f=" . urlencode($filename) . "&n=" . urlencode($name);
         
         if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
             return "<br/><a href='" . $fullPath . "' target='_blank'><img src='" . $fullPath . "' onload='var b=document.getElementById(\"messages\"); if(b) b.scrollTop=b.scrollHeight;' style='max-width:100%; height:auto; max-height:200px; border-radius:10px; margin-top:5px; display:block; box-sizing:border-box;' alt='" . $name . "'/></a>";
