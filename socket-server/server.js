@@ -91,7 +91,7 @@ function formatMessageNode(msg) {
     }
 }
 
-function deleteFilesFromMessage(messageEncoded) {
+async function deleteFilesFromMessage(messageEncoded) {
     if (!messageEncoded) return;
     try {
         const decoded = decodeURIComponent(messageEncoded);
@@ -99,11 +99,26 @@ function deleteFilesFromMessage(messageEncoded) {
         let match;
         while ((match = fileRegex.exec(decoded)) !== null) {
             const filename = path.basename(match[1]);
-            const fullDiskPath = path.join(__dirname, '..', 'uploads', 'chat_files', filename);
-            fs.unlink(fullDiskPath, (err) => {
-                if (err) console.error('Failed to delete file:', fullDiskPath, err);
-                else console.log('Successfully deleted file:', fullDiskPath);
-            });
+            
+            const apiUrl = process.env.PHP_APP_URL ? `${process.env.PHP_APP_URL}/api/delete_chat_file.php` : 'http://localhost/All-Chat-web-app/api/delete_chat_file.php';
+            const secret = process.env.API_SECRET || '';
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `filename=${encodeURIComponent(filename)}&secret=${encodeURIComponent(secret)}`
+                });
+                
+                if (response.ok) {
+                    console.log('Successfully requested remote file deletion for:', filename);
+                } else {
+                    const responseData = await response.text();
+                    console.error('Failed to request file deletion:', filename, responseData);
+                }
+            } catch (fetchErr) {
+                console.error('Network error while requesting file deletion:', fetchErr);
+            }
         }
     } catch (e) {
         console.error("Error parsing message for files to delete", e);
