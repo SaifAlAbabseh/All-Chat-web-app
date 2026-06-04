@@ -33,7 +33,7 @@ if(isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"]=="fromMob
             }
         }
         else{
-            echo "Username or password is incorrect";
+            echo "User not found";
         }
     }
     else{
