@@ -15,6 +15,7 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
 <html>
 
 <head>
+    <link rel="icon" type="image/x-icon" href="../../Extra/images/favicon.ico">
     <title>
         Chat
     </title>
@@ -110,11 +111,40 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                                             <div class='message-container <?php echo ($from == $you) ? "right-message" : "left-message"; ?>' title='<?php echo $date; ?>'>
                                                 <div class='message-header'>
                                                     <div class='message-from'>
-                                                        <?php echo ($from == $you) ? "YOU <span class='edit-btn' onclick='editPersonalMessage(\"".$row[2]."\")' style='cursor:pointer;margin-left:10px;' title='Edit'>✏️</span> <span class='delete-btn' onclick='deletePersonalMessage(\"".$row[2]."\")' style='cursor:pointer;margin-left:5px;' title='Delete'>🗑️</span>" : "From: " . $from; ?>
+                                                        <?php echo ($from == $you) ? "YOU" : "From: " . $from; ?>
+                                                    </div>
+                                                    <div class="message-actions">
+                                                        <div class="reaction-picker">
+                                                            <span class="action-icon" onclick="toggleReaction('<?php echo $row[2]; ?>', '😂')">😂</span>
+                                                            <span class="action-icon" onclick="toggleReaction('<?php echo $row[2]; ?>', '😭')">😭</span>
+                                                            <span class="action-icon" onclick="toggleReaction('<?php echo $row[2]; ?>', '😡')">😡</span>
+                                                            <span class="action-icon" onclick="toggleReaction('<?php echo $row[2]; ?>', '👍')">👍</span>
+                                                        </div>
+                                                        <?php if ($from == $you) { ?>
+                                                        <div class="edit-delete-picker" style="display: flex; gap: 2px;">
+                                                            <span class="action-icon" onclick="editPersonalMessage('<?php echo $row[2]; ?>')" title="Edit">✏️</span>
+                                                            <span class="action-icon" onclick="deletePersonalMessage('<?php echo $row[2]; ?>')" title="Delete">🗑️</span>
+                                                        </div>
+                                                        <?php } ?>
                                                     </div>
                                                 </div>
                                                 <div class='message-text' id='msg-text-<?php echo $row[2]; ?>' data-raw='<?php echo htmlspecialchars(urldecode($messageitself), ENT_QUOTES); ?>'>
                                                     <?php echo nl2br(formatMessage((urldecode($messageitself)))); ?>
+                                                </div>
+                                                <div class="reactions-bar" id="reactions-<?php echo $row[2]; ?>">
+                                                    <?php
+                                                        $reactionsJson = isset($row[4]) ? $row[4] : null;
+                                                        if ($reactionsJson) {
+                                                            $reactionsObj = json_decode($reactionsJson, true);
+                                                            if ($reactionsObj) {
+                                                                foreach ($reactionsObj as $emoji => $users) {
+                                                                    $count = count($users);
+                                                                    $userList = htmlspecialchars(implode(", ", $users));
+                                                                    echo "<span class='reaction-badge' title='{$userList}' onclick='toggleReaction(\"{$row[2]}\", \"{$emoji}\")'>{$emoji} {$count}</span>";
+                                                                }
+                                                            }
+                                                        }
+                                                    ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -164,6 +194,15 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
     <script src="<?= asset('../../scripts/commonMethods.js') ?>"></script>
     <script>
+        function escapeHtml(unsafe) {
+            return (unsafe || "").toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         $(document).ready(function() {
             var oldpos = "<?php echo "" . $lastmessageindex; ?>";
             var you = "<?php if (isset($_SESSION) && isset($_SESSION["who"])) { echo "" . $_SESSION["who"]; } ?>";
@@ -193,6 +232,7 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                     var messageDate = res.date;
                     var mess = res.message;
                     var lastwho = res.lastwho;
+                    let isMe = (res.lastwho == you);
 
                     $("#ava").css({
                         "border-color": `${ava == "1" ? "green" : "red"}`
@@ -201,18 +241,32 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                     // The server pushes new messages directly, so we always append them.
                     const messageElement = document.createElement("div");
                     messageElement.classList.add("message-container-outer");
-                    messageElement.id = "msg-pos-" + pos;
+                    messageElement.id = "msg-pos-" + res.pos;
                     messageElement.innerHTML = `
-                        <div class='message-container ${(lastwho == you) ? "right-message" : "left-message"}' title='${messageDate}'>
+                        <div class='message-container ${isMe ? "right-message" : "left-message"}' title='${res.date}'>
                             <div class='message-header'>
                                 <div class='message-from'>
-                                        ${(lastwho == you) ? "YOU <span class='edit-btn' onclick='editPersonalMessage(\""+pos+"\")' style='cursor:pointer;margin-left:10px;' title='Edit'>✏️</span> <span class='delete-btn' onclick='deletePersonalMessage(\""+pos+"\")' style='cursor:pointer;margin-left:5px;' title='Delete'>🗑️</span>" : "From: " + lastwho}
-                                    </div>
+                                    ${isMe ? "YOU" : "From: " + escapeHtml(res.lastwho)}
                                 </div>
-                                <div class='message-text' id='msg-text-${pos}' data-raw='${res.rawMessage.replace(/'/g, "&#39;")}'>
-                                    ${mess}
+                                <div class="message-actions">
+                                    <div class="reaction-picker">
+                                        <span class="action-icon" onclick="toggleReaction('${res.pos}', '😂')">😂</span>
+                                        <span class="action-icon" onclick="toggleReaction('${res.pos}', '😭')">😭</span>
+                                        <span class="action-icon" onclick="toggleReaction('${res.pos}', '😡')">😡</span>
+                                        <span class="action-icon" onclick="toggleReaction('${res.pos}', '👍')">👍</span>
+                                    </div>
+                                    ${isMe ? `
+                                    <div class="edit-delete-picker" style="display: flex; gap: 2px;">
+                                        <span class="action-icon" onclick="editPersonalMessage('${res.pos}')" title="Edit">✏️</span>
+                                        <span class="action-icon" onclick="deletePersonalMessage('${res.pos}')" title="Delete">🗑️</span>
+                                    </div>
+                                    ` : ''}
                                 </div>
                             </div>
+                            <div class='message-text' id='msg-text-${res.pos}' data-raw='${res.rawMessage.replace(/'/g, "&#39;")}'>
+                                ${res.message}
+                            </div>
+                            <div class="reactions-bar" id="reactions-${res.pos}"></div>
                         </div>
                     `;
                     msg.appendChild(messageElement);
@@ -223,6 +277,17 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                     $("#ava").css({
                         "border-color": `${res.ava == "1" ? "green" : "red"}`
                     });
+                } else if (res.type === 'reaction_updated' && res.tname === tname) {
+                    var reactBar = document.getElementById("reactions-" + res.pos);
+                    if (reactBar) {
+                        reactBar.innerHTML = "";
+                        for (const emoji in res.reactions) {
+                            const users = res.reactions[emoji];
+                            const count = users.length;
+                            const userList = escapeHtml(users.join(", "));
+                            reactBar.innerHTML += `<span class='reaction-badge' title='${userList}' onclick='toggleReaction("${res.pos}", "${emoji}")'>${emoji} ${count}</span>`;
+                        }
+                    }
                 } else if (res.type === 'message_deleted' && res.tname === tname) {
                     const msgEl = document.getElementById("msg-pos-" + res.pos);
                     if (msgEl) msgEl.remove();
@@ -266,10 +331,10 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                 textEl.setAttribute("data-orig-html", originalHTML);
                 
                 const html = `
-                    <textarea id="edit-box-${pos}" class="edit-textarea" style="width:100%;resize:vertical;min-height:40px;color:black;">${rawText}</textarea>
-                    <div style="margin-top:5px;text-align:right;">
-                        <button onclick="saveEditPersonal('${pos}')" style="padding:2px 10px;cursor:pointer;">Save</button>
-                        <button onclick="cancelEditPersonal('${pos}')" style="padding:2px 10px;cursor:pointer;">Cancel</button>
+                    <textarea id="edit-box-${pos}" class="edit-textarea">${rawText}</textarea>
+                    <div class="edit-actions">
+                        <button onclick="cancelEditPersonal('${pos}')" class="btn-cancel-edit">Cancel</button>
+                        <button onclick="saveEditPersonal('${pos}')" class="btn-save-edit">Save</button>
                     </div>
                 `;
                 textEl.innerHTML = html;
@@ -330,6 +395,11 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                     newText = newText ? (newText + "\n" + fileTags) : fileTags;
                 }
                 
+                if (newText === "") {
+                    alert("Message cannot be empty.");
+                    return;
+                }
+                
                 ws.send(JSON.stringify({
                     type: 'edit_personal_message',
                     tname: tname,
@@ -339,14 +409,45 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                 }));
             };
 
+            window.toggleReaction = function(pos, emoji) {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        type: 'toggle_reaction',
+                        tname: tname,
+                        pos: pos,
+                        reaction: emoji,
+                        isGroup: false,
+                        towho: towho
+                    }));
+                }
+            };
+
+            let pendingDeletePos = null;
+
             window.deletePersonalMessage = function(pos) {
-                if (!confirm("Are you sure you want to delete this message?")) return;
-                ws.send(JSON.stringify({
-                    type: 'delete_personal_message',
-                    tname: tname,
-                    to: towho,
-                    pos: pos
-                }));
+                pendingDeletePos = pos;
+                $("#deleteMessageModal").css("display", "flex");
+                setTimeout(() => $("#deleteMessageModal").addClass("show"), 10);
+            };
+
+            window.closeDeleteMessageModal = function() {
+                $("#deleteMessageModal").removeClass("show");
+                setTimeout(() => {
+                    $("#deleteMessageModal").css("display", "none");
+                    pendingDeletePos = null;
+                }, 300);
+            };
+
+            window.confirmDeleteMessage = function() {
+                if (pendingDeletePos !== null) {
+                    ws.send(JSON.stringify({
+                        type: 'delete_personal_message',
+                        tname: tname,
+                        to: towho,
+                        pos: pendingDeletePos
+                    }));
+                    closeDeleteMessageModal();
+                }
             };
 
             ws.onerror = function() {
@@ -442,6 +543,15 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
             });
         });
     </script>
+    <div id="deleteMessageModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <h3 style="color:#fff; margin-bottom: 20px;">Confirm Deletion</h3>
+            <p style="color:#ccc; margin-bottom: 30px;">Are you sure you want to delete this message?</p>
+            <div class="custom-modal-actions">
+                <button onclick="closeDeleteMessageModal()" class="btn-cancel">Cancel</button>
+                <button onclick="confirmDeleteMessage()" class="btn-confirm">Delete</button>
+            </div>
+        </div>
+    </div>
 </body>
-
 </html>

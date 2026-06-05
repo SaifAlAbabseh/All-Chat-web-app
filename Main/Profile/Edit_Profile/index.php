@@ -9,6 +9,7 @@ require_once(dirname(__DIR__, 3) . '/common.php');
 <html>
 
 <head>
+    <link rel="icon" type="image/x-icon" href="../../../Extra/images/favicon.ico">
     <title>
         All Chat | Edit Profile | Change Picture
     </title>
@@ -28,6 +29,104 @@ require_once(dirname(__DIR__, 3) . '/common.php');
         body,
         html {
             height: 100%;
+        }
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        
+        .modern-profile-box {
+            background: rgba(43, 48, 58, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+        body.light-mode .modern-profile-box {
+            background: rgba(240, 242, 245, 0.95);
+            color: #333;
+            border-color: rgba(0,0,0,0.1);
+        }
+        
+        .modern-profile-box h2.modal-title {
+            color: white;
+            font-size: 1.8rem;
+            margin: 0 0 15px 0;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+        }
+        body.light-mode .modern-profile-box h2.modal-title {
+            color: #333;
+            border-bottom-color: rgba(0,0,0,0.1);
+        }
+        
+        .modern-profile-box .instruction {
+            color: #F76D57;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .modern-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .modern-input {
+            width: 100%;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        body.light-mode .modern-input {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            color: #333;
+        }
+        .modern-input:focus {
+            outline: none;
+            border-color: #F76D57;
+            box-shadow: 0 0 10px rgba(247, 109, 87, 0.3);
+        }
+        
+        .modern-submit-btn {
+            background: linear-gradient(135deg, #0162AF 0%, #004d8c 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(1, 98, 175, 0.3);
+        }
+        .modern-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(1, 98, 175, 0.5);
+        }
+        
+        #imageRenderOuterBox img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 15px;
         }
     </style>
     <script>
@@ -80,41 +179,27 @@ require_once(dirname(__DIR__, 3) . '/common.php');
 </head>
 
 <body>
-    <div id="whole_box">
+    <div id="whole_box" style="width: 100%; display: flex; justify-content: center; align-items: center;">
         <div style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
             <a href="../" class="backButton" style="text-decoration:none; font-size:1.5rem; color: #F76D57; font-weight:bold; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:20px; backdrop-filter:blur(5px); transition:all 0.3s ease;">🔙 Back</a>
         </div>
-        <div class="outer">
-            <div class="mainChangeBox">
-                <table style="width:60%">
-                    <caption style="color:red">
-                        Image should be at most 1MB and should be of type PNG
-                    </caption>
-                    <thead>
-                        <th>
-                            <h2 id="message"></h2>
-                        </th>
-                    </thead>
-                    <form action="" method="post" enctype="multipart/form-data">
-                        <tbody class="changeBox">
-                            <tr>
-                                <td id="imageRenderOuterBox">
-                                    <input type="file" onchange="renderImage()" name="image" class="inputfield" id="picField" required />
-                                    <br>
-                                </td>
-
-                            </tr>
-                        </tbody>
-                        <tfoot class="footOfPic">
-                            <tr>
-                                <td>
-                                    <input type="submit" value="OK" class="buttontag" name="changeButton" />
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </form>
-                </table>
+        
+        <div class="modern-profile-box">
+            <h2 class="modal-title">Change Profile Picture</h2>
+            <div class="instruction">
+                Image should be at most 1MB and should be of type PNG.
             </div>
+            <h3 id="message" style="margin: 0 0 15px 0;"></h3>
+            
+            <form action="" method="post" enctype="multipart/form-data">
+                <div class="modern-form-group">
+                    <input type="file" onchange="renderImage()" name="image" class="modern-input" id="picField" required />
+                    
+                    <div id="imageRenderOuterBox"></div>
+                    
+                    <button type="submit" name="changeButton" class="modern-submit-btn">Upload & Save</button>
+                </div>
+            </form>
         </div>
     </div>
 </body>

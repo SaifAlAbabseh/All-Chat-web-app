@@ -32,6 +32,7 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
 <html>
 
 <head>
+    <link rel="icon" type="image/x-icon" href="Extra/images/favicon.ico">
     <title>
         ALL CHAT
     </title>
@@ -358,7 +359,7 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                                 <input type="text" name="signupusername" class="inputfield" id="signupusername_inputfield" placeholder="Enter Username.." required />
                             </td>
                             <td>
-                                <input type="button" value=" i " class="i" id="userreq">
+                                <div class="i" id="userreq">i</div>
                             </td>
                         </tr>
                         <tr>
@@ -366,7 +367,7 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                                 <input type="password" name="signupuserpassword" class="inputfield" id="signupuserpassword_field" placeholder="Enter Password.." required />
                             </td>
                             <td>
-                                <input type="button" value=" i " class="i" id="passreq">
+                                <div class="i" id="passreq">i</div>
                             </td>
                         </tr>
                         <tr>
@@ -435,6 +436,8 @@ function generateSignupCode()
 
 if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton"]) || isset($_POST["verification_button"]))) {
     echo "<script>startLoading('main_box-id');</script>";
+    ob_flush();
+    flush();
     extract($_POST);
 
     if (isset($loginButton)) {
@@ -562,7 +565,11 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                 require_once "mail.php";
                                 if (sendVerificationCodeMail($signupemail, $un, $_SESSION["signup_code"])) {
                                     echo
-                                    "<div id='email_verification_box_parent'>
+                                    "<script>
+                                        $('#loading_box_outer_id').stop(true, true).css({opacity: 0, 'z-index': '-100'});
+                                        $('#main_box-id').stop(true, true).css({'pointer-events': 'all', opacity: 1});
+                                    </script>
+                                    <div id='email_verification_box_parent'>
                                     <div id='email_verification_box'>
                                         <h2 style='color:white'>We've sent an email verification code to your email</h2>
                                         <form action='' method='post'>
@@ -571,6 +578,8 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                         </form>
                                     </div>
                                 </div>";
+                                    ob_flush();
+                                    flush();
                                 } else {
                                     echo
                                     "<script>

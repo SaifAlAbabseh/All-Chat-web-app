@@ -38,7 +38,7 @@ if (isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"] == "from
                     mysqli_stmt_bind_param($stmt, "ss", $you, $requesterUsername);
                     mysqli_stmt_execute($stmt);
                     $tablename = "" . $you . "" . $requesterUsername;
-                    $query = "CREATE TABLE " . $tablename . " (fromwho varchar(1000) , message varchar(1000),pos varchar(1000), whenSent DATETIME DEFAULT CURRENT_TIMESTAMP)";
+                    $query = "CREATE TABLE " . $tablename . " (fromwho varchar(1000) , message varchar(1000),pos varchar(1000), whenSent DATETIME DEFAULT CURRENT_TIMESTAMP, reactions TEXT DEFAULT NULL)";
                     $stmt = mysqli_prepare($conn, $query);
                     mysqli_stmt_execute($stmt);
                     echo "Success";

@@ -9,6 +9,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
 <html>
 
 <head>
+    <link rel="icon" type="image/x-icon" href="../../Extra/images/favicon.ico">
     <title>
         All Chat | Add Friend
     </title>
@@ -21,6 +22,192 @@ require_once(dirname(__DIR__, 2) . '/common.php');
         body,
         html {
             height: 100%;
+        }
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-family: sans-serif;
+        }
+        #whole_box {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .modern-add-outer {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            z-index: 10;
+        }
+        .modern-add-box {
+            width: 100%;
+            height: auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        body.light-mode .modern-add-box {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .modal-title {
+            color: #fff;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        body.light-mode .modal-title {
+            color: #333;
+            text-shadow: none;
+        }
+        .modern-form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+        .modern-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        .modern-input:focus {
+            border-color: #0162AF;
+            box-shadow: 0 0 10px rgba(1, 98, 175, 0.3);
+        }
+        body.light-mode .modern-input {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+        .modern-submit-btn {
+            background: linear-gradient(135deg, #0162AF 0%, #004d8c 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(1, 98, 175, 0.4);
+            width: 100%;
+            margin-top: 10px;
+        }
+        .modern-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(1, 98, 175, 0.6);
+        }
+        #sug_box {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            width: 100%;
+            background: rgba(40, 40, 40, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            display: none;
+            flex-direction: column;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .modern-input:focus + #sug_box, #sug_box:active, #sug_box:hover {
+            display: flex;
+        }
+        body.light-mode #sug_box {
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+        }
+        .no_sug_label {
+            color: #aaa;
+            padding: 15px;
+            margin: 0;
+            font-size: 1rem;
+        }
+        body.light-mode .no_sug_label {
+            color: #666;
+        }
+        .sug_row {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            gap: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        body.light-mode .sug_row {
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .sug_row:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        body.light-mode .sug_row:hover {
+            background: rgba(0,0,0,0.05);
+        }
+        .sug_row h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: white !important; 
+        }
+        body.light-mode .sug_row h3 {
+            color: #333 !important;
+        }
+        #addfriendLabel {
+            margin-top: 15px;
+            margin-bottom: 0;
+            font-size: 1.1rem;
+            color: #22c55e !important;
+            min-height: 24px;
+        }
+        #exit-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(247, 109, 87, 0.2);
+            color: #F76D57;
+            border: 2px solid rgba(247, 109, 87, 0.5);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        #exit-btn:hover {
+            background: #F76D57;
+            color: white;
+            border-color: #F76D57;
+            transform: rotate(90deg);
         }
     </style>
     <script>
@@ -83,36 +270,25 @@ require_once(dirname(__DIR__, 2) . '/common.php');
 <body>
     <div id="whole_box" style="height:100%;">
         <div style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
-            <a href="../" class="backButton" style="text-decoration:none; font-size:1.5rem; color: #F76D57; font-weight:bold; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:20px; backdrop-filter:blur(5px); transition:all 0.3s ease;">🔙 Back</a>
+            <a href="../" class="backButton" style="text-decoration:none; font-size:1.5rem; color: #0162AF; font-weight:bold; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:20px; backdrop-filter:blur(5px); transition:all 0.3s ease;">🔙 Back</a>
         </div>
-        <div class="add_box_outer">
-            <div class="add_box">
-                <form action="../Add/" method="post">
-                    <table>
-                        <tr>
-                            <td>
-                                <input type="text" class="inputfield" name="friendUsername" id="friendUsername_field" required placeholder="Username" onkeyup="getSuggesstions(this.value, false)" autocomplete="off" />
-                            </td>
-                            <td>
-                                <input type="submit" name="addFriendButton" class="buttontag" id="addFriendButton" value="ADD">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <div class="friends_result" id="sug_box">
-                                    <h2 class="no_sug_label" id="no_sug_label_box">
-                                        No Suggestions.
-                                    </h2>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th colspan="2">
-                                <h2 id="addfriendLabel">
-                                </h2>
-                            </th>
-                        </tr>
-                    </table>
+        <div class="modern-add-outer">
+            <div class="modern-add-box">
+                <a href="../" id="exit-btn" title="Close">✖</a>
+                <h2 class="modal-title">Add New Friend</h2>
+                <form action="../Add/" method="post" class="modern-form-container">
+                    <div style="position: relative;">
+                        <input type="text" class="modern-input" name="friendUsername" id="friendUsername_field" required placeholder="Enter username..." onkeyup="getSuggesstions(this.value, false)" autocomplete="off" />
+                        <div class="friends_result" id="sug_box">
+                            <h2 class="no_sug_label" id="no_sug_label_box">
+                                No Suggestions.
+                            </h2>
+                        </div>
+                    </div>
+                    
+                    <input type="submit" name="addFriendButton" class="modern-submit-btn" id="addFriendButton" value="Send Request">
+                    
+                    <h2 id="addfriendLabel"></h2>
                 </form>
             </div>
         </div>

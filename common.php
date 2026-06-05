@@ -30,14 +30,20 @@ function formatMessage($message)
         } else if (in_array($ext, ['mp3', 'wav'])) {
             return "<br/><audio src='" . $fullPath . "' controls style='max-width:100%; margin-top:5px; display:block; box-sizing:border-box;'></audio>";
         } else {
-            return "<br/><a href='" . $fullPath . "' target='_blank' class='chatFileLink' style='display:inline-block; margin-top:5px; background:rgba(255,255,255,0.2); padding:5px 10px; border-radius:10px; text-decoration:none; color:inherit;'>📎 " . $name . "</a>";
+            return "<br/><a href='" . $fullPath . "' target='_blank' class='chatFileLink' style='display:inline-block; margin-top:5px; padding:5px 10px; border-radius:10px; text-decoration:none; color:inherit;'>📎 " . $name . "</a>";
         }
     }, $message);
     
     $pattern = '/(https?:\/\/[^\s]+)/';
     $replacement = '<a href="$1" target="_blank" rel="noopener noreferrer" class="chatMessageLink">$1</a>';
-    return preg_replace($pattern, $replacement, $message);
-    //
+    $message = preg_replace($pattern, $replacement, $message);
+
+    // Format mentions
+    $mentionPattern = '/(?<!\w)@(\w+)/';
+    $mentionReplacement = '<span class="mention-text">@$1</span>';
+    $message = preg_replace($mentionPattern, $mentionReplacement, $message);
+
+    return $message;
 
 
 }

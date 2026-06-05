@@ -7,7 +7,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($
     $group_table_name = "g" . $_REQUEST["group_id"] . "_users";
 
     try {
-        $check_query = "SELECT g.group_name, g.leader_username FROM all_chat_groups g INNER JOIN $group_table_name gu WHERE BINARY gu.username=? AND g.group_id=?";
+        $check_query = "SELECT g.group_name, g.leader_username, gu.user_type FROM all_chat_groups g INNER JOIN $group_table_name gu WHERE BINARY gu.username=? AND g.group_id=?";
         $stmt = mysqli_prepare($conn, $check_query);
 
         if ($stmt === false) {
@@ -45,6 +45,7 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
 <html>
 
 <head>
+    <link rel="icon" type="image/x-icon" href="../../Extra/images/favicon.ico">
     <title>
         Group Chat
     </title>
@@ -125,6 +126,94 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
         .btn-confirm:hover {
             background: #ff523a;
             box-shadow: 0 0 15px rgba(247, 109, 87, 0.4);
+        }
+        .modern-modal {
+            display: none;
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            background: rgba(43, 48, 58, 0.95) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border-radius: 15px !important;
+            padding: 30px !important;
+            width: 90% !important;
+            max-width: 400px !important;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6) !important;
+            z-index: 10000 !important;
+            backdrop-filter: blur(10px) !important;
+            color: white !important;
+        }
+        body.light-mode .modern-modal {
+            background: rgba(240, 242, 245, 0.95) !important;
+            color: #333 !important;
+            border-color: rgba(0,0,0,0.1) !important;
+        }
+        .modern-modal h2.modal-title {
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 0 20px 0;
+            text-align: center;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+        body.light-mode .modern-modal h2.modal-title {
+            color: #333;
+            border-bottom-color: rgba(0,0,0,0.1);
+        }
+        .modern-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: #F76D57;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .modern-modal-close:hover {
+            transform: scale(1.2);
+        }
+        .modern-action-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #0162AF 0%, #004d8c 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        .modern-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(1, 98, 175, 0.4);
+            color: white;
+        }
+        .modern-action-btn.danger {
+            background: linear-gradient(135deg, #F76D57 0%, #d84b38 100%);
+        }
+        .modern-action-btn.danger:hover {
+            box-shadow: 0 4px 15px rgba(247, 109, 87, 0.4);
+        }
+        /* Update Group Users styling to fit inside modern modal */
+        #group_users_box tr td {
+            padding: 8px;
+            color: white;
+        }
+        body.light-mode #group_users_box tr td {
+            color: #333;
+        }
+        #innerData tr td {
+            padding: 8px;
+            color: white;
+        }
+        body.light-mode #innerData tr td {
+            color: #333;
         }
     </style>
     <script src="<?= asset('../../scripts/commonMethods.js') ?>"></script>
@@ -215,21 +304,6 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
             });
         }
 
-        function kickUser(memberToKick) {
-            if (confirm("Are you sure you want to kick " + memberToKick + "?")) {
-                if (ws && ws.readyState === WebSocket.OPEN) {
-                    ws.send(JSON.stringify({
-                        type: 'kick_user',
-                        tname: tname,
-                        target: memberToKick
-                    }));
-                }
-                setTimeout(() => {
-                    window.location.href = "../../kickMember.php?group_id=<?php echo $_REQUEST['group_id']; ?>&member=" + encodeURIComponent(memberToKick);
-                }, 100);
-            }
-        }
-
         function closeDestroyModal() {
             $("#destroyGroupModal").removeClass("show");
             setTimeout(() => {
@@ -242,7 +316,7 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
 <body>
     <?php
 
-    if ($check_result_row[1] == $_SESSION["who"]) {
+    if ($check_result_row[2] == "leader" || $check_result_row[1] == $_SESSION["who"]) {
         echo
         "
             <div id='groupEditBox' class='friendsListBox' style='max-width: 400px; padding: 2rem; border-radius: 20px; text-align: center;'>
@@ -260,42 +334,42 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
     }
 
     ?>
-    <div class="friendsListBox" id="addfriendBox">
-        <button onclick="addExitDialog()" id="exit">X</button>
-        <center>
-            <table>
-                <thead>
-                    <tr>
-                        <th colspan="3" style="color:white">
-                            &gt; Your Friends :
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="innerData">
-                </tbody>
-            </table>
-        </center>
+    <div class="modern-modal" id="addfriendBox">
+        <button onclick="addExitDialog()" class="modern-modal-close">✖</button>
+        <h2 class="modal-title">Add Member</h2>
+        <div style="width: 100%; max-height: 300px; overflow-y: auto;">
+            <div id="innerData">
+            </div>
+        </div>
     </div>
-    <div class="friendsListBox" id="mainDialogBox">
-        <button onclick="exitDialog()" id="exit">X</button>
-        <center>
+    
+    <div class="modern-modal" id="mainDialogBox">
+        <button onclick="exitDialog()" class="modern-modal-close">✖</button>
+        <h2 class="modal-title">Group Settings</h2>
+        <div style="text-align: center; margin-bottom: 20px;">
             <?php
-            if ($check_result_row[1] == $_SESSION["who"]) {
+            $is_original_admin = ($check_result_row[1] == $_SESSION["who"]);
+            $is_admin = ($check_result_row[2] == "leader");
+            
+            if ($is_original_admin) {
                 echo "
-                <a href='#' onclick='openDestroyModal()' class='link btn-danger'>Destroy Group</a>
-                &nbsp;
-                <a href='#' class='link btn-primary' onclick='showEditGroupPicBox()'>Edit Picture</a>
+                <button onclick='openDestroyModal()' class='modern-action-btn danger'>Destroy Group</button>
+                <button class='modern-action-btn' onclick='showEditGroupPicBox()'>Edit Picture</button>
+                ";
+            } else if ($is_admin) {
+                echo "
+                <button class='modern-action-btn' onclick='showEditGroupPicBox()'>Edit Picture</button>
+                <a href='#' onclick='leaveGroup()' class='modern-action-btn danger'>Leave Group</a>
                 ";
             } else {
-                echo "<a href='Leave_Group/?group_id=" . $_REQUEST["group_id"] . "' class='link btn-danger'>Leave Group</a>";
+                echo "<a href='#' onclick='leaveGroup()' class='modern-action-btn danger'>Leave Group</a>";
             }
             ?>
-            <br /><br /><br />
-            <table id="group_info_table">
-                <tbody id="group_users_box">
-                </tbody>
-            </table>
-        </center>
+        </div>
+        <div style="width: 100%; max-height: 250px; overflow-y: auto;">
+            <div id="group_users_box">
+            </div>
+        </div>
     </div>
     <div id="main_box_parent">
         <div class="mobile-back-btn" style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
@@ -317,7 +391,7 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                             <img class="settingsIcon" src="../../Extra/styles/images/settings.png" alt="settings icon" style="width:30px; height:30px;">
                         </a>
                         <?php
-                        if ($check_result_row[1] == $_SESSION["who"]) {
+                        if ($check_result_row[2] == "leader" || $check_result_row[1] == $_SESSION["who"]) {
                             echo "<button onclick='showAddMemberBox()' title='Add New Member' id='add_member_button' style='background:#22c55e; color:white; border:none; border-radius:50%; width:35px; height:35px; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(34,197,94,0.4);'>+</button>";
                         }
                         ?>
@@ -342,15 +416,48 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                                             $you = $_SESSION["who"];
                                 ?>
 
+                                            <?php 
+                                            $decodedMessage = urldecode($messageitself);
+                                            $isMentioned = preg_match('/(?<!\w)@' . preg_quote($you, '/') . '\b/', $decodedMessage);
+                                            ?>
                                             <div class='message-container-outer' id='msg-pos-<?php echo $row[2]; ?>'>
-                                                <div class='message-container <?php echo ($from == $you) ? "right-message" : "left-message"; ?>' title='<?php echo $date; ?>'>
+                                                <div class='message-container <?php echo ($from == $you) ? "right-message" : "left-message"; ?><?php echo $isMentioned ? " mentioned-message" : ""; ?>' title='<?php echo $date; ?>'>
                                                     <div class='message-header'>
                                                         <div class='message-from'>
-                                                            <?php echo ($from == $you) ? "YOU <span class='edit-btn' onclick='editGroupMessage(\"".$row[2]."\")' style='cursor:pointer;margin-left:10px;' title='Edit'>✏️</span> <span class='delete-btn' onclick='deleteGroupMessage(\"".$row[2]."\")' style='cursor:pointer;margin-left:5px;' title='Delete'>🗑️</span>" : "From: " . $from; ?>
+                                                            <?php echo ($from == $you) ? "YOU" : "From: " . $from; ?>
+                                                        </div>
+                                                        <div class="message-actions">
+                                                            <div class="reaction-picker">
+                                                                <span class="action-icon" onclick="toggleReaction('<?php echo $row[2]; ?>', '😂')">😂</span>
+                                                                <span class="action-icon" onclick="toggleReaction('<?php echo $row[2]; ?>', '😭')">😭</span>
+                                                                <span class="action-icon" onclick="toggleReaction('<?php echo $row[2]; ?>', '😡')">😡</span>
+                                                                <span class="action-icon" onclick="toggleReaction('<?php echo $row[2]; ?>', '👍')">👍</span>
+                                                            </div>
+                                                            <?php if ($from == $you) { ?>
+                                                            <div class="edit-delete-picker" style="display: flex; gap: 2px;">
+                                                                <span class="action-icon" onclick="editGroupMessage('<?php echo $row[2]; ?>')" title="Edit">✏️</span>
+                                                                <span class="action-icon" onclick="deleteGroupMessage('<?php echo $row[2]; ?>')" title="Delete">🗑️</span>
+                                                            </div>
+                                                            <?php } ?>
                                                         </div>
                                                     </div>
                                                     <div class='message-text' id='msg-text-<?php echo $row[2]; ?>' data-raw='<?php echo htmlspecialchars(urldecode($messageitself), ENT_QUOTES); ?>'>
                                                         <?php echo nl2br(formatMessage((urldecode($messageitself)))); ?>
+                                                    </div>
+                                                    <div class="reactions-bar" id="reactions-<?php echo $row[2]; ?>">
+                                                        <?php
+                                                            $reactionsJson = isset($row[4]) ? $row[4] : null;
+                                                            if ($reactionsJson) {
+                                                                $reactionsObj = json_decode($reactionsJson, true);
+                                                                if ($reactionsObj) {
+                                                                    foreach ($reactionsObj as $emoji => $users) {
+                                                                        $count = count($users);
+                                                                        $userList = htmlspecialchars(implode(", ", $users));
+                                                                        echo "<span class='reaction-badge' title='{$userList}' onclick='toggleReaction(\"{$row[2]}\", \"{$emoji}\")'>{$emoji} {$count}</span>";
+                                                                    }
+                                                                }
+                                                            }
+                                                        ?>
                                                     </div>
                                                 </div>
                                             </div>
@@ -376,7 +483,8 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                             </div>
                         </div>
                         <div class="message-fields">
-                            <div class="input-wrapper">
+                            <div class="input-wrapper" style="position: relative;">
+                                <div id="mention-dropdown" class="mention-dropdown"></div>
                                 <textarea name="messageField" id="messageField" placeholder="Type a message..."></textarea>
 
                                 <div class="input-actions">
@@ -401,6 +509,15 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
     <script src="<?= asset('../../scripts/commonMethods.js') ?>"></script>
     <script>
+        function escapeHtml(unsafe) {
+            return (unsafe || "").toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         $(document).ready(function() {
             var oldpos = "<?php echo "" . $lastmessageindex; ?>";
             var you = "<?php echo "" . $_SESSION["who"]; ?>";
@@ -422,27 +539,57 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                     var mess = res.message;
                     var lastwho = res.lastwho;
 
-                    // The server pushes new messages directly, so we always append them.
+                    let isMe = (res.lastwho == you);
+                    let isMentioned = false;
+                    if (res.rawMessage) {
+                        const mentionRegex = new RegExp(`(?<!\\w)@${you}\\b`);
+                        isMentioned = mentionRegex.test(res.rawMessage);
+                    }
                     const messageElement = document.createElement("div");
                     messageElement.classList.add("message-container-outer");
-                    messageElement.id = "msg-pos-" + pos;
+                    messageElement.id = "msg-pos-" + res.pos;
                     messageElement.innerHTML = `
-                        <div class='message-container ${(lastwho == you) ? "right-message" : "left-message"}' title='${messageDate}'>
+                        <div class='message-container ${isMe ? "right-message" : "left-message"} ${isMentioned ? "mentioned-message" : ""}' title='${res.date}'>
                             <div class='message-header'>
                                 <div class='message-from'>
-                                        ${(lastwho == you) ? "YOU <span class='edit-btn' onclick='editGroupMessage(\""+pos+"\")' style='cursor:pointer;margin-left:10px;' title='Edit'>✏️</span> <span class='delete-btn' onclick='deleteGroupMessage(\""+pos+"\")' style='cursor:pointer;margin-left:5px;' title='Delete'>🗑️</span>" : "From: " + lastwho}
-                                    </div>
+                                    ${isMe ? "YOU" : "From: " + escapeHtml(res.lastwho)}
                                 </div>
-                                <div class='message-text' id='msg-text-${pos}' data-raw='${res.rawMessage.replace(/'/g, "&#39;")}'>
-                                    ${mess}
+                                <div class="message-actions">
+                                    <div class="reaction-picker">
+                                        <span class="action-icon" onclick="toggleReaction('${res.pos}', '😂')">😂</span>
+                                        <span class="action-icon" onclick="toggleReaction('${res.pos}', '😭')">😭</span>
+                                        <span class="action-icon" onclick="toggleReaction('${res.pos}', '😡')">😡</span>
+                                        <span class="action-icon" onclick="toggleReaction('${res.pos}', '👍')">👍</span>
+                                    </div>
+                                    ${isMe ? `
+                                    <div class="edit-delete-picker" style="display: flex; gap: 2px;">
+                                        <span class="action-icon" onclick="editGroupMessage('${res.pos}')" title="Edit">✏️</span>
+                                        <span class="action-icon" onclick="deleteGroupMessage('${res.pos}')" title="Delete">🗑️</span>
+                                    </div>
+                                    ` : ''}
                                 </div>
                             </div>
+                            <div class='message-text' id='msg-text-${res.pos}' data-raw='${res.rawMessage.replace(/'/g, "&#39;")}'>
+                                ${res.message}
+                            </div>
+                            <div class="reactions-bar" id="reactions-${res.pos}"></div>
                         </div>
                     `;
                     msg.appendChild(messageElement);
                     const box = document.getElementById("messages");
                     box.scrollTop = box.scrollHeight;
                     oldpos = pos;
+                } else if (res.type === 'reaction_updated' && res.tname === tname) {
+                    var reactBar = document.getElementById("reactions-" + res.pos);
+                    if (reactBar) {
+                        reactBar.innerHTML = "";
+                        for (const emoji in res.reactions) {
+                            const users = res.reactions[emoji];
+                            const count = users.length;
+                            const userList = escapeHtml(users.join(", "));
+                            reactBar.innerHTML += `<span class='reaction-badge' title='${userList}' onclick='toggleReaction("${res.pos}", "${emoji}")'>${emoji} ${count}</span>`;
+                        }
+                    }
                 } else if (res.type === 'message_deleted' && res.tname === tname) {
                     var el = document.getElementById("msg-pos-" + res.pos);
                     if (el) el.remove();
@@ -461,6 +608,10 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                 } else if (res.type === 'user_kicked' && res.tname === tname) {
                     alert("You have been kicked from this group.");
                     window.location.href = "../";
+                } else if (res.type === 'user_promoted' && res.tname === tname) {
+                    window.location.reload();
+                } else if (res.type === 'user_demoted' && res.tname === tname) {
+                    window.location.reload();
                 }
             };
 
@@ -489,10 +640,10 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                 textEl.setAttribute("data-orig-html", originalHTML);
                 
                 const html = `
-                    <textarea id="edit-box-${pos}" class="edit-textarea" style="width:100%;resize:vertical;min-height:40px;color:black;">${rawText}</textarea>
-                    <div style="margin-top:5px;text-align:right;">
-                        <button onclick="saveEditGroup('${pos}')" style="padding:2px 10px;cursor:pointer;">Save</button>
-                        <button onclick="cancelEditGroup('${pos}')" style="padding:2px 10px;cursor:pointer;">Cancel</button>
+                    <textarea id="edit-box-${pos}" class="edit-textarea">${rawText}</textarea>
+                    <div class="edit-actions">
+                        <button onclick="cancelEditGroup('${pos}')" class="btn-cancel-edit">Cancel</button>
+                        <button onclick="saveEditGroup('${pos}')" class="btn-save-edit">Save</button>
                     </div>
                 `;
                 textEl.innerHTML = html;
@@ -553,6 +704,11 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                     newText = newText ? (newText + "\n" + fileTags) : fileTags;
                 }
                 
+                if (newText === "") {
+                    alert("Message cannot be empty.");
+                    return;
+                }
+                
                 ws.send(JSON.stringify({
                     type: 'edit_group_message',
                     tname: tname,
@@ -561,13 +717,171 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                 }));
             };
 
+            window.toggleReaction = function(pos, emoji) {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        type: 'toggle_reaction',
+                        tname: tname,
+                        pos: pos,
+                        reaction: emoji,
+                        isGroup: true
+                    }));
+                }
+            };
+
+            let pendingDeletePos = null;
+
             window.deleteGroupMessage = function(pos) {
-                if (!confirm("Are you sure you want to delete this message?")) return;
-                ws.send(JSON.stringify({
-                    type: 'delete_group_message',
-                    tname: tname,
-                    pos: pos
-                }));
+                pendingDeletePos = pos;
+                $("#deleteMessageModal").css("display", "flex");
+                setTimeout(() => $("#deleteMessageModal").addClass("show"), 10);
+            };
+
+            window.closeDeleteMessageModal = function() {
+                $("#deleteMessageModal").removeClass("show");
+                setTimeout(() => {
+                    $("#deleteMessageModal").css("display", "none");
+                    pendingDeletePos = null;
+                }, 300);
+            };
+
+            window.confirmDeleteMessage = function() {
+                if (pendingDeletePos !== null) {
+                    ws.send(JSON.stringify({
+                        type: 'delete_group_message',
+                        tname: tname,
+                        pos: pendingDeletePos
+                    }));
+                    closeDeleteMessageModal();
+                }
+            };
+
+            let pendingKickMember = null;
+            window.kickUser = function(memberToKick) {
+                pendingKickMember = memberToKick;
+                document.getElementById('kickMemberName').innerText = memberToKick;
+                $("#kickMemberModal").css("display", "flex");
+                setTimeout(() => $("#kickMemberModal").addClass("show"), 10);
+            };
+
+            window.closeKickMemberModal = function() {
+                $("#kickMemberModal").removeClass("show");
+                setTimeout(() => {
+                    $("#kickMemberModal").css("display", "none");
+                    pendingKickMember = null;
+                }, 300);
+            };
+
+            window.confirmKickMember = function() {
+                if (pendingKickMember) {
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify({
+                            type: 'kick_user',
+                            tname: tname,
+                            target: pendingKickMember
+                        }));
+                    }
+                    setTimeout(() => {
+                        window.location.href = "../../kickMember.php?group_id=<?php echo $_REQUEST['group_id'] ?? ''; ?>&member=" + encodeURIComponent(pendingKickMember);
+                    }, 100);
+                    closeKickMemberModal();
+                }
+            };
+
+            let pendingPromoteMember = null;
+            window.promoteMember = function(memberToPromote) {
+                pendingPromoteMember = memberToPromote;
+                document.getElementById('promoteMemberName').innerText = memberToPromote;
+                $("#promoteMemberModal").css("display", "flex");
+                setTimeout(() => $("#promoteMemberModal").addClass("show"), 10);
+            };
+
+            window.closePromoteMemberModal = function() {
+                $("#promoteMemberModal").removeClass("show");
+                setTimeout(() => {
+                    $("#promoteMemberModal").css("display", "none");
+                    pendingPromoteMember = null;
+                }, 300);
+            };
+
+            window.confirmPromoteMember = function() {
+                if (pendingPromoteMember) {
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify({
+                            type: 'promote_user',
+                            tname: tname,
+                            target: pendingPromoteMember
+                        }));
+                    }
+                    closePromoteMemberModal();
+                }
+            };
+
+            let pendingDemoteMember = null;
+            window.demoteMember = function(memberToDemote) {
+                pendingDemoteMember = memberToDemote;
+                document.getElementById('demoteMemberName').innerText = memberToDemote;
+                $("#demoteMemberModal").css("display", "flex");
+                setTimeout(() => $("#demoteMemberModal").addClass("show"), 10);
+            };
+
+            window.closeDemoteMemberModal = function() {
+                $("#demoteMemberModal").removeClass("show");
+                setTimeout(() => {
+                    $("#demoteMemberModal").css("display", "none");
+                    pendingDemoteMember = null;
+                }, 300);
+            };
+
+            window.confirmDemoteMember = function() {
+                if (pendingDemoteMember) {
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify({
+                            type: 'demote_user',
+                            tname: tname,
+                            target: pendingDemoteMember
+                        }));
+                    }
+                    closeDemoteMemberModal();
+                }
+            };
+
+            window.leaveGroup = function() {
+                $("#leaveGroupModal").css("display", "flex");
+                setTimeout(() => $("#leaveGroupModal").addClass("show"), 10);
+            };
+
+            window.closeLeaveGroupModal = function() {
+                $("#leaveGroupModal").removeClass("show");
+                setTimeout(() => {
+                    $("#leaveGroupModal").css("display", "none");
+                }, 300);
+            };
+
+            window.confirmLeaveGroup = function() {
+                window.location.href = "Leave_Group/?group_id=<?php echo $_REQUEST['group_id'] ?? ''; ?>";
+            };
+
+            let pendingAddMember = null;
+            window.addMemberToGroup = function(memberToAdd) {
+                pendingAddMember = memberToAdd;
+                document.getElementById('addMemberName').innerText = memberToAdd;
+                $("#addMemberModal").css("display", "flex");
+                setTimeout(() => $("#addMemberModal").addClass("show"), 10);
+            };
+
+            window.closeAddMemberModal = function() {
+                $("#addMemberModal").removeClass("show");
+                setTimeout(() => {
+                    $("#addMemberModal").css("display", "none");
+                    pendingAddMember = null;
+                }, 300);
+            };
+
+            window.confirmAddMember = function() {
+                if (pendingAddMember) {
+                    window.location.href = "../../addMemberToGroup.php?group_id=<?php echo $_REQUEST['group_id'] ?? ''; ?>&user=" + encodeURIComponent(pendingAddMember);
+                }
             };
 
             ws.onerror = function() {
@@ -595,6 +909,77 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                 attachButton.innerHTML = `📎 (${files.length})`;
                 attachButton.style.color = "#22c55e"; // Green to indicate attached
             });
+
+            // Mention Logic
+            let groupMembers = [];
+            let isMentioning = false;
+            let mentionQuery = '';
+            let mentionStartIndex = -1;
+            const mentionDropdown = document.getElementById('mention-dropdown');
+
+            // Fetch group members once
+            fetch(`../../getGroupMembersJSON.php?group_id=${group_id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.members) {
+                        groupMembers = data.members;
+                    }
+                });
+
+            messageField.addEventListener('input', function(e) {
+                const val = messageField.value;
+                const cursorPos = messageField.selectionStart;
+
+                // Find the last '@' before the cursor
+                const textBeforeCursor = val.substring(0, cursorPos);
+                const lastAtPos = textBeforeCursor.lastIndexOf('@');
+
+                if (lastAtPos !== -1) {
+                    // Check if '@' is at the start or preceded by a space
+                    if (lastAtPos === 0 || textBeforeCursor[lastAtPos - 1] === ' ' || textBeforeCursor[lastAtPos - 1] === '\n') {
+                        // Check if there's no space after '@' up to the cursor
+                        const queryPart = textBeforeCursor.substring(lastAtPos + 1);
+                        if (!queryPart.includes(' ') && !queryPart.includes('\n')) {
+                            isMentioning = true;
+                            mentionStartIndex = lastAtPos;
+                            mentionQuery = queryPart.toLowerCase();
+                            showMentionDropdown();
+                            return;
+                        }
+                    }
+                }
+                
+                isMentioning = false;
+                mentionDropdown.style.display = 'none';
+            });
+
+            function showMentionDropdown() {
+                mentionDropdown.innerHTML = '';
+                const filtered = groupMembers.filter(m => m.toLowerCase().includes(mentionQuery) && m !== "<?php echo $_SESSION['who']; ?>");
+                
+                if (filtered.length === 0) {
+                    mentionDropdown.style.display = 'none';
+                    return;
+                }
+
+                filtered.forEach(member => {
+                    const div = document.createElement('div');
+                    div.className = 'mention-dropdown-item';
+                    div.innerText = member;
+                    div.onclick = function() {
+                        const val = messageField.value;
+                        const before = val.substring(0, mentionStartIndex);
+                        const after = val.substring(messageField.selectionStart);
+                        messageField.value = before + '@' + member + ' ' + after;
+                        mentionDropdown.style.display = 'none';
+                        isMentioning = false;
+                        messageField.focus();
+                    };
+                    mentionDropdown.appendChild(div);
+                });
+
+                mentionDropdown.style.display = 'flex';
+            }
 
             $("#sendButton").click(async function() {
                 var message = "" + document.getElementById("messageField").value;
@@ -665,16 +1050,82 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
     </script>
     <div id="destroyGroupModal" class="custom-modal">
         <div class="custom-modal-content">
-            <h3 style="color:#fff; margin-bottom: 20px;">Confirm Destruction</h3>
-            <p style="color:#ccc; margin-bottom: 30px;">Are you sure you want to destroy this group? This action cannot be undone.</p>
+            <h3 style="color:#fff; margin-bottom: 20px;">Destroy Group</h3>
+            <p style="color:#ccc; margin-bottom: 30px;">Are you sure you want to completely destroy this group?</p>
             <div class="custom-modal-actions">
                 <button onclick="closeDestroyModal()" class="btn-cancel">Cancel</button>
                 <button id="confirmDestroyBtn" class="btn-confirm">Destroy</button>
             </div>
         </div>
     </div>
-</body>
+    
+    <div id="deleteMessageModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <h3 style="color:#fff; margin-bottom: 20px;">Confirm Deletion</h3>
+            <p style="color:#ccc; margin-bottom: 30px;">Are you sure you want to delete this message?</p>
+            <div class="custom-modal-actions">
+                <button onclick="closeDeleteMessageModal()" class="btn-cancel">Cancel</button>
+                <button onclick="confirmDeleteMessage()" class="btn-confirm">Delete</button>
+            </div>
+        </div>
+    </div>
 
+    <div id="kickMemberModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <h3 style="color:#fff; margin-bottom: 20px;">Kick Member</h3>
+            <p style="color:#ccc; margin-bottom: 30px;">Are you sure you want to kick <span id="kickMemberName" style="color:#F76D57; font-weight:bold;"></span>?</p>
+            <div class="custom-modal-actions">
+                <button onclick="closeKickMemberModal()" class="btn-cancel">Cancel</button>
+                <button onclick="confirmKickMember()" class="btn-confirm">Kick</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="promoteMemberModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <h3 style="color:#fff; margin-bottom: 20px;">Promote Member</h3>
+            <p style="color:#ccc; margin-bottom: 30px;">Are you sure you want to promote <span id="promoteMemberName" style="color:#3b82f6; font-weight:bold;"></span> to Admin?</p>
+            <div class="custom-modal-actions">
+                <button onclick="closePromoteMemberModal()" class="btn-cancel">Cancel</button>
+                <button onclick="confirmPromoteMember()" class="btn-confirm" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">Promote</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="demoteMemberModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <h3 style="color:#fff; margin-bottom: 20px;">Demote Member</h3>
+            <p style="color:#ccc; margin-bottom: 30px;">Are you sure you want to demote <span id="demoteMemberName" style="color:#f59e0b; font-weight:bold;"></span> back to a normal member?</p>
+            <div class="custom-modal-actions">
+                <button onclick="closeDemoteMemberModal()" class="btn-cancel">Cancel</button>
+                <button onclick="confirmDemoteMember()" class="btn-confirm" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">Demote</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="leaveGroupModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <h3 style="color:#fff; margin-bottom: 20px;">Leave Group</h3>
+            <p style="color:#ccc; margin-bottom: 30px;">Are you sure you want to leave this group?</p>
+            <div class="custom-modal-actions">
+                <button onclick="closeLeaveGroupModal()" class="btn-cancel">Cancel</button>
+                <button onclick="confirmLeaveGroup()" class="btn-confirm">Leave</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addMemberModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <h3 style="color:#fff; margin-bottom: 20px;">Add Member</h3>
+            <p style="color:#ccc; margin-bottom: 30px;">Are you sure you want to invite <span id="addMemberName" style="color:#22c55e; font-weight:bold;"></span> to this group?</p>
+            <div class="custom-modal-actions">
+                <button onclick="closeAddMemberModal()" class="btn-cancel">Cancel</button>
+                <button onclick="confirmAddMember()" class="btn-confirm" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">Add</button>
+            </div>
+        </div>
+    </div>
+
+</body>
 </html>
 
 <?php

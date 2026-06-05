@@ -9,6 +9,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
 <html>
 
 <head>
+    <link rel="icon" type="image/x-icon" href="../../Extra/images/favicon.ico">
     <title>
         All Chat | Edit Profile
     </title>

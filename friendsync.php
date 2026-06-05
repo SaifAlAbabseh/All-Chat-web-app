@@ -12,14 +12,8 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
         while ($row = mysqli_fetch_row($result)) {
             $user1 = $row[0];
             $user2 = $row[1];
-            $get;
-            if ($user1 == $_SESSION["who"]) {
-                $get = "SELECT * FROM users WHERE BINARY username=?";
-                $username_to_get = $user2;
-            } else if ($user2 == $_SESSION["who"]) {
-                $get = "SELECT * FROM users WHERE BINARY username=?";
-                $username_to_get = $user1;
-            }
+            $get = "SELECT * FROM users WHERE BINARY username=?";
+            $username_to_get = ($user1 == $_SESSION["who"]) ? $user2 : $user1;
             $stmt2 = mysqli_prepare($conn, $get);
             mysqli_stmt_bind_param($stmt2, "s", $username_to_get);
             mysqli_stmt_execute($stmt2);
@@ -28,13 +22,16 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
                 while ($row2 = mysqli_fetch_row($result2)) {
                     $ava = $row2[3];
                     echo "
-                                    <div class='friendRow'>
-                                        <img src='View_Image/?u=" . $row2[0] . "' width='50px' height='50px' style='border-radius:50%;border:solid 4px " . (($ava == "0") ? "red" : "green") . "'/>
+                                    <div class='friendRow' title= '" . $row2[0] . "'>
+                                        <div style='display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;'>
+                                            <img src='View_Image/?u=" . $row2[0] . "' width='60px' height='60px' style='border-radius:50%; object-fit: cover; border:solid 3px " . (($ava == "0") ? "#ef4444" : "#10b981") . "'/>
+                                        </div>
                                         <h2 class='friendUsername'>" . $row2[0] . "</h2> 
-                                        <a href='Chat/?with=" . $row2[0] . "' class='link'>Chat</a>
-                                        <a href='javascript:void(0)' onclick='openDeleteModal(\"".$row2[0]."\")' class='link'>Delete</a>
+                                        <div class='bubble-btn-container'>
+                                            <a href='Chat/?with=" . $row2[0] . "' class='bubble-btn chat' title='Chat'>&#128172;</a>
+                                            <button onclick='openDeleteModal(\"".$row2[0]."\")' class='bubble-btn delete' title='Delete'>&#128465;</button>
+                                        </div>
                                     </div>
-
                             ";
                 }
             }

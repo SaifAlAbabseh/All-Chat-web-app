@@ -6,7 +6,25 @@ function toggle() {
     } else {
         $("#m").toggleClass("menuC1");
     }
-    $("#mainHeader").slideToggle();
+    const header = $("#mainHeader");
+    const overlay = $("#drawer-overlay");
+    
+    if (header.hasClass("drawer-open")) {
+        header.removeClass("drawer-open");
+        overlay.removeClass("show");
+    } else {
+        // Ensure overlay exists
+        if (overlay.length === 0) {
+            $("body").append('<div id="drawer-overlay" class="drawer-overlay"></div>');
+            $("#drawer-overlay").click(function() {
+                toggle();
+                $("#friendBox").css({ "pointer-events": "initial", "opacity": "1", "user-select": "auto" });
+                $("#groupsBox").css({ "pointer-events": "initial", "opacity": "1", "user-select": "auto" });
+            });
+        }
+        header.addClass("drawer-open");
+        $("#drawer-overlay").addClass("show");
+    }
 }
 
 function hide() {
@@ -30,13 +48,9 @@ $(document).ready(function () {
     $("#exit").click(exitDialog);
     $("#exit_menu_button").click(function () {
         toggle();
-        $("#friendBox").css({ "pointer-events": "initial", "opacity": "1", "user-select": "auto" });
-        $("#groupsBox").css({ "pointer-events": "initial", "opacity": "1", "user-select": "auto" });
     });
     $("#m").click(function () {
         toggle();
-        $("#friendBox").css({ "pointer-events": "none", "opacity": "0.2", "user-select": "none" });
-        $("#groupsBox").css({ "pointer-events": "none", "opacity": "0.2", "user-select": "none" });
     });
     generateURL("friendsync.php", 1).then(url => {
         const friends_url = url;

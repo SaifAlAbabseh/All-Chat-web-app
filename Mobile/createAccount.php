@@ -21,6 +21,7 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
 <html lang="en">
 
 <head>
+    <link rel="icon" type="image/x-icon" href="../Extra/images/favicon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="<?= asset('../Extra/styles/cssFiles/themes.css') ?>" />
@@ -110,6 +111,15 @@ function generateSignupCode()
 
 
 if (isset($_POST["signupButton"]) || isset($_POST["verification_button"])) {
+    echo "<script>
+        var temp = document.createElement('div');
+        temp.setAttribute('id', 'loading_box_outer_id');
+        temp.setAttribute('class', 'loading_box_outer');
+        temp.innerHTML = '<div class=loading_bar></div><h3 class=loading_label>Sending Email...</h3>';
+        document.body.appendChild(temp);
+    </script>";
+    ob_flush();
+    flush();
     extract($_POST);
     if (isset($signupButton)) {
         $un = $signupusername;
@@ -177,7 +187,12 @@ if (isset($_POST["signupButton"]) || isset($_POST["verification_button"])) {
                             require_once "../mail.php";
                             if (sendVerificationCodeMail($signupemail, $un, $_SESSION["signup_code"])) {
                                 echo
-                                "<div id='email_verification_box_parent'>
+                                "<script>
+                                    if(document.getElementById('loading_box_outer_id')){
+                                        document.getElementById('loading_box_outer_id').style.display='none';
+                                    }
+                                </script>
+                                <div id='email_verification_box_parent'>
                                     <div id='email_verification_box'>
                                         <h2 style='color:white'>We've sent an email verification code to your email</h2>
                                         <form action='' method='post'>
@@ -186,6 +201,8 @@ if (isset($_POST["signupButton"]) || isset($_POST["verification_button"])) {
                                         </form>
                                     </div>
                                 </div>";
+                                ob_flush();
+                                flush();
                             } else {
                                 echo
                                 "<script>

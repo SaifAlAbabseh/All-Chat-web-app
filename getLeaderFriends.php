@@ -27,23 +27,22 @@ if (isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_R
             if (mysqli_num_rows($result2)) {
                 while ($row2 = mysqli_fetch_row($result2)) {
                     echo "
-                                    
-                                    <tr>
-                                        <td><img src='../View_Image/?u=" . $row2[0] . "' width='50px' height='50px' style='border-radius:50%'/></td>
-                                        <td><h2 style='color:white'>" . $row2[0] . "</h2></td>
-                                        <td>
-                                            <a style='border-color:green;' href='../../addMemberToGroup.php?group_id=" . $_REQUEST["group_id"] . "&user=" . $row2[0] . "' id='addlink' class='link'>Add</a>
-                                        </td>
-                                    </tr>
-
-
-                                    ";
+                                    <div class='friendRow' title= '" . $row2[0] . "'>
+                                        <div style='display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;'>
+                                            <img src='../View_Image/?u=" . $row2[0] . "' width='60px' height='60px' style='border-radius:50%; object-fit: cover; border:none;'/>
+                                        </div>
+                                        <h2 class='friendUsername'>" . $row2[0] . "</h2> 
+                                        <div class='bubble-btn-container'>
+                                            <button onclick='addMemberToGroup(\"" . $row2[0] . "\")' class='bubble-btn chat' title='Add' style='background: linear-gradient(135deg, #10b981, #059669); font-size: 20px;'>➕</button>
+                                        </div>
+                                    </div>
+                            ";
                 }
             }
         }
     } else {
-        echo "<tr><th><h2 style='color:white'>No friends to show..</h2></th></tr>";
+        echo "<div style='text-align:center; padding: 20px;'><h2 style='margin:0; color: #888;'>No friends to show..</h2></div>";
     }
 } else {
-    echo "<tr><th><h2 style='color:white'>Error..</h2></th></tr>";
+    echo "<div style='text-align:center; padding: 20px;'><h2 style='margin:0; color: #888;'>Error..</h2></div>";
 }

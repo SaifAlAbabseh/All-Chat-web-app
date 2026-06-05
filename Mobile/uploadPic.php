@@ -24,6 +24,7 @@ else{
 <html>
 
 <head>
+    <link rel="icon" type="image/x-icon" href="../Extra/images/favicon.ico">
     <title>
         ALL CHAT
     </title>

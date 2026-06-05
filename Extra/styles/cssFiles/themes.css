@@ -16,14 +16,17 @@ body {
     width: 8px;
     height: 8px;
 }
+
 ::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.1);
     border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.4);
 }
@@ -190,7 +193,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    width: 320px;
+    width: 360px;
     height: 450px;
     position: absolute;
     top: 15%;
@@ -206,7 +209,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    width: 320px;
+    width: 360px;
     height: 450px;
     position: absolute;
     top: 15%;
@@ -291,23 +294,118 @@ body {
 
 @media only screen and (max-width:1430px) {
     #exit_menu_button_box {
-        display: block;
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 10002;
+    }
+
+    #exit_menu_button {
+        background: transparent;
+        color: #F76D57;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 35px;
+        height: 35px;
         display: flex;
+        align-items: center;
         justify-content: center;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+    #exit_menu_button:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: rotate(90deg) scale(1.1);
     }
 
     .mainHeaderImage {
-        position: absolute;
-        height: max-content;
-        width: 50%;
+        position: fixed;
+        top: 0;
+        left: -320px;
+        height: 100vh;
+        width: 280px;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(15px);
         text-align: center;
-        z-index: 1000;
-        overflow: visible;
+        z-index: 10001;
+        overflow-y: auto;
+        overflow-x: hidden;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 5px 0 25px rgba(0, 0, 0, 0.6);
+        display: flex !important;
+        /* Force flex to override any slideToggle inline blocks */
+        flex-direction: column;
+        justify-content: flex-start;
+        padding-top: 40px;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .mainHeaderImage.drawer-open {
+        left: 0;
+    }
+
+    .drawer-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(3px);
+        z-index: 10000;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .drawer-overlay.show {
+        display: block;
+        opacity: 1;
+    }
+
+    /* Redesign inner menu container for drawer */
+    .menuContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 20px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .menuContainer a.link {
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+        padding: 14px 20px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.2s ease;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .menuContainer a.link:hover {
+        background: rgba(247, 109, 87, 0.15);
+        border-color: #F76D57;
+        color: #F9EBB2;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(247, 109, 87, 0.2);
     }
 
     .friendsListBox,
     .groupsListBox {
         position: static;
+    }
+
+    .groupsListBox {
+        margin-bottom: 25px;
     }
 
     #addfriendBox {
@@ -380,11 +478,6 @@ body {
     visibility: hidden;
 }
 
-#picField:hover {
-    background-color: white;
-    font-size: 2vw;
-}
-
 .footOfPic tr td {
     text-align: center;
     border-radius: 10px;
@@ -451,16 +544,27 @@ body {
 }
 
 .i {
-    font-family: sans-serif;
-    font-weight: bold;
-    color: white;
-    background-color: gray;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-family: serif;
     cursor: pointer;
-    border: solid lightgreen 2px;
-    outline: none;
-    width: 30px;
-    height: 30px;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.i:hover {
+    background: #0162AF;
+    color: white;
+    border-color: #0162AF;
+    transform: scale(1.1);
 }
 
 .outer_reqs_box {
@@ -474,14 +578,19 @@ body {
     position: absolute;
     left: 50%;
     top: 50%;
-    background-color: gray;
-    border-radius: 5px;
-    border: solid lightgreen 5px;
+    transform: translate(-50%, -50%);
+    background: #2B303A;
+    border: 2px solid #F76D57;
+    border-radius: 12px;
     padding: 20px;
-    width: 30%;
+    width: 80%;
+    max-width: 400px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    color: #fff;
+    z-index: 10000;
+    text-align: center;
+    font-size: 1.1rem;
     display: none;
-    color: white;
-    z-index: 1;
 }
 
 #mainDialogBox,
@@ -528,10 +637,6 @@ body {
     border: solid 5px black;
 }
 
-#createGroupBox {
-    height: 50%;
-    width: 50%;
-}
 
 #exit {
     position: absolute;
@@ -553,10 +658,15 @@ body {
     align-items: center;
     justify-content: center;
 }
+
 #exit:hover {
     color: #ff523a;
     transform: rotate(90deg) scale(1.1);
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.light-mode #exit:hover {
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 .closeButtonForNotifications {
@@ -598,7 +708,9 @@ body {
 }
 
 #createGroupBox-inner {
-    overflow: auto;
+    overflow: visible;
+    height: auto;
+    justify-content: flex-start;
 }
 
 #add-main-dialog-inner {
@@ -608,20 +720,33 @@ body {
 }
 
 .otherPlatformDownloadLink {
-    color: black;
-    border: solid black 2px;
-    padding: 5px 10px;
+    color: white;
+    border: solid white 2px;
+    padding: 10px 15px;
     text-decoration: none;
-    font-size: 3vh;
-    width: 30vw;
+    font-size: 1.2rem;
+    width: 80%;
+    max-width: 300px;
     text-align: center;
     transition: all 0.5s;
     border-radius: 10px;
+    margin: 10px 0;
+    box-sizing: border-box;
 }
 
 .otherPlatformDownloadLink:hover {
-    background-color: black;
-    color: red
+    background-color: white;
+    color: #0162AF;
+}
+
+body.light-mode .otherPlatformDownloadLink {
+    color: #034780;
+    border: solid #034780 2px;
+}
+
+body.light-mode .otherPlatformDownloadLink:hover {
+    background-color: #034780;
+    color: white;
 }
 
 .friends_result {
@@ -710,6 +835,21 @@ body {
 .settingsIcon {
     width: 40px;
     height: 40px;
+    filter: invert(0.8);
+    transition: all 0.3s ease;
+}
+
+.settingsIconClickable:hover .settingsIcon {
+    filter: invert(1);
+    transform: rotate(90deg);
+}
+
+.light-mode .settingsIcon {
+    filter: invert(0);
+}
+
+.light-mode .settingsIconClickable:hover .settingsIcon {
+    filter: invert(0.3);
 }
 
 .main-dialog-inner {
@@ -888,7 +1028,7 @@ body {
 #bellImage {
     width: 32px;
     height: 32px;
-    stroke:#000;
+    stroke: #000;
     stroke-width: 1px;
 }
 
@@ -921,7 +1061,7 @@ body {
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     color: white;
     position: fixed;
-    z-index: 10000;
+    z-index: 10005;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -935,27 +1075,101 @@ body {
     padding: 0 20px;
 }
 
-#innerData, #groupsInnerData {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    padding: 10px 15px;
-}
-
-.friendRow, .groupRow {
+#innerData,
+#groupsInnerData,
+#group_users_box {
     display: flex;
     flex-direction: row;
-    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    padding: 10px 15px;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    align-content: flex-start;
+}
+
+.friendRow,
+.groupRow {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 15px 10px;
+    width: 140px;
+    height: 195px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.friendRow:hover,
+.groupRow:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .friendUsername {
     color: white;
-    width: 100px;
-    max-width: 100px;
+    width: 100%;
+    max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: center;
+    margin: 5px 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Bubble Buttons */
+.bubble-btn-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.bubble-btn {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.bubble-btn.chat {
+    background: linear-gradient(135deg, #0162AF 0%, #00508F 100%);
+    color: white;
+    box-shadow: 0 4px 10px rgba(1, 98, 175, 0.3);
+}
+
+.bubble-btn.delete {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+}
+
+.bubble-btn:hover {
+    transform: scale(1.1);
+}
+
+.bubble-btn.chat:hover {
+    box-shadow: 0 6px 15px rgba(1, 98, 175, 0.5);
+}
+
+.bubble-btn.delete:hover {
+    box-shadow: 0 6px 15px rgba(239, 68, 68, 0.5);
 }
 
 .message-container {
@@ -1000,7 +1214,7 @@ body {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 30px;
     padding: 5px 15px;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 #messageField {
@@ -1016,6 +1230,7 @@ body {
     line-height: 24px;
     font-family: inherit;
 }
+
 #messageField::placeholder {
     color: rgba(255, 255, 255, 0.5);
 }
@@ -1035,13 +1250,14 @@ body {
     transition: background 0.2s;
     opacity: 0.7;
 }
+
 .icon-btn:hover {
     background: rgba(255, 255, 255, 0.1);
     opacity: 1;
 }
 
 #chatBox {
-    padding: 0 0 50px 0 ;
+    padding: 0 0 50px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1065,7 +1281,7 @@ body {
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-bottom-left-radius: 5px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(5px);
 }
 
@@ -1092,88 +1308,88 @@ body {
 }
 
 .send-btn {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  flex-shrink: 0;
-  color: white;
-  background: linear-gradient(135deg, #ee3f3f, #7c3aed);
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    flex-shrink: 0;
+    color: white;
+    background: linear-gradient(135deg, #ee3f3f, #7c3aed);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  transition: all 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .send-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.7);
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.7);
 }
 
 .send-btn:active {
-  transform: scale(0.95);
+    transform: scale(0.95);
 }
 
 .chat-input-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px;
-  background: #0f172a;
-  border-top: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: #0f172a;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* Wrapper */
 .input-wrapper {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  background: #1e293b;
-  border-radius: 25px;
-  padding: 8px 12px;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: #1e293b;
+    border-radius: 25px;
+    padding: 8px 12px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 /* Textarea */
 .input-wrapper textarea {
-  flex: 1;
-  border: none;
-  outline: none;
-  resize: none;
-  background: transparent;
-  color: #e2e8f0;
-  font-size: 14px;
-  padding: 6px;
-  max-height: 80px;
+    flex: 1;
+    border: none;
+    outline: none;
+    resize: none;
+    background: transparent;
+    color: #e2e8f0;
+    font-size: 14px;
+    padding: 6px;
+    max-height: 80px;
 }
 
 /* Placeholder */
 .input-wrapper textarea::placeholder {
-  color: #64748b;
+    color: #64748b;
 }
 
 /* Icons */
 .input-actions {
-  display: flex;
-  gap: 6px;
+    display: flex;
+    gap: 6px;
 }
 
 .icon-btn {
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  cursor: pointer;
-  font-size: 16px;
-  transition: 0.2s;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.2s;
 }
 
 .icon-btn:hover {
-  color: #38bdf8;
-  transform: scale(1.2);
+    color: #38bdf8;
+    transform: scale(1.2);
 }
 
 .link {
@@ -1241,6 +1457,7 @@ body {
     border-collapse: separate;
     border-spacing: 0 10px;
 }
+
 .notificationsInnerBox th {
     text-align: left;
     padding: 10px 15px;
@@ -1248,23 +1465,29 @@ body {
     font-size: 1.1rem;
     border-bottom: 2px solid rgba(247, 109, 87, 0.3);
 }
+
 .notificationsInnerBox td {
     padding: 15px;
     background: rgba(255, 255, 255, 0.05);
 }
+
 .notificationsInnerBox tr td:first-child {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
 }
+
 .notificationsInnerBox tr td:last-child {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
 }
+
 .notificationUsername {
     margin: 5px 0 0 0;
     font-size: 1.1rem;
 }
-.accept-btn, .reject-btn {
+
+.accept-btn,
+.reject-btn {
     border: none;
     border-radius: 8px;
     padding: 8px 16px;
@@ -1275,18 +1498,22 @@ body {
     margin: 2px 0;
     width: 100%;
 }
+
 .accept-btn {
     background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
     box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3);
 }
+
 .accept-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(34, 197, 94, 0.5);
 }
+
 .reject-btn {
     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
 }
+
 .reject-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(239, 68, 68, 0.5);
@@ -1336,6 +1563,25 @@ body.light-mode .user-card-logout:hover {
     box-shadow: 0 6px 15px rgba(3, 71, 128, 0.5);
 }
 
+/* Light Mode overrides for .i and .reqs */
+body.light-mode .i {
+    background: rgba(0, 0, 0, 0.05);
+    color: #666;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .i:hover {
+    background: #0162AF;
+    color: white;
+}
+
+body.light-mode .reqs {
+    background: #fff;
+    color: #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-color: #0162AF;
+}
+
 /* Light mode for notifications */
 body.light-mode #notificationsBox {
     background: rgba(255, 255, 255, 0.85);
@@ -1343,9 +1589,23 @@ body.light-mode #notificationsBox {
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
     color: #2B303A;
 }
+
+/* Light mode for other modern modals */
+body.light-mode #mainDialogBox,
+body.light-mode #createGroupBox,
+body.light-mode #addMainDialogBox,
+body.light-mode #groupEditBox,
+body.light-mode #addfriendBox {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    color: #2B303A;
+}
+
 body.light-mode .notificationsInnerBox td {
     background: rgba(0, 0, 0, 0.05);
 }
+
 body.light-mode .notificationsInnerBox th {
     color: #034780;
     border-bottom: 2px solid rgba(3, 71, 128, 0.2);
@@ -1355,9 +1615,11 @@ body.light-mode .notificationsInnerBox th {
 body.light-mode ::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.05);
 }
+
 body.light-mode ::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
 }
+
 body.light-mode ::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.4);
 }
@@ -1377,14 +1639,17 @@ body.light-mode ::-webkit-scrollbar-thumb:hover {
     transition: all 0.3s ease;
     padding: 0;
 }
+
 .theme-btn:hover {
     transform: scale(1.1);
 }
+
 .theme-btn.active {
     background: rgba(255, 255, 255, 0.1);
     border-color: #F76D57;
     box-shadow: 0 0 10px rgba(247, 109, 87, 0.4);
 }
+
 body.light-mode .theme-btn.active {
     background: rgba(0, 0, 0, 0.05);
     border-color: #034780;
@@ -1397,6 +1662,7 @@ body.light-mode .theme-btn.active {
     text-align: center;
     margin-top: 30px;
 }
+
 body.light-mode .empty-state-msg {
     color: #64748b;
 }
@@ -1455,40 +1721,50 @@ body.light-mode .main_chat_inner_box {
     border: 1px solid rgba(255, 255, 255, 0.6);
     color: #2B303A;
 }
+
 body.light-mode .header {
     background: rgba(255, 255, 255, 0.5);
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     color: #034780;
 }
+
 body.light-mode .header h2 {
     color: #034780 !important;
 }
+
 body.light-mode .message-fields {
     background: rgba(255, 255, 255, 0.5);
     border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
+
 body.light-mode .input-wrapper {
     background: rgba(0, 0, 0, 0.05);
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
 }
+
 body.light-mode #messageField {
     color: #2B303A;
 }
+
 body.light-mode #messageField::placeholder {
     color: rgba(43, 48, 58, 0.5);
 }
+
 body.light-mode .icon-btn {
     color: #034780;
 }
+
 body.light-mode .icon-btn:hover {
     background: rgba(0, 0, 0, 0.1);
 }
+
 body.light-mode .left-message {
     background: rgba(255, 255, 255, 0.8);
     color: #2B303A;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
+
 body.light-mode .message-from {
     color: #034780;
 }
@@ -1615,38 +1891,50 @@ body.light-mode .profileLink:hover {
         border-radius: 0 !important;
         border: none !important;
     }
+
     .main_chat_box {
         padding: 0 !important;
     }
+
     .message-fields {
         padding: 10px !important;
         gap: 8px !important;
     }
+
     .send-btn {
         width: 40px !important;
         height: 40px !important;
     }
+
     .input-wrapper {
         padding: 5px 10px !important;
     }
+
     .input-actions {
         gap: 2px !important;
     }
+
     .icon-btn {
         padding: 2px !important;
         font-size: 1.1rem !important;
     }
+
     .mobile-back-btn {
         top: 15px !important;
         left: 10px !important;
         transform: scale(0.8);
         transform-origin: top left;
     }
+
     .header {
         padding-left: 110px !important;
         justify-content: flex-start !important;
     }
-    #groupEditBox, #addfriendBox, #mainDialogBox, #createGroupBox {
+
+    #groupEditBox,
+    #addfriendBox,
+    #mainDialogBox,
+    #createGroupBox {
         width: 90vw !important;
         max-width: 400px !important;
         left: 50% !important;
@@ -1655,4 +1943,448 @@ body.light-mode .profileLink:hover {
         position: fixed !important;
         margin: 0 !important;
     }
+}
+
+/* Custom Row Splitter */
+.row-splitter {
+    height: 30px;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.row-splitter::after {
+    content: '';
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+body.light-mode .row-splitter::after {
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+}
+
+/* Modern Confirm Modal Styles */
+.custom-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.custom-modal.show {
+    display: flex;
+    opacity: 1;
+}
+
+.custom-modal-content {
+    background: #2B303A;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+    min-width: 300px;
+    border: 1px solid #3d4554;
+}
+
+.custom-modal.show .custom-modal-content {
+    transform: scale(1);
+}
+
+.custom-modal-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.custom-modal-actions button {
+    flex: 1;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel {
+    background: #394240;
+    color: #fff;
+}
+
+.btn-cancel:hover {
+    background: #506C7F;
+}
+
+.btn-confirm {
+    background: #F76D57;
+    color: #fff;
+}
+
+.btn-confirm:hover {
+    background: #ff523a;
+    box-shadow: 0 0 15px rgba(247, 109, 87, 0.4);
+}
+
+body.light-mode .custom-modal-content {
+    background: #fff;
+    border: 1px solid #ddd;
+}
+
+body.light-mode .custom-modal h3 {
+    color: #333 !important;
+}
+
+body.light-mode .custom-modal p {
+    color: #666 !important;
+}
+
+/* Inline Message Editing Styles */
+.edit-textarea {
+    width: 100%;
+    box-sizing: border-box !important;
+    min-height: 40px;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    color: #fff !important;
+    font-size: 1rem !important;
+    font-family: inherit !important;
+    resize: vertical !important;
+    outline: none !important;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+    margin-top: 5px !important;
+    margin-bottom: 8px !important;
+}
+
+.edit-textarea:focus {
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-color: #fff !important;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3), inset 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+}
+
+.edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.edit-actions button {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-save-edit {
+    background: #10b981;
+    color: white;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+.btn-save-edit:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.btn-cancel-edit {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.btn-cancel-edit:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+body.light-mode .edit-textarea {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    color: #333 !important;
+}
+
+body.light-mode .edit-textarea:focus {
+    background: rgba(0, 0, 0, 0.1) !important;
+    border-color: #F76D57 !important;
+}
+
+body.light-mode .btn-cancel-edit {
+    background: rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+body.light-mode .btn-cancel-edit:hover {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+/* Chat File Link Styles */
+.chatFileLink {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+body.light-mode .chatFileLink {
+    background: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Reactions Styles */
+.reactions-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+    width: 0;
+    min-width: 100%;
+}
+
+.reaction-badge {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.reaction-badge:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+body.light-mode .reaction-badge {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+body.light-mode .reaction-badge:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Message Hover Actions (Edit/Delete/React) */
+.message-actions {
+    position: absolute;
+    top: -15px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    border-radius: 20px;
+    padding: 2px 8px;
+    display: none;
+    gap: 5px;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.message-container:hover .message-actions {
+    display: flex;
+}
+
+body.light-mode .message-actions {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.action-icon {
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+    padding: 2px;
+}
+
+.action-icon:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+.reaction-picker {
+    display: flex;
+    gap: 2px;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    padding-right: 5px;
+    margin-right: 2px;
+}
+
+body.light-mode .reaction-picker {
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Mention Feature Styles */
+.mention-dropdown {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 20px;
+    background: rgba(30, 30, 30, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    max-height: 200px;
+    width: 250px;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+}
+
+.mention-dropdown-item {
+    padding: 10px 15px;
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mention-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.mention-dropdown-item:hover,
+.mention-dropdown-item.active {
+    background: rgba(247, 109, 87, 0.2);
+    color: #F76D57;
+    padding-left: 20px;
+}
+
+.light-mode .mention-dropdown {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.light-mode .mention-dropdown-item {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.light-mode .mention-dropdown-item:hover,
+.light-mode .mention-dropdown-item.active {
+    background: rgba(247, 109, 87, 0.1);
+}
+
+.mentioned-message {
+    border: 2px solid gold !important;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3) !important;
+}
+
+.mentioned-message .message-text {
+    font-weight: 500;
+}
+
+.mention-text {
+    color: #ffffff !important;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2px 8px;
+    border-radius: 12px;
+    border: 1px solid #FFD700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    display: inline-block;
+    margin: 0 2px;
+}
+
+/* Modern Form Inputs */
+.modern-input,
+.modern-input-file {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 12px 15px;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.modern-input:focus,
+.modern-input-file:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #F76D57;
+    box-shadow: 0 0 0 3px rgba(247, 109, 87, 0.2);
+}
+
+.modern-submit-btn {
+    background: #0162AF;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(1, 98, 175, 0.3);
+}
+
+.modern-submit-btn:hover {
+    background: #0275D8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(1, 98, 175, 0.5);
+}
+
+/* Light mode overrides for modern inputs */
+body.light-mode .modern-input,
+body.light-mode .modern-input-file {
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #2B303A;
+}
+
+body.light-mode .modern-input:focus,
+body.light-mode .modern-input-file:focus {
+    background: white;
+    border-color: #0162AF;
+    box-shadow: 0 0 0 3px rgba(1, 98, 175, 0.2);
+}
+
+body.light-mode .modern-info-btn {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    color: #2B303A;
+}
+
+body.light-mode .modern-info-btn:hover {
+    background: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Light Mode Support for Bubbles */
+body.light-mode .friendRow,
+body.light-mode .groupRow {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .friendRow:hover,
+body.light-mode .groupRow:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .friendUsername {
+    color: #2B303A;
 }

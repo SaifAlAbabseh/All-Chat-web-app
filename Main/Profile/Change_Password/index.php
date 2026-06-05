@@ -10,6 +10,7 @@ require_once(dirname(__DIR__, 3) . '/common.php');
 <html lang="en">
 
 <head>
+    <link rel="icon" type="image/x-icon" href="../../../Extra/images/favicon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Chat | Edit Profile | Change Password</title>
@@ -51,7 +52,7 @@ require_once(dirname(__DIR__, 3) . '/common.php');
             <tr>
                 <td>
                     <input type="password" required name="newPass" class="inputfield" placeholder="New Password">
-                    <input type="button" value=" i " class="i" id="passreq">
+                    <div class="i" id="passreq">i</div>
                 </td>
             </tr>
             <tr>

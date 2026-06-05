@@ -44,6 +44,7 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
 <html>
 
 <head>
+    <link rel="icon" type="image/x-icon" href="../Extra/images/favicon.ico">
     <title>
         Welcome To All Chat
     </title>
@@ -313,6 +314,9 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
             });
 
             $("#notificationsButton").click(function() {
+                if (typeof toggle === 'function' && $("#mainHeader").hasClass("drawer-open")) {
+                    toggle();
+                }
                 $("#whole_box_id").css({
                     "pointer-events": "none",
                     "opacity": "0.2",
@@ -388,47 +392,32 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
 
             </div>
         </div>
-        <button id="exit">X</button>
+        <button id="exit">&times;</button>
         <div id="createGroupBox-inner">
-            <form action="" method="post" enctype="multipart/form-data" class="createGroupForm">
-                <center>
-                    <table>
-                        <tr>
-                            <td>
-                                <label>Group Name: </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="text" name="group_name" class="inputfield" style="width:70%;">
-                            </td>
-                            <td>
-                                <input type="button" value=" i " class="i" id="userreq">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>Group Profile Image: </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="file" onchange='renderImage()' name="image" id="picField" class="inputfield" style="width:70%;font-size:1rem;">
-                            </td>
-                            <td>
-                                <input type="button" value=" i " class="i" id="imagereq">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td id="imageRenderOuterBox">
-                            </td>
-                        </tr>
-                    </table>
-                </center>
-                <br>
-                <div class="createGroupButton">
-                    <input type="submit" class="link" value="Create" name="create_group_button" style="cursor:pointer;width:90%;font-weight:bolder;">
+            <form action="" method="post" enctype="multipart/form-data" class="createGroupForm" style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+                <div class="modern-box-header" style="margin-bottom: 10px;">
+                    <h2 style="margin: 0; font-size: 1.5rem;">Create New Group</h2>
                 </div>
+                
+                <div class="modern-input-group" style="display: flex; flex-direction: column; gap: 8px; text-align: left;">
+                    <label style="font-weight: 600; font-size: 0.95rem; opacity: 0.9;">Group Name:</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" name="group_name" class="modern-input" style="flex: 1; min-width: 0;" placeholder="Enter group name...">
+                        <div class="modern-info-btn" id="userreq" style="display: flex; align-items: center; justify-content: center; width: 40px; border-radius: 12px; background: rgba(255,255,255,0.1); cursor: pointer; border: 1px solid rgba(255,255,255,0.2);">i</div>
+                    </div>
+                </div>
+
+                <div class="modern-input-group" style="display: flex; flex-direction: column; gap: 8px; text-align: left;">
+                    <label style="font-weight: 600; font-size: 0.95rem; opacity: 0.9;">Group Profile Image:</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="file" onchange='renderImage()' name="image" id="picField" class="modern-input-file" style="flex: 1; padding: 10px; min-width: 0;">
+                        <div class="modern-info-btn" id="imagereq" style="display: flex; align-items: center; justify-content: center; width: 40px; border-radius: 12px; background: rgba(255,255,255,0.1); cursor: pointer; border: 1px solid rgba(255,255,255,0.2);">i</div>
+                    </div>
+                </div>
+                
+                <div id="imageRenderOuterBox" style="text-align: center;"></div>
+                
+                <button type="submit" name="create_group_button" class="modern-submit-btn">Create Group</button>
             </form>
         </div>
     </div>
@@ -573,7 +562,7 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
 
             ?>
             <div id="exit_menu_button_box">
-                <div id="exit_menu_button">X</div>
+                <div id="exit_menu_button">&times;</div>
             </div>
         </div>
 
