@@ -73,7 +73,7 @@ function formatMessageNode(msg) {
             } else if (['mp3', 'wav'].includes(ext)) {
                 return `<br/><audio src='${fullPath}' controls style='max-width:100%; margin-top:5px; display:block; box-sizing:border-box;'></audio>`;
             } else {
-                return `<br/><a href='${fullPath}' target='_blank' class='chatFileLink' style='display:inline-block; margin-top:5px; background:rgba(255,255,255,0.2); padding:5px 10px; border-radius:10px; text-decoration:none; color:inherit;'>📎 ${name}</a>`;
+                return `<br/><a href='${fullPath}' target='_blank' class='chatFileLink' style='display:inline-block; margin-top:5px; padding:5px 10px; border-radius:10px; text-decoration:none; color:inherit;'>📎 ${name}</a>`;
             }
         });
 
@@ -81,6 +81,9 @@ function formatMessageNode(msg) {
         const pattern = /(https?:\/\/[^\s]+)/g;
         const replacement = '<a href="$1" target="_blank" rel="noopener noreferrer" class="chatMessageLink">$1</a>';
         decoded = decoded.replace(pattern, replacement);
+
+        // Format mentions
+        decoded = decoded.replace(/(?<!\w)@(\w+)/g, '<span class="mention-text">@$1</span>');
 
         // PHP's nl2br
         decoded = decoded.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br />$2');
@@ -99,8 +102,8 @@ async function deleteFilesFromMessage(messageEncoded) {
         let match;
         while ((match = fileRegex.exec(decoded)) !== null) {
             const filename = path.basename(match[1]);
-            
-            const apiUrl = process.env.PHP_APP_URL ? `${process.env.PHP_APP_URL}/api/delete_chat_file.php` : 'http://localhost/All-Chat-web-app/api/delete_chat_file.php';
+            const complementUrl = process.env.PUBLIC_SITE_URL !== '' ? `/${process.env.PUBLIC_SITE_URL}` : '';
+            const apiUrl = `${process.env.PHP_APP_URL}${complementUrl}/api/delete_chat_file.php`;
             const secret = process.env.API_SECRET || '';
             
             try {
@@ -403,6 +406,145 @@ wss.on('connection', async (ws, req) => {
                             });
                         }
                     });
+                }
+            } else if (data.type === 'toggle_reaction') {
+                const { tname, pos, reaction, isGroup, towho } = data;
+                
+                // Fetch the current reactions
+                const [msgRows] = await dbPool.query(`SELECT reactions FROM \`${tname}\` WHERE pos = ?`, [pos]);
+                if (msgRows.length > 0) {
+                    let reactionsStr = msgRows[0].reactions;
+                    let reactionsObj = {};
+                    
+                    if (reactionsStr) {
+                        try {
+                            reactionsObj = JSON.parse(reactionsStr);
+                        } catch(e) {}
+                    }
+                    
+                    // Toggle reaction
+                    if (!reactionsObj[reaction]) {
+                        reactionsObj[reaction] = [];
+                    }
+                    
+                    const userIndex = reactionsObj[reaction].indexOf(username);
+                    if (userIndex > -1) {
+                        reactionsObj[reaction].splice(userIndex, 1);
+                        if (reactionsObj[reaction].length === 0) {
+                            delete reactionsObj[reaction];
+                        }
+                    } else {
+                        reactionsObj[reaction].push(username);
+                    }
+                    
+                    const newReactionsStr = Object.keys(reactionsObj).length > 0 ? JSON.stringify(reactionsObj) : null;
+                    
+                    // Update in DB
+                    await dbPool.query(`UPDATE \`${tname}\` SET reactions = ? WHERE pos = ?`, [newReactionsStr, pos]);
+                    
+                    const updateMsg = JSON.stringify({ 
+                        type: 'reaction_updated', 
+                        pos: pos, 
+                        tname: tname, 
+                        reactions: reactionsObj
+                    });
+                    
+                    if (isGroup) {
+                        const [groupMembers] = await dbPool.query(`SELECT username FROM \`${tname}_users\``);
+                        groupMembers.forEach(memberRow => {
+                            const memberUsername = memberRow.username;
+                            if (clients.has(memberUsername)) {
+                                clients.get(memberUsername).forEach(client => {
+                                    if (client.readyState === WebSocket.OPEN) {
+                                        client.send(updateMsg);
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        ws.send(updateMsg);
+                        if (clients.has(towho)) {
+                            clients.get(towho).forEach(client => {
+                                if (client.readyState === WebSocket.OPEN) {
+                                    client.send(updateMsg);
+                                }
+                            });
+                        }
+                    }
+                }
+            } else if (data.type === 'notification') {
+                const towho = data.to;
+                const notificationMsg = JSON.stringify({ type: 'notification', content: data.content, from: username });
+                if (clients.has(towho)) {
+                    clients.get(towho).forEach(client => {
+                        if (client.readyState === WebSocket.OPEN) {
+                            client.send(notificationMsg);
+                        }
+                    });
+                }
+            } else if (data.type === 'promote_user') {
+                const tname = data.tname;
+                const target = data.target;
+                
+                try {
+                    // Check if sender is a leader
+                    const [senderCheck] = await dbPool.query(`SELECT user_type FROM \`${tname}_users\` WHERE username=?`, [username]);
+                    if (senderCheck.length > 0 && senderCheck[0].user_type === 'leader') {
+                        // Update DB
+                        await dbPool.query(`UPDATE \`${tname}_users\` SET user_type='leader' WHERE username=?`, [target]);
+                        
+                        const msgStr = JSON.stringify({
+                            type: 'user_promoted',
+                            tname: tname,
+                            target: target
+                        });
+                        
+                        // Send to affected users only (the target and the admin who promoted)
+                        const affectedUsers = [target, username];
+                        affectedUsers.forEach(memberUsername => {
+                            if (clients.has(memberUsername)) {
+                                clients.get(memberUsername).forEach(client => {
+                                    if (client.readyState === WebSocket.OPEN) {
+                                        client.send(msgStr);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error executing promote_user:", e);
+                }
+            } else if (data.type === 'demote_user') {
+                const tname = data.tname;
+                const target = data.target;
+                
+                try {
+                    // Check if sender is a leader
+                    const [senderCheck] = await dbPool.query(`SELECT user_type FROM \`${tname}_users\` WHERE username=?`, [username]);
+                    if (senderCheck.length > 0 && senderCheck[0].user_type === 'leader') {
+                        // Update DB to demote to member
+                        await dbPool.query(`UPDATE \`${tname}_users\` SET user_type='member' WHERE username=?`, [target]);
+                        
+                        const msgStr = JSON.stringify({
+                            type: 'user_demoted',
+                            tname: tname,
+                            target: target
+                        });
+                        
+                        // Send to affected users only (the target and the admin who demoted)
+                        const affectedUsers = [target, username];
+                        affectedUsers.forEach(memberUsername => {
+                            if (clients.has(memberUsername)) {
+                                clients.get(memberUsername).forEach(client => {
+                                    if (client.readyState === WebSocket.OPEN) {
+                                        client.send(msgStr);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error executing demote_user:", e);
                 }
             }
         } catch (err) {
