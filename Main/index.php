@@ -20,7 +20,7 @@ if (isset($_POST) && isset($_POST["acceptFriendRequestButton"])) {
         mysqli_stmt_bind_param($stmt, "ss", $_SESSION["who"], $acceptFriendRequestUsernameField);
         if (mysqli_stmt_execute($stmt)) {
             $tablename = "" . $_SESSION["who"] . "" . $acceptFriendRequestUsernameField;
-            $query = "CREATE TABLE " . $tablename . " (fromwho varchar(1000) , message varchar(1000),pos varchar(1000), whenSent DATETIME DEFAULT CURRENT_TIMESTAMP)";
+            $query = "CREATE TABLE " . $tablename . " (fromwho varchar(1000) , message varchar(1000),pos varchar(1000), whenSent DATETIME DEFAULT CURRENT_TIMESTAMP, reactions TEXT DEFAULT NULL)";
             $stmt = mysqli_prepare($conn, $query);
             if ($stmt) {
                 mysqli_stmt_execute($stmt);
@@ -51,6 +51,22 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="stylesheet" href="<?= asset('../Extra/styles/cssFiles/themes.css') ?>" />
     <style>
+        @keyframes bellWiggle {
+            0% { transform: rotate(0deg); }
+            10% { transform: rotate(15deg); }
+            20% { transform: rotate(-10deg); }
+            30% { transform: rotate(5deg); }
+            40% { transform: rotate(-5deg); }
+            50% { transform: rotate(0deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .notificationsButton:not(.notificationsButtonDisabled) {
+            animation: bellWiggle 1.5s infinite ease-in-out;
+            transform-origin: top center;
+        }
+        .notificationsButtonDisabled .hasNotifications {
+            display: none;
+        }
         body,
         html {
             height: 100%;
@@ -317,6 +333,9 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                 if (typeof toggle === 'function' && $("#mainHeader").hasClass("drawer-open")) {
                     toggle();
                 }
+                if (typeof toggle === 'function' && $("#mainHeader").hasClass("drawer-open")) {
+                    toggle();
+                }
                 $("#whole_box_id").css({
                     "pointer-events": "none",
                     "opacity": "0.2",
@@ -325,7 +344,7 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                 $("#notificationsBox").show();
             });
 
-            $("#closeNotificationsButton").click(function() {
+            $(document).on("click", "#closeNotificationsButton", function() {
                 $("#whole_box_id").css({
                     "pointer-events": "all",
                     "opacity": "1",
@@ -340,6 +359,17 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
         var wsHost = "<?php echo getVarFromEnv('WS_URL') ?: (isset($_SERVER['HTTP_HOST']) ? explode(':', $_SERVER['HTTP_HOST'])[0] . ':8080' : 'localhost:8080'); ?>";
         var wsUrl = protocol + wsHost + '?token=' + encodeURIComponent(wsToken);
         var wsMain = new WebSocket(wsUrl);
+
+        wsMain.onmessage = function(event) {
+            try {
+                var data = JSON.parse(event.data);
+                if (data.type === 'notification' && data.content === 'friend_request') {
+                    $('#notificationsBox').load(window.location.href + ' #notificationsBox > *', function() {
+                        $('#notificationsButton').removeClass('notificationsButtonDisabled');
+                    });
+                }
+            } catch(e) {}
+        };
 
         function openDeleteModal(friendName) {
             $("#deleteFriendName").text(friendName);
@@ -469,6 +499,10 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                     </tr>
             <?php
                 }
+            } else {
+            ?>
+                <tr><td colspan="3"><h4 style="text-align:center; color:#ccc; margin-top:20px;">No new notifications.</h4></td></tr>
+            <?php
             }
             ?>
         </table>
@@ -531,9 +565,7 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                                 <path fill="#F76D57" d="M56,54H8c-1.104,0-2-0.896-2-2s0.896-2,2-2c4.418,0,8-3.582,8-8h32c0,4.418,3.582,8,8,8   c1.104,0,2,0.896,2,2S57.104,54,56,54z" />
                             </g>
                         </svg>
-                        <?php if ($hasNotifications) { ?>
-                            <span class="hasNotifications"></span>
-                        <?php } ?>
+                        <span class="hasNotifications"></span>
                     </button>
                     <img src='View_Image/?u=<?php echo $_SESSION["who"]; ?>' width='100px' height='100px' class='profile-img-styled' />
                     
@@ -680,7 +712,8 @@ function createTables($conn, $group_id, $group_name)
             fromwho VARCHAR(255),
             message VARCHAR(1000),
             pos VARCHAR(255),
-            whenSent DATETIME DEFAULT CURRENT_TIMESTAMP
+            whenSent DATETIME DEFAULT CURRENT_TIMESTAMP,
+            reactions TEXT DEFAULT NULL
             ) ";
             $stmt = mysqli_prepare($conn, $normal_group_table_query);
             $normal_group_query_result = ($stmt && mysqli_stmt_execute($stmt)) ? true : false;

@@ -1038,7 +1038,8 @@ body.light-mode .otherPlatformDownloadLink:hover {
     height: 10px;
     background-color: red;
     position: absolute;
-    left: 30px;
+    top: 5px;
+    right: 5px;
 }
 
 .notificationUserImage {

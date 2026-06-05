@@ -1,0 +1,38 @@
+Created At: 2026-06-05T11:01:41Z
+Completed At: 2026-06-05T11:01:42Z
+File Path: `file:///c:/xampp/htdocs/All-Chat-web-app/Main/index.php`
+Total Lines: 901
+Total Bytes: 34761
+Showing lines 1 to 30
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: <?php
+2: session_start();
+3: if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
+4:     header("Location:../");
+5: }
+6: 
+7: require_once("../DB.php");
+8: require_once(dirname(__DIR__, 1) . '/common.php');
+9: 
+10: if (isset($_POST) && isset($_POST["acceptFriendRequestButton"])) {
+11:     extract($_POST);
+12:     $query = "DELETE FROM friend_requests WHERE request_id=?";
+13:     $stmt = mysqli_prepare($conn, $query);
+14:     mysqli_stmt_bind_param($stmt, "i", $acceptFriendRequestField);
+15:     $result = mysqli_stmt_execute($stmt);
+16:     if ($result && mysqli_affected_rows($conn) > 0) {
+17:         // Actually to be a freind
+18:         $query = "INSERT INTO friends VALUES (?,?)";
+19:         $stmt = mysqli_prepare($conn, $query);
+20:         mysqli_stmt_bind_param($stmt, "ss", $_SESSION["who"], $acceptFriendRequestUsernameField);
+21:         if (mysqli_stmt_execute($stmt)) {
+22:             $tablename = "" . $_SESSION["who"] . "" . $acceptFriendRequestUsernameField;
+23:             $query = "CREATE TABLE " . $tablename . " (fromwho varchar(1000) , message varchar(1000),pos varchar(1000), whenSent DATETIME DEFAULT CURRENT_TIMESTAMP)";
+24:             $stmt = mysqli_prepare($conn, $query);
+25:             if ($stmt) {
+26:                 mysqli_stmt_execute($stmt);
+27:             }
+28:         } else {
+29:             echo "<script>alert('Connection Error.');</script>";
+30:         }
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

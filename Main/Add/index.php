@@ -43,6 +43,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
             max-width: 400px;
             padding: 20px;
             z-index: 10;
+            box-sizing: border-box;
         }
         .modern-add-box {
             width: 100%;
@@ -56,6 +57,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
             text-align: center;
             transition: all 0.3s ease;
             position: relative;
+            box-sizing: border-box;
         }
         body.light-mode .modern-add-box {
             background: rgba(255, 255, 255, 0.85);
@@ -356,14 +358,35 @@ if (isset($_POST) && isset($_POST["addFriendButton"])) {
                                     var errorfield=document.getElementById('addfriendLabel');
                                     errorfield.style.color='white';
                                     errorfield.innerHTML='Sent Friend Request';
+
+                                    // Send real-time notification
+                                    var wsToken = '" . (isset($_SESSION['ws_token']) ? $_SESSION['ws_token'] : '') . "';
+                                    var protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+                                    var wsHost = '" . (getenv('WS_URL') ?: (isset($_SERVER['HTTP_HOST']) ? explode(':', $_SERVER['HTTP_HOST'])[0] . ':8080' : 'localhost:8080')) . "';
+                                    var wsUrl = protocol + wsHost + '?token=' + encodeURIComponent(wsToken);
+                                    var wsTemp = new WebSocket(wsUrl);
+                                    wsTemp.onopen = function() {
+                                        wsTemp.send(JSON.stringify({
+                                            type: 'notification',
+                                            to: '" . addslashes($fusername) . "',
+                                            content: 'friend_request'
+                                        }));
+                                        setTimeout(() => wsTemp.close(), 1000);
+                                    };
                                 </script>
                                 ";
 
                                 //Send email to receiver
 
+                                ob_flush();
+                                flush();
+
                                 require_once(dirname(__DIR__, 2) . '/mail.php');
                                 $userEmail = mysqli_fetch_assoc($isUserExistsResult)["email"];
                                 sendFriendRequestMail($conn, $userEmail, $fusername, $_SESSION["who"]);
+
+                                ob_flush();
+                                flush();
 
                                 ////////
 
