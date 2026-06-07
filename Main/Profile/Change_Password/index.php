@@ -24,6 +24,116 @@ require_once(dirname(__DIR__, 3) . '/common.php');
             height: 100vh;
             margin: 0;
         }
+        .modern-change-pass-box {
+            background: rgba(43, 48, 58, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .modern-title {
+            font-size: 1.8rem;
+            color: #F76D57;
+            margin: 0 0 25px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .modern-input-group {
+            margin-bottom: 20px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .modern-input-group label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        .modern-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        .modern-input:focus {
+            outline: none;
+            border-color: #F76D57;
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 0 3px rgba(247, 109, 87, 0.2);
+        }
+        .modern-btn {
+            background: linear-gradient(135deg, #F76D57 0%, #ff523a 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(247, 109, 87, 0.4);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .modern-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(247, 109, 87, 0.6);
+        }
+        .modern-btn-clear {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            box-shadow: none;
+            margin-top: 15px;
+        }
+        .modern-btn-clear:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Light Mode Support */
+        body.light-mode .modern-change-pass-box {
+            background: rgba(255, 255, 255, 0.85);
+            border-color: rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        }
+        body.light-mode .modern-input {
+            background: rgba(255, 255, 255, 0.6);
+            border-color: rgba(0, 0, 0, 0.2);
+            color: #2B303A;
+        }
+        body.light-mode .modern-input:focus {
+            background: #fff;
+            border-color: #034780;
+            box-shadow: 0 0 0 3px rgba(3, 71, 128, 0.2);
+        }
+        body.light-mode .modern-btn-clear {
+            background: rgba(0, 0, 0, 0.05);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #2B303A;
+        }
+        body.light-mode .modern-btn-clear:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        body.light-mode .backButton {
+            color: #034780 !important;
+            border-color: rgba(0,0,0,0.1) !important;
+        }
+        body.light-mode #passreq {
+            border-color: rgba(0,0,0,0.2) !important;
+            color: #034780 !important;
+        }
     </style>
     <script>
         const currentTheme = localStorage.getItem('theme') || 'dark';
@@ -40,35 +150,36 @@ require_once(dirname(__DIR__, 3) . '/common.php');
 
 <body>
     <div style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
-        <a href="../" class="backButton" style="text-decoration:none; font-size:1.5rem; color: #F76D57; font-weight:bold; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:20px; backdrop-filter:blur(5px); transition:all 0.3s ease;">🔙 Back</a>
+        <a href="../" class="backButton" style="text-decoration:none; font-size:1.2rem; color: #F76D57; font-weight:bold; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:20px; backdrop-filter:blur(5px); border: 1px solid rgba(255,255,255,0.1); transition:all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">🔙 Back</a>
     </div>
-    <form action="" method="POST" class="changePasswordForm">
-        <table>
-            <tr>
-                <td>
-                    <input type="password" required name="currentPass" class="inputfield" placeholder="Current Password">
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="password" required name="newPass" class="inputfield" placeholder="New Password">
-                    <div class="i" id="passreq">i</div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="password" required name="confirmNewPass" class="inputfield" placeholder="Confirm New Password">
-                </td>
-            </tr>
-            <tr>
-                <td align="center">
-                    <br><br>
-                    <input type="submit" value="Change" class="buttontag" name="changePassButton">
-                    <input type="reset" value="Clear" class="buttontag">
-                </td>
-            </tr>
-        </table>
-    </form>
+    
+    <div class="modern-change-pass-box">
+        <h2 class="modern-title">Change Password</h2>
+        <form action="" method="POST">
+            <div class="modern-input-group">
+                <label>Current Password</label>
+                <input type="password" required name="currentPass" class="modern-input" placeholder="Enter current password...">
+            </div>
+            
+            <div class="modern-input-group">
+                <label>New Password</label>
+                <div style="display:flex; gap: 10px;">
+                    <input type="password" required name="newPass" class="modern-input" placeholder="Enter new password...">
+                    <div class="i" id="passreq" style="display:flex; align-items:center; justify-content:center; width: 45px; border-radius: 12px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); transition: all 0.3s ease;">i</div>
+                </div>
+            </div>
+            
+            <div class="modern-input-group">
+                <label>Confirm New Password</label>
+                <input type="password" required name="confirmNewPass" class="modern-input" placeholder="Confirm new password...">
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <button type="submit" class="modern-btn" name="changePassButton">Change Password</button>
+                <button type="reset" class="modern-btn modern-btn-clear">Clear Form</button>
+            </div>
+        </form>
+    </div>
     <div class="outer_reqs_box" onclick="hide()">
         <div class="reqs" id="username_reqs">
             <p>

@@ -509,7 +509,11 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
     </div>
     <div class="whole-box" id="whole_box_id">
         <div class="menuBar">
-            <img style="cursor:pointer" id="m" width="40px" height="40px" src="../Extra/styles/images/menu.png" alt="menu icon">
+            <svg id="m" class="menu-icon-svg" style="cursor:pointer; width: 35px; height: 35px; color: inherit; transition: transform 0.5s;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
         </div>
         <div class="mainHeaderImage" id="mainHeader">
             <div>

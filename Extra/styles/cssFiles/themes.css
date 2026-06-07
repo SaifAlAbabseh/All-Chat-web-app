@@ -153,14 +153,19 @@ body {
 }
 
 .mainHeaderImage {
-    background-color: #0162AF;
+    background: rgba(43, 48, 58, 0.6);
+    backdrop-filter: blur(15px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
     height: 100%;
     width: max-content;
+    min-width: 250px;
     text-align: center;
     overflow: auto;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    box-shadow: 2px 0 15px rgba(0,0,0,0.3);
+    transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .whole-box {
@@ -172,19 +177,54 @@ body {
 }
 
 .hrLine {
-    background-color: red;
-    height: 5px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    height: 2px;
     border: none;
+    margin: 15px 0;
 }
 
 .profileBox {
     text-align: center;
-    background-color: #034780;
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.menuContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 20px;
+    margin-bottom: 20px;
+}
+
+.menuContainer a.link {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.menuContainer a.link:hover {
+    background: rgba(247, 109, 87, 0.15);
+    border-color: #F76D57;
+    color: #F9EBB2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(247, 109, 87, 0.2);
 }
 
 .friendsListBox {
@@ -413,7 +453,7 @@ body {
     }
 
     .menuBar {
-        display: block;
+        display: flex;
         width: 100%;
     }
 
@@ -426,7 +466,26 @@ body {
 }
 
 .menuBar {
-    background-color: #034780;
+    background: rgba(43, 48, 58, 0.6);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    color: #ffffff;
+    box-sizing: border-box;
+    transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+body.light-mode .menuBar {
+    background: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    color: #2B303A;
+}
+
+.menu-icon-svg:hover {
+    transform: scale(1.1);
 }
 
 .editMainBox {
@@ -474,8 +533,21 @@ body {
     font-weight: bolder;
 }
 
-#picField::file-selector-button {
-    visibility: hidden;
+input[type="file"]::file-selector-button {
+    background: linear-gradient(135deg, #F76D57 0%, #d84b38 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 15px;
+    transition: all 0.3s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+    box-shadow: 0 4px 15px rgba(247, 109, 87, 0.4);
+    transform: translateY(-2px);
 }
 
 .footOfPic tr td {
@@ -485,7 +557,8 @@ body {
 
 .main_chat_box {
     width: 100%;
-    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -523,6 +596,7 @@ body {
     flex-direction: column;
     overflow: hidden;
     padding: 0;
+    position: relative;
 }
 
 #messages {
@@ -1526,6 +1600,34 @@ body.light-mode {
     color: #2B303A;
 }
 
+body.light-mode .mainHeaderImage {
+    background: rgba(255, 255, 255, 0.6);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 0 15px rgba(0,0,0,0.05);
+}
+
+body.light-mode .hrLine {
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+}
+
+body.light-mode .profileBox {
+    background: rgba(255, 255, 255, 0.4);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .menuContainer a.link {
+    background: rgba(0, 0, 0, 0.05);
+    color: #034780;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.5);
+}
+
+body.light-mode .menuContainer a.link:hover {
+    background: rgba(247, 109, 87, 0.1);
+    border-color: #F76D57;
+    color: #F76D57;
+}
+
 body.light-mode .friendsListBox,
 body.light-mode .groupsListBox {
     background: rgba(255, 255, 255, 0.6);
@@ -1810,7 +1912,7 @@ body.light-mode .boxupperlabel {
 }
 
 body.light-mode .allchat_image_box {
-    background: rgba(255, 255, 255, 0.5);
+    background: white;
 }
 
 /* Profile and Form Boxes */
@@ -1888,7 +1990,7 @@ body.light-mode .profileLink:hover {
 @media (max-width: 850px) {
     .main_chat_inner_box {
         width: 100vw !important;
-        height: 100vh !important;
+        height: 100dvh !important;
         border-radius: 0 !important;
         border: none !important;
     }

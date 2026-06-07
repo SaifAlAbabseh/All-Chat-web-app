@@ -200,6 +200,21 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
         .modern-action-btn.danger:hover {
             box-shadow: 0 4px 15px rgba(247, 109, 87, 0.4);
         }
+        .btn-primary {
+            background: linear-gradient(135deg, #F76D57 0%, #d84b38 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 4px 15px rgba(247, 109, 87, 0.4);
+            transform: translateY(-2px);
+        }
         /* Update Group Users styling to fit inside modern modal */
         #group_users_box tr td {
             padding: 8px;
@@ -288,6 +303,29 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
             $("#groupEditBox").hide();
         }
 
+        function showEditBgBox() {
+            $("#main_box_parent").css({
+                "pointer-events": "none",
+                "opacity": "0.5",
+                "user-select": "none"
+            });
+            $("#mainDialogBox").css({
+                "pointer-events": "none",
+                "opacity": "0.5",
+                "user-select": "none"
+            });
+            $("#groupBgEditBox").show();
+        }
+
+        function editBgExitDialog() {
+            $("#mainDialogBox").css({
+                "pointer-events": "initial",
+                "opacity": "1",
+                "user-select": "auto"
+            });
+            $("#groupBgEditBox").hide();
+        }
+
         function openDestroyModal() {
             $("#destroyGroupModal").css("display", "flex");
             setTimeout(() => $("#destroyGroupModal").addClass("show"), 10);
@@ -319,7 +357,7 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
     if ($check_result_row[2] == "leader" || $check_result_row[1] == $_SESSION["who"]) {
         echo
         "
-            <div id='groupEditBox' class='friendsListBox' style='max-width: 400px; padding: 2rem; border-radius: 20px; text-align: center;'>
+            <div id='groupEditBox' class='modern-modal' style='z-index: 10005 !important;'>
                 <button onclick='editExitDialog()' id='exit' style='position:absolute; top:15px; right:20px; background:transparent; border:none; color:var(--text-color); font-size:1.5rem; cursor:pointer; transition: transform 0.2s;'>✖</button>
                 <h2 style='margin-bottom: 0.5rem; color: var(--text-color); font-weight: 600;'>Update Picture</h2>
                 <p style='color: #F76D57; font-size: 0.9rem; margin-bottom: 1.5rem;'>Must be at most 1MB and type PNG</p>
@@ -328,6 +366,17 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                         <input type='file' name='pic' id='picField' accept='.png' required style='color: var(--text-color); width: 100%; cursor: pointer;' />
                     </div>
                     <button type='submit' class='btn-primary' name='changePicButton' style='width:100%; padding: 12px; font-size: 1.1rem; border-radius: 25px; border: none; cursor: pointer;'>Upload Picture</button>
+                </form>
+            </div>
+            <div id='groupBgEditBox' class='modern-modal' style='z-index: 10005 !important;'>
+                <button onclick='editBgExitDialog()' id='exitBg' style='position:absolute; top:15px; right:20px; background:transparent; border:none; color:var(--text-color); font-size:1.5rem; cursor:pointer; transition: transform 0.2s;'>✖</button>
+                <h2 style='margin-bottom: 0.5rem; color: var(--text-color); font-weight: 600;'>Update Background</h2>
+                <p style='color: #F76D57; font-size: 0.9rem; margin-bottom: 1.5rem;'>Must be at most 2MB and type PNG</p>
+                <form action='' method='post' enctype='multipart/form-data' style='display:flex; flex-direction:column; gap:1.5rem; align-items:center; width: 100%;'>
+                    <div style='width: 100%; border: 2px dashed rgba(255,255,255,0.2); border-radius: 15px; padding: 2rem 1rem; background: rgba(0,0,0,0.1); cursor: pointer; transition: all 0.3s ease;' onmouseover='this.style.borderColor=\"#F76D57\"; this.style.background=\"rgba(247,109,87,0.05)\"' onmouseout='this.style.borderColor=\"rgba(255,255,255,0.2)\"; this.style.background=\"rgba(0,0,0,0.1)\"'>
+                        <input type='file' name='bgPic' accept='.png' required style='color: var(--text-color); width: 100%; cursor: pointer;' />
+                    </div>
+                    <button type='submit' class='btn-primary' name='changeBgButton' style='width:100%; padding: 12px; font-size: 1.1rem; border-radius: 25px; border: none; cursor: pointer;'>Upload Background</button>
                 </form>
             </div>
             ";
@@ -355,10 +404,12 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                 echo "
                 <button onclick='openDestroyModal()' class='modern-action-btn danger'>Destroy Group</button>
                 <button class='modern-action-btn' onclick='showEditGroupPicBox()'>Edit Picture</button>
+                <button class='modern-action-btn' onclick='showEditBgBox()'>Edit Background</button>
                 ";
             } else if ($is_admin) {
                 echo "
                 <button class='modern-action-btn' onclick='showEditGroupPicBox()'>Edit Picture</button>
+                <button class='modern-action-btn' onclick='showEditBgBox()'>Edit Background</button>
                 <a href='#' onclick='leaveGroup()' class='modern-action-btn danger'>Leave Group</a>
                 ";
             } else {
@@ -377,7 +428,11 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
         </div>
         <center>
             <div class="main_chat_box">
-                <div class="main_chat_inner_box">
+                <?php
+                $bg_path = "../../Extra/styles/images/chat_backgrounds/bg_g" . $_REQUEST["group_id"] . ".png";
+                $bg_style = file_exists($bg_path) ? "background-image: url('$bg_path'); background-size: cover; background-position: center;" : "";
+                ?>
+                <div class="main_chat_inner_box" style="<?php echo $bg_style; ?>">
                     <div class="header">
                         <?php
                         echo "<img src='../View_Group_Image/?group_id=" . $_REQUEST["group_id"] . "' width='50px' height='50px' style='border-radius:50%; border:solid 2px #F76D57; box-shadow:0 2px 10px rgba(247,109,87,0.3);'/>";
@@ -403,7 +458,17 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                                 <?php
                                 try {
                                     $group_table_id = "g" . $_REQUEST["group_id"];
-                                    $query = "SELECT * FROM " . $group_table_id . "";
+                                    
+                                    $countQuery = "SELECT COUNT(*) FROM `" . $group_table_id . "`";
+                                    $countResult = mysqli_query($conn, $countQuery);
+                                    $totalMessages = 0;
+                                    if ($countResult) {
+                                        $countRow = mysqli_fetch_row($countResult);
+                                        $totalMessages = (int)$countRow[0];
+                                    }
+                                    $hasMoreMessages = $totalMessages > 20 ? 'true' : 'false';
+
+                                    $query = "SELECT * FROM (SELECT * FROM `" . $group_table_id . "` ORDER BY CAST(pos AS UNSIGNED) DESC LIMIT 20) sub ORDER BY CAST(pos AS UNSIGNED) ASC";
                                     $stmt = mysqli_prepare($conn, $query);
                                     mysqli_stmt_execute($stmt);
                                     $result = mysqli_stmt_get_result($stmt);
@@ -428,6 +493,7 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                                                         </div>
                                                         <div class="message-actions">
                                                             <div class="reaction-picker">
+                                                                <span class="action-icon" onclick="toggleReaction('<?php echo $row[2]; ?>', '❤️')">❤️</span>
                                                                 <span class="action-icon" onclick="toggleReaction('<?php echo $row[2]; ?>', '😂')">😂</span>
                                                                 <span class="action-icon" onclick="toggleReaction('<?php echo $row[2]; ?>', '😭')">😭</span>
                                                                 <span class="action-icon" onclick="toggleReaction('<?php echo $row[2]; ?>', '😡')">😡</span>
@@ -522,6 +588,113 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
             var oldpos = "<?php echo "" . $lastmessageindex; ?>";
             var you = "<?php echo "" . $_SESSION["who"]; ?>";
             var group_id = "<?php echo "" . $_REQUEST["group_id"]; ?>";
+            
+            var hasMoreMessages = <?php echo isset($hasMoreMessages) ? $hasMoreMessages : 'false'; ?>;
+            var isFetchingMessages = false;
+            
+            $("#messages").on("scroll", async function() {
+                const isAtBottom = this.scrollHeight - this.scrollTop - this.clientHeight <= 100;
+                if (isAtBottom) {
+                    const indicator = document.getElementById("newMsgIndicator");
+                    if (indicator) indicator.style.display = "none";
+                }
+
+                if (this.scrollTop === 0 && hasMoreMessages && !isFetchingMessages) {
+                    isFetchingMessages = true;
+                    
+                    var firstMsg = document.querySelector(".message-container-outer");
+                    if (!firstMsg) {
+                        isFetchingMessages = false;
+                        return;
+                    }
+                    var beforePos = firstMsg.id.replace("msg-pos-", "");
+                    
+                    try {
+                        const formData = new FormData();
+                        formData.append('tname', tname);
+                        formData.append('before_pos', beforePos);
+                        formData.append('limit', 20);
+                        
+                        const response = await fetch('../../api/loadMessages.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const result = await response.json();
+                        if (result.success && result.messages && result.messages.length > 0) {
+                            const msgContainer = document.getElementById("msg");
+                            const oldScrollHeight = this.scrollHeight;
+                            
+                            let htmlToPrepend = "";
+                            result.messages.forEach(res => {
+                                let isMe = (res.from == you);
+                                let isMentioned = false;
+                                if (res.rawMessage) {
+                                    const mentionRegex = new RegExp(`(?<!\\w)@${you}\\b`);
+                                    isMentioned = mentionRegex.test(res.rawMessage);
+                                }
+
+                                let reactionsHtml = "";
+                                if (res.reactions) {
+                                    for (const emoji in res.reactions) {
+                                        const users = res.reactions[emoji];
+                                        const count = users.length;
+                                        const userList = escapeHtml(users.join(", "));
+                                        reactionsHtml += `<span class='reaction-badge' title='${userList}' onclick='toggleReaction("${res.pos}", "${emoji}")'>${emoji} ${count}</span>`;
+                                    }
+                                }
+                                
+                                htmlToPrepend += `
+                                    <div class='message-container-outer' id='msg-pos-${res.pos}'>
+                                        <div class='message-container ${isMe ? "right-message" : "left-message"} ${isMentioned ? "mentioned-message" : ""}' title='${res.date}'>
+                                            <div class='message-header'>
+                                                <div class='message-from'>
+                                                    ${isMe ? "YOU" : "From: " + escapeHtml(res.from)}
+                                                </div>
+                                                <div class="message-actions">
+                                                    <div class="reaction-picker">
+                                                        <span class="action-icon" onclick="toggleReaction('${res.pos}', '❤️')">❤️</span>
+                                                        <span class="action-icon" onclick="toggleReaction('${res.pos}', '😂')">😂</span>
+                                                        <span class="action-icon" onclick="toggleReaction('${res.pos}', '😭')">😭</span>
+                                                        <span class="action-icon" onclick="toggleReaction('${res.pos}', '😡')">😡</span>
+                                                        <span class="action-icon" onclick="toggleReaction('${res.pos}', '👍')">👍</span>
+                                                    </div>
+                                                    ${isMe ? `
+                                                    <div class="edit-delete-picker" style="display: flex; gap: 2px;">
+                                                        <span class="action-icon" onclick="editGroupMessage('${res.pos}')" title="Edit">✏️</span>
+                                                        <span class="action-icon" onclick="deleteGroupMessage('${res.pos}')" title="Delete">🗑️</span>
+                                                    </div>
+                                                    ` : ''}
+                                                </div>
+                                            </div>
+                                            <div class='message-text' id='msg-text-${res.pos}' data-raw='${escapeHtml(res.rawMessage)}'>
+                                                ${res.message}
+                                            </div>
+                                            <div class="reactions-bar" id="reactions-${res.pos}">
+                                                ${reactionsHtml}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            
+                            msgContainer.insertAdjacentHTML('afterbegin', htmlToPrepend);
+                            
+                            this.scrollTop = this.scrollHeight - oldScrollHeight;
+                            
+                            if (result.messages.length < 20) {
+                                hasMoreMessages = false;
+                            }
+                        } else {
+                            hasMoreMessages = false;
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+                    
+                    isFetchingMessages = false;
+                }
+            });
 
             var wsToken = "<?php echo isset($_SESSION['ws_token']) ? $_SESSION['ws_token'] : ''; ?>";
             var protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
@@ -556,6 +729,7 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                                 </div>
                                 <div class="message-actions">
                                     <div class="reaction-picker">
+                                        <span class="action-icon" onclick="toggleReaction('${res.pos}', '❤️')">❤️</span>
                                         <span class="action-icon" onclick="toggleReaction('${res.pos}', '😂')">😂</span>
                                         <span class="action-icon" onclick="toggleReaction('${res.pos}', '😭')">😭</span>
                                         <span class="action-icon" onclick="toggleReaction('${res.pos}', '😡')">😡</span>
@@ -569,7 +743,7 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                                     ` : ''}
                                 </div>
                             </div>
-                            <div class='message-text' id='msg-text-${res.pos}' data-raw='${res.rawMessage.replace(/'/g, "&#39;")}'>
+                            <div class='message-text' id='msg-text-${res.pos}' data-raw='${escapeHtml(res.rawMessage)}'>
                                 ${res.message}
                             </div>
                             <div class="reactions-bar" id="reactions-${res.pos}"></div>
@@ -577,7 +751,29 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                     `;
                     msg.appendChild(messageElement);
                     const box = document.getElementById("messages");
-                    box.scrollTop = box.scrollHeight;
+                    
+                    const isScrolledUp = box.scrollHeight - box.scrollTop - box.clientHeight > 100;
+                    if (isScrolledUp && !isMe) {
+                        let indicator = document.getElementById("newMsgIndicator");
+                        if (!indicator) {
+                            indicator = document.createElement("div");
+                            indicator.id = "newMsgIndicator";
+                            indicator.innerHTML = "New message ↓";
+                            indicator.style.cssText = "position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); background-color: #F76D57; color: #fff; padding: 8px 16px; border-radius: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 100; font-weight: bold; transition: all 0.3s ease; font-size: 0.9rem;";
+                            indicator.onclick = function() {
+                                box.scrollTop = box.scrollHeight;
+                                indicator.style.display = "none";
+                            };
+                            document.getElementById("chatBox").appendChild(indicator);
+                        } else {
+                            indicator.style.display = "block";
+                        }
+                    } else {
+                        box.scrollTop = box.scrollHeight;
+                        const indicator = document.getElementById("newMsgIndicator");
+                        if (indicator) indicator.style.display = "none";
+                    }
+                    
                     oldpos = pos;
                 } else if (res.type === 'reaction_updated' && res.tname === tname) {
                     var reactBar = document.getElementById("reactions-" + res.pos);
@@ -1177,6 +1373,31 @@ if (isset($_POST) && isset($_POST["changePicButton"])) {
                             alert('Invalid');
                         </script>
                         ";
+    }
+}
+
+if (isset($_POST) && isset($_POST["changeBgButton"])) {
+    if ($_FILES['bgPic']['name'] != "") {
+        $name = $_FILES["bgPic"]["name"];
+        $type = substr($name, strlen($name) - 3, strlen($name) - 1);
+        if (strtolower($type) == "png") {
+            $size = round((($_FILES["bgPic"]["size"]) / 1024000), 0);
+            if ($size <= 2) {
+                $tmp_name = $_FILES["bgPic"]["tmp_name"];
+                $path = "../../Extra/styles/images/chat_backgrounds/bg_g" . $_REQUEST["group_id"] . ".png";
+                if (move_uploaded_file($tmp_name, $path)) {
+                    echo "<script>alert('Successfully Changed Background');</script>";
+                } else {
+                    echo "<script>alert('Error uploading background');</script>";
+                }
+            } else {
+                echo "<script>alert('Size is bigger than 2 MB');</script>";
+            }
+        } else {
+            echo "<script>alert('Type is not PNG');</script>";
+        }
+    } else {
+        echo "<script>alert('Invalid file');</script>";
     }
 }
 ?>

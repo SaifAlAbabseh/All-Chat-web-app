@@ -4,6 +4,7 @@ require_once("DB.php");
 require_once("common.php");
 
 session_start();
+ob_start();
 
 // Secure Remember Me via HttpOnly Cookie
 if (!isset($_SESSION["who"]) && isset($_COOKIE['remember_user'])) {
@@ -56,6 +57,26 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                 });
                 $("#mainDialogBox").show();
             }
+
+            // Populate saved creds
+            let savedUser = localStorage.getItem("all_chat-username");
+            let savedPass = localStorage.getItem("all_chat-password");
+            if(savedUser && savedPass) {
+                $("#username_inputfield").val(savedUser);
+                $("#userpassword_field").val(savedPass);
+                $("#rememberCred").prop("checked", true);
+            }
+
+            // Save creds on form submit
+            $(".loginForm").on("submit", function() {
+                if($("#rememberCred").is(":checked")) {
+                    localStorage.setItem("all_chat-username", $("#username_inputfield").val());
+                    localStorage.setItem("all_chat-password", $("#userpassword_field").val());
+                } else {
+                    localStorage.removeItem("all_chat-username");
+                    localStorage.removeItem("all_chat-password");
+                }
+            });
         });
     </script>
     <style>
@@ -76,7 +97,7 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
             position: relative;
         }
         .allchat_image_box {
-            background: rgba(255, 255, 255, 0.4) !important;
+            background: white !important;
             z-index: 10;
         }
         .forms_wrapper {
@@ -204,17 +225,131 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
             margin: 0 !important;
             z-index: 20;
         }
-        .captchaInputField {
-            width: 120px !important;
-            margin-left: 10px !important;
-            margin-bottom: 0 !important;
-        }
+        /* Captcha Redesign */
         .captchaOuterBoxParent {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            border-radius: 12px !important;
+            padding: 8px !important;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05), 0 4px 15px rgba(0,0,0,0.05) !important;
+            margin-top: 10px;
+            margin-bottom: 25px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        
+        .captchaOuterBoxParent:focus-within {
+            background: #fff !important;
+            border-color: #0162AF !important;
+            box-shadow: 0 0 15px rgba(1, 98, 175, 0.15), inset 0 1px 3px rgba(0,0,0,0.05) !important;
+        }
+
+        #captchaBox {
+            border-radius: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            margin-right: 10px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            width: 130px;
+            height: 45px;
+            object-fit: fill;
+        }
+
+        .captchaInputField {
+            width: 100% !important;
+            margin: 0 !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 8px 10px !important;
+            font-size: 1rem;
+            color: #333 !important;
+        }
+
+        .captchaInputField:focus {
+            box-shadow: none !important;
+            border-color: transparent !important;
+            background: transparent !important;
+        }
+        
+        .captchaInputField::placeholder {
+            color: #aaa !important;
+        }
+
+        /* Checkbox Design */
+        .remember-container {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            padding: 5px 0;
             margin-top: 5px;
-            margin-bottom: 30px;
+            margin-bottom: 5px;
+            transition: opacity 0.3s ease;
+        }
+
+        .remember-container input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .custom-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ced4da;
+            border-radius: 6px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+            background: #f8f9fa;
+        }
+
+        .custom-checkbox::after {
+            content: '';
+            position: absolute;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2.5px 2.5px 0;
+            transform: rotate(45deg) scale(0);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            margin-bottom: 2px;
+        }
+
+        .remember-container input[type="checkbox"]:checked + .custom-checkbox {
+            background: linear-gradient(135deg, #0162AF 0%, #004d8c 100%);
+            border-color: #0162AF;
+            box-shadow: 0 3px 8px rgba(1, 98, 175, 0.3);
+        }
+
+        .remember-container input[type="checkbox"]:checked + .custom-checkbox::after {
+            transform: rotate(45deg) scale(1);
+        }
+
+        .remember-container:hover .custom-checkbox {
+            border-color: #0162AF;
+            box-shadow: 0 0 8px rgba(1, 98, 175, 0.2);
+        }
+
+        .remember-container .small-labels {
+            font-size: 0.95rem;
+            cursor: pointer;
+            color: #486581 !important;
+            transition: color 0.3s ease;
+        }
+        
+        .remember-container:hover .small-labels {
+            color: #0162AF !important;
         }
 
         .mobile-logo {
@@ -313,8 +448,11 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                         </tr>
                         <tr>
                             <td colspan="2" align="left">
-                                <input type="checkbox" name="rememberCred" id="rememberCred" class="checkbox">
-                                <label class="small-labels" for="rememberCred">Remember</label>
+                                <label class="remember-container" for="rememberCred">
+                                    <input type="checkbox" name="rememberCred" id="rememberCred" class="checkbox">
+                                    <div class="custom-checkbox"></div>
+                                    <span class="small-labels">Remember Me</span>
+                                </label>
                             </td>
                         </tr>
                         <tr>
@@ -399,13 +537,13 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                                 $_SESSION["code"] .= generateRandomChar();
                             }
 
-                            echo "<img width='200' height='50' src='captcha.php' id='captchaBox'>";
+                            echo "<img width='130' height='45' src='captcha.php' id='captchaBox'>";
                         }
 
                         showCaptcha();
 
                         ?>
-                        <input type="text" name="signup_code_field" class="inputfield captchaInputField" placeholder="Code.." required />
+                        <input type="text" name="signup_code_field" class="inputfield captchaInputField" placeholder="Enter Captcha Code.." required />
                     </div>
                     <h2 class="invalid" id="invalidforsignup">
                         INVALID
@@ -436,8 +574,6 @@ function generateSignupCode()
 
 if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton"]) || isset($_POST["verification_button"]))) {
     echo "<script>startLoading('main_box-id');</script>";
-    ob_flush();
-    flush();
     extract($_POST);
 
     if (isset($loginButton)) {
@@ -578,8 +714,6 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                         </form>
                                     </div>
                                 </div>";
-                                    ob_flush();
-                                    flush();
                                 } else {
                                     echo
                                     "<script>
