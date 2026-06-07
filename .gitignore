@@ -1,7 +1,7 @@
 .env
-Extra/styles/images/groups_images/
+Extra/styles/images/groups_images/*.png
 Extra/styles/images/users_images/
-Extra/styles/images/chat_backgrounds/
+Extra/styles/images/chat_backgrounds/*.png
 socket-server/node_modules/
 uploads/chat_files/*
 !uploads/chat_files/.htaccess
