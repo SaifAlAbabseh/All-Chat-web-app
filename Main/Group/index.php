@@ -430,7 +430,8 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
             <div class="main_chat_box">
                 <?php
                 $bg_path = "../../Extra/styles/images/chat_backgrounds/bg_g" . $_REQUEST["group_id"] . ".png";
-                $bg_style = file_exists($bg_path) ? "background-image: url('$bg_path'); background-size: cover; background-position: center;" : "";
+                $bg_url = "../View_Background/?tname=g" . $_REQUEST["group_id"] . "&v=" . time();
+                $bg_style = file_exists($bg_path) ? "background-image: url('$bg_url'); background-size: cover; background-position: center;" : "";
                 ?>
                 <div class="main_chat_inner_box" style="<?php echo $bg_style; ?>">
                     <div class="header">

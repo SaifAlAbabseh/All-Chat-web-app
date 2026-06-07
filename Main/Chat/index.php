@@ -156,7 +156,8 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
         <div class="main_chat_box">
             <?php
             $bg_path = "../../Extra/styles/images/chat_backgrounds/bg_" . $tname . ".png";
-            $bg_style = file_exists($bg_path) ? "background-image: url('$bg_path'); background-size: cover; background-position: center;" : "";
+            $bg_url = "../View_Background/?tname=" . $tname . "&v=" . time();
+            $bg_style = file_exists($bg_path) ? "background-image: url('$bg_url'); background-size: cover; background-position: center;" : "";
             ?>
             <div class="main_chat_inner_box" style="<?php echo $bg_style; ?>">
                 <div class="header">
