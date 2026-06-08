@@ -36,16 +36,7 @@ Ensure the project folder (`All-Chat-web-app`) is placed inside your web server'
 
 ### 3. Environment Configuration
 Locate the `.env` file in the root directory. Update the configuration settings to match your local environment if necessary:
-```env
-PUBLIC_SITE_URL=All-Chat-web-app
-DB_HOST_NAME=localhost
-DB_USERNAME=root
-DB_PASSWORD=
-DB_NAME=allchat
-WS_PORT=8080
-PHP_APP_URL=http://localhost
-```
-*(Ensure the database credentials (`DB_USERNAME`, `DB_PASSWORD`) and URLs match your setup)*
+
 
 ### 4. WebSocket Server Setup
 The real-time chat functionality requires the Node.js WebSocket server to be running.
