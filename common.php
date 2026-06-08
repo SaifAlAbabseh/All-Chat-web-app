@@ -24,9 +24,9 @@ function formatMessage($message)
         $fullPath = $basePath . "/serveFile.php?f=" . urlencode($filename) . "&n=" . urlencode($name);
         
         if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-            return "<br/><a href='" . $fullPath . "' target='_blank'><img src='" . $fullPath . "' onload='var b=document.getElementById(\"messages\"); if(b) b.scrollTop=b.scrollHeight;' style='max-width:100%; height:auto; max-height:200px; border-radius:10px; margin-top:5px; display:block; box-sizing:border-box;' alt='" . $name . "'/></a>";
+            return "<br/><a href='" . $fullPath . "' target='_blank'><img src='" . $fullPath . "' onload='var b=document.getElementById(\"messages\"); if(b && (b.scrollHeight - b.scrollTop - b.clientHeight <= 300)) b.scrollTop=b.scrollHeight;' style='max-width:100%; height:auto; max-height:200px; border-radius:10px; margin-top:5px; display:block; box-sizing:border-box;' alt='" . $name . "'/></a>";
         } else if (in_array($ext, ['mp4', 'webm'])) {
-            return "<br/><video src='" . $fullPath . "' onloadeddata='var b=document.getElementById(\"messages\"); if(b) b.scrollTop=b.scrollHeight;' controls style='max-width:100%; height:auto; max-height:200px; border-radius:10px; margin-top:5px; display:block; box-sizing:border-box;'></video>";
+            return "<br/><video src='" . $fullPath . "' onloadeddata='var b=document.getElementById(\"messages\"); if(b && (b.scrollHeight - b.scrollTop - b.clientHeight <= 300)) b.scrollTop=b.scrollHeight;' controls style='max-width:100%; height:auto; max-height:200px; border-radius:10px; margin-top:5px; display:block; box-sizing:border-box;'></video>";
         } else if (in_array($ext, ['mp3', 'wav'])) {
             return "<br/><audio src='" . $fullPath . "' controls style='max-width:100%; margin-top:5px; display:block; box-sizing:border-box;'></audio>";
         } else {

@@ -452,7 +452,8 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                         }
                         ?>
                     </div>
-                    <div id="chatBox">
+                    <div id="chatBox" style="position: relative;">
+                        <div id="scrollDownBtn" style="display: none; position: absolute; bottom: 85px; right: 20px; background-color: rgba(247, 109, 87, 0.9); color: white; width: 40px; height: 40px; border-radius: 50%; text-align: center; line-height: 40px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 100; font-size: 1.5rem; transition: all 0.3s ease; user-select: none;">↓</div>
                         <div id="messages" class="at-top" onscroll="showBlurOnTop()">
                             <div class="blur-top"></div>
                             <div id="msg">
@@ -486,7 +487,10 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                                             $decodedMessage = urldecode($messageitself);
                                             $isMentioned = preg_match('/(?<!\w)@' . preg_quote($you, '/') . '\b/', $decodedMessage);
                                             ?>
-                                            <div class='message-container-outer' id='msg-pos-<?php echo $row[2]; ?>'>
+                                            <div class='message-container-outer <?php echo ($from == $you) ? "right-message-outer" : "left-message-outer"; ?>' id='msg-pos-<?php echo $row[2]; ?>' style='display: flex; align-items: flex-end; margin-bottom: 10px; <?php echo ($from == $you) ? "flex-direction: row-reverse;" : ""; ?>'>
+                                                <?php if ($from != $you): ?>
+                                                    <img src="../View_Image/?u=<?php echo urlencode($from); ?>" class="message-profile-pic" alt="Profile" style="width: 30px; height: 30px; border-radius: 50%; margin: 0 10px; object-fit: cover; flex-shrink: 0;" />
+                                                <?php endif; ?>
                                                 <div class='message-container <?php echo ($from == $you) ? "right-message" : "left-message"; ?><?php echo $isMentioned ? " mentioned-message" : ""; ?>' title='<?php echo $date; ?>'>
                                                     <div class='message-header'>
                                                         <div class='message-from'>
@@ -593,11 +597,27 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
             var hasMoreMessages = <?php echo isset($hasMoreMessages) ? $hasMoreMessages : 'false'; ?>;
             var isFetchingMessages = false;
             
+            const scrollBtn = document.getElementById("scrollDownBtn");
+            if (scrollBtn) {
+                scrollBtn.addEventListener("click", function() {
+                    const box = document.getElementById("messages");
+                    if (box) {
+                        box.scrollTo({
+                            top: box.scrollHeight,
+                            behavior: "smooth"
+                        });
+                    }
+                });
+            }
+            
             $("#messages").on("scroll", async function() {
                 const isAtBottom = this.scrollHeight - this.scrollTop - this.clientHeight <= 100;
                 if (isAtBottom) {
                     const indicator = document.getElementById("newMsgIndicator");
                     if (indicator) indicator.style.display = "none";
+                    if (scrollBtn) scrollBtn.style.display = "none";
+                } else {
+                    if (scrollBtn && !isFetchingMessages) scrollBtn.style.display = "block";
                 }
 
                 if (this.scrollTop === 0 && hasMoreMessages && !isFetchingMessages) {
@@ -646,7 +666,8 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                                 }
                                 
                                 htmlToPrepend += `
-                                    <div class='message-container-outer' id='msg-pos-${res.pos}'>
+                                    <div class='message-container-outer ${isMe ? "right-message-outer" : "left-message-outer"}' id='msg-pos-${res.pos}' style='display: flex; align-items: flex-end; margin-bottom: 10px; ${isMe ? "flex-direction: row-reverse;" : ""}'>
+                                        ${!isMe ? '<img src="../View_Image/?u=' + encodeURIComponent(res.from) + '" class="message-profile-pic" alt="Profile" style="width: 30px; height: 30px; border-radius: 50%; margin: 0 10px; object-fit: cover; flex-shrink: 0;" />' : ''}
                                         <div class='message-container ${isMe ? "right-message" : "left-message"} ${isMentioned ? "mentioned-message" : ""}' title='${res.date}'>
                                             <div class='message-header'>
                                                 <div class='message-from'>
@@ -681,7 +702,9 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                             
                             msgContainer.insertAdjacentHTML('afterbegin', htmlToPrepend);
                             
-                            this.scrollTop = this.scrollHeight - oldScrollHeight;
+                            requestAnimationFrame(() => {
+                                this.scrollTop = this.scrollHeight - oldScrollHeight;
+                            });
                             
                             if (result.messages.length < 20) {
                                 hasMoreMessages = false;
@@ -721,8 +744,18 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                     }
                     const messageElement = document.createElement("div");
                     messageElement.classList.add("message-container-outer");
+                    if (isMe) {
+                        messageElement.classList.add("right-message-outer");
+                        messageElement.style.flexDirection = "row-reverse";
+                    } else {
+                        messageElement.classList.add("left-message-outer");
+                    }
+                    messageElement.style.display = "flex";
+                    messageElement.style.alignItems = "flex-end";
+                    messageElement.style.marginBottom = "10px";
                     messageElement.id = "msg-pos-" + res.pos;
                     messageElement.innerHTML = `
+                        ${!isMe ? '<img src="../View_Image/?u=' + encodeURIComponent(res.lastwho) + '" class="message-profile-pic" alt="Profile" style="width: 30px; height: 30px; border-radius: 50%; margin: 0 10px; object-fit: cover; flex-shrink: 0;" />' : ''}
                         <div class='message-container ${isMe ? "right-message" : "left-message"} ${isMentioned ? "mentioned-message" : ""}' title='${res.date}'>
                             <div class='message-header'>
                                 <div class='message-from'>

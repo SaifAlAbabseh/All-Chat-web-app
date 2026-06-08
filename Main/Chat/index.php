@@ -177,7 +177,8 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
                         <img class="settingsIcon" src="../../Extra/styles/images/settings.png" alt="settings icon" style="width:30px; height:30px;">
                     </a>
                 </div>
-                <div id="chatBox">
+                <div id="chatBox" style="position: relative;">
+                    <div id="scrollDownBtn" style="display: none; position: absolute; bottom: 85px; right: 20px; background-color: rgba(247, 109, 87, 0.9); color: white; width: 40px; height: 40px; border-radius: 50%; text-align: center; line-height: 40px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 100; font-size: 1.5rem; transition: all 0.3s ease; user-select: none;">↓</div>
                     <div id="messages" class="at-top" onscroll="showBlurOnTop()">
                         <div class="blur-top"></div>
                         <div id="msg">
@@ -322,11 +323,27 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
             var hasMoreMessages = <?php echo isset($hasMoreMessages) ? $hasMoreMessages : 'false'; ?>;
             var isFetchingMessages = false;
             
+            const scrollBtn = document.getElementById("scrollDownBtn");
+            if (scrollBtn) {
+                scrollBtn.addEventListener("click", function() {
+                    const box = document.getElementById("messages");
+                    if (box) {
+                        box.scrollTo({
+                            top: box.scrollHeight,
+                            behavior: "smooth"
+                        });
+                    }
+                });
+            }
+            
             $("#messages").on("scroll", async function() {
                 const isAtBottom = this.scrollHeight - this.scrollTop - this.clientHeight <= 100;
                 if (isAtBottom) {
                     const indicator = document.getElementById("newMsgIndicator");
                     if (indicator) indicator.style.display = "none";
+                    if (scrollBtn) scrollBtn.style.display = "none";
+                } else {
+                    if (scrollBtn && !isFetchingMessages) scrollBtn.style.display = "block";
                 }
                 
                 if (this.scrollTop === 0 && hasMoreMessages && !isFetchingMessages) {
@@ -404,7 +421,9 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
                             
                             msgContainer.insertAdjacentHTML('afterbegin', htmlToPrepend);
                             
-                            this.scrollTop = this.scrollHeight - oldScrollHeight;
+                            requestAnimationFrame(() => {
+                                this.scrollTop = this.scrollHeight - oldScrollHeight;
+                            });
                             
                             if (result.messages.length < 20) {
                                 hasMoreMessages = false;
