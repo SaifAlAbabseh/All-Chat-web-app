@@ -67,9 +67,9 @@ function formatMessageNode(msg) {
             const fullPath = `${basePath}/serveFile.php?f=${encodeURIComponent(filename)}&n=${encodeURIComponent(name)}`;
 
             if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
-                return `<br/><a href='${fullPath}' target='_blank'><img src='${fullPath}' onload='var b=document.getElementById("messages"); if(b) b.scrollTop=b.scrollHeight;' style='max-width:100%; height:auto; max-height:200px; border-radius:10px; margin-top:5px; display:block; box-sizing:border-box;' alt='${name}'/></a>`;
+                return `<br/><a href='${fullPath}' target='_blank'><img src='${fullPath}' onload='var b=document.getElementById("messages"); if(b && (b.scrollHeight - b.scrollTop - b.clientHeight <= 300)) b.scrollTop=b.scrollHeight;' style='max-width:100%; height:auto; max-height:200px; border-radius:10px; margin-top:5px; display:block; box-sizing:border-box;' alt='${name}'/></a>`;
             } else if (['mp4', 'webm'].includes(ext)) {
-                return `<br/><video src='${fullPath}' onloadeddata='var b=document.getElementById("messages"); if(b) b.scrollTop=b.scrollHeight;' controls style='max-width:100%; height:auto; max-height:200px; border-radius:10px; margin-top:5px; display:block; box-sizing:border-box;'></video>`;
+                return `<br/><video src='${fullPath}' onloadeddata='var b=document.getElementById("messages"); if(b && (b.scrollHeight - b.scrollTop - b.clientHeight <= 300)) b.scrollTop=b.scrollHeight;' controls style='max-width:100%; height:auto; max-height:200px; border-radius:10px; margin-top:5px; display:block; box-sizing:border-box;'></video>`;
             } else if (['mp3', 'wav'].includes(ext)) {
                 return `<br/><audio src='${fullPath}' controls style='max-width:100%; margin-top:5px; display:block; box-sizing:border-box;'></audio>`;
             } else {
