@@ -45,7 +45,8 @@ require_once("../common.php");
             'rawMessage' => $rawMessage,
             'pos' => $row[2],
             'date' => $row[3],
-            'reactions' => isset($row[4]) ? json_decode($row[4], true) : null
+            'reactions' => isset($row[4]) ? json_decode($row[4], true) : null,
+            'is_edited' => isset($row[5]) ? $row[5] : 0
         ];
     }
     

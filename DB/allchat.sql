@@ -1,4 +1,4 @@
-﻿-- MariaDB dump 10.19  Distrib 10.4.32-MariaDB, for Win64 (AMD64)
+-- MariaDB dump 10.19  Distrib 10.4.32-MariaDB, for Win64 (AMD64)
 --
 -- Host: localhost    Database: allchat
 -- ------------------------------------------------------
@@ -72,7 +72,7 @@ CREATE TABLE `users` (
   `picture` varchar(1000) NOT NULL,
   `available` varchar(1) NOT NULL,
   `email` varchar(1000) NOT NULL
-) ENGINE=InnoDB;
+) ENGINE=InnoDB; 
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -99,4 +99,4 @@ CREATE TABLE `ws_tokens` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-05 18:24:54
+-- Dump completed on 2026-06-10  1:09:33

@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['chat_file'])) {
     }
     
     // Validate extension
-    $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'txt', 'doc', 'docx', 'zip', 'rar', 'mp3', 'mp4'];
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'txt', 'doc', 'docx', 'zip', 'rar', 'mp3', 'mp4', 'weba', 'ogg'];
     $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     
     if (!in_array($fileExt, $allowedExtensions)) {

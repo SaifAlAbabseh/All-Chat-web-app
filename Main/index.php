@@ -20,13 +20,13 @@ if (isset($_POST) && isset($_POST["acceptFriendRequestButton"])) {
         mysqli_stmt_bind_param($stmt, "ss", $_SESSION["who"], $acceptFriendRequestUsernameField);
         if (mysqli_stmt_execute($stmt)) {
             $tablename = "" . $_SESSION["who"] . "" . $acceptFriendRequestUsernameField;
-            $query = "CREATE TABLE " . $tablename . " (fromwho varchar(1000) , message varchar(1000),pos varchar(1000), whenSent DATETIME DEFAULT CURRENT_TIMESTAMP, reactions TEXT DEFAULT NULL)";
+            $query = "CREATE TABLE " . $tablename . " (fromwho varchar(1000) , message varchar(1000),pos varchar(1000), whenSent DATETIME DEFAULT CURRENT_TIMESTAMP, reactions TEXT DEFAULT NULL, is_edited TINYINT(1) DEFAULT 0)";
             $stmt = mysqli_prepare($conn, $query);
             if ($stmt) {
                 mysqli_stmt_execute($stmt);
             }
         } else {
-            echo "<script>alert('Connection Error.');</script>";
+            echo "<script>window.pendingAlerts = window.pendingAlerts || []; window.pendingAlerts.push('Connection Error.');</script>";
         }
     }
 }
@@ -45,11 +45,16 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
 
 <head>
     <link rel="icon" type="image/x-icon" href="../Extra/images/favicon.ico">
-    <title>
-        Welcome To All Chat
-    </title>
-    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>All Chat</title>
+    <meta name="viewport" content="width=device-width" />
     <link rel="stylesheet" href="<?= asset('../Extra/styles/cssFiles/themes.css') ?>" />
+    <?php if (isset($_SESSION['pendingAlert'])): ?>
+        <script>
+            window.pendingAlerts = window.pendingAlerts || [];
+            window.pendingAlerts.push(<?= json_encode($_SESSION['pendingAlert']) ?>);
+        </script>
+        <?php unset($_SESSION['pendingAlert']); ?>
+    <?php endif; ?>
     <style>
         @keyframes bellWiggle {
             0% { transform: rotate(0deg); }
@@ -394,6 +399,18 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                 $("#deleteFriendModal").css("display", "none");
             }, 300);
         }
+
+        function openLogoutModal() {
+            $("#logoutModal").css("display", "flex");
+            setTimeout(() => $("#logoutModal").addClass("show"), 10);
+        }
+
+        function closeLogoutModal() {
+            $("#logoutModal").removeClass("show");
+            setTimeout(() => {
+                $("#logoutModal").css("display", "none");
+            }, 300);
+        }
     </script>
 </head>
 
@@ -405,6 +422,16 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
             <div class="custom-modal-actions">
                 <button onclick="closeDeleteModal()" class="btn-cancel">Cancel</button>
                 <button id="confirmDeleteBtn" class="btn-confirm">Delete</button>
+            </div>
+        </div>
+    </div>
+    <div id="logoutModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <h3 style="color:#fff; margin-bottom: 20px;">Confirm Logout</h3>
+            <p style="color:#ccc; margin-bottom: 30px;">Are you sure you want to log out of All Chat?</p>
+            <div class="custom-modal-actions">
+                <button onclick="closeLogoutModal()" class="btn-cancel">Cancel</button>
+                <button onclick="closeLogoutModal(); startLoadingToLogout('whole_box_id');" class="btn-confirm">Logout</button>
             </div>
         </div>
     </div>
@@ -579,7 +606,7 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                             <button id="themeLightBtn" class="theme-btn" title="Light Mode">☀️</button>
                             <button id="themeDarkBtn" class="theme-btn" title="Dark Mode">🌙</button>
                         </div>
-                        <button onclick="startLoadingToLogout('whole_box_id')" class="user-card-logout">
+                        <button onclick="openLogoutModal()" class="user-card-logout">
                             <span style="margin-right: 8px; font-size:1.2rem;">🚪</span> Logout
                         </button>
                     </div>
@@ -713,19 +740,20 @@ function createTables($conn, $group_id, $group_name)
         if ($users2_result) {
             $normal_group_table_name = "g" . $group_id;
             $normal_group_table_query = "CREATE TABLE " . $normal_group_table_name . " (
-            fromwho VARCHAR(255),
-            message VARCHAR(1000),
-            pos VARCHAR(255),
-            whenSent DATETIME DEFAULT CURRENT_TIMESTAMP,
-            reactions TEXT DEFAULT NULL
-            ) ";
+                fromwho varchar(1000), 
+                message varchar(1000),
+                pos varchar(1000), 
+                whenSent DATETIME DEFAULT CURRENT_TIMESTAMP, 
+                reactions TEXT DEFAULT NULL,
+                is_edited TINYINT(1) DEFAULT 0
+            )";
             $stmt = mysqli_prepare($conn, $normal_group_table_query);
             $normal_group_query_result = ($stmt && mysqli_stmt_execute($stmt)) ? true : false;
             if ($normal_group_query_result) {
                 echo
                 "
                 <script>
-                alert('Successfully created group: " . $group_name . "');
+                window.pendingAlerts = window.pendingAlerts || []; window.pendingAlerts.push('Successfully created group: " . $group_name . "');
                 </script>
                 ";
             } else {
@@ -754,7 +782,7 @@ if (isset($_POST) && isset($_POST["create_group_button"])) {
                 echo
                 "
                             <script>
-                            alert('Image size is bigger than 1 MB');
+                            window.pendingAlerts = window.pendingAlerts || []; window.pendingAlerts.push('Image size is bigger than 1 MB');
                             </script>
                             ";
             }
@@ -762,13 +790,13 @@ if (isset($_POST) && isset($_POST["create_group_button"])) {
             echo
             "
                             <script>
-                            alert('Image type is not PNG');
+                            window.pendingAlerts = window.pendingAlerts || []; window.pendingAlerts.push('Image type is not PNG');
                             </script>
                             ";
         }
     } else {
         echo "<script>
-            alert('Check group name requirements or image file is not present.');
+            window.pendingAlerts = window.pendingAlerts || []; window.pendingAlerts.push('Check group name requirements or image file is not present.');
         </script>";
     }
 }

@@ -20,31 +20,36 @@ if (isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_R
             $check_if_already_exists_result = mysqli_stmt_get_result($stmt2);
             if ($check_if_already_exists_result) {
                 if (mysqli_num_rows($check_if_already_exists_result)) {
-                    echo "<script>alert('Already a member..');</script>";
+                    $_SESSION['pendingAlert'] = $_REQUEST["user"] . ' is already a member!';
                 } else {
                     $query = "INSERT INTO $group_table_name VALUES(?, 'member')";
                     $stmt3 = mysqli_prepare($conn, $query);
                     $user_to_add = $_REQUEST["user"];
                     mysqli_stmt_bind_param($stmt3, "s", $user_to_add);
                     if (mysqli_stmt_execute($stmt3)) {
-                        header("Location:Main/Group/?group_id=".$_REQUEST["group_id"]);
+                        $_SESSION['pendingAlert'] = $_REQUEST["user"] . ' was added to the group successfully!';
+                        header("Location:Main/Group/?group_id=" . $_REQUEST["group_id"]);
+                        exit();
                     } else {
-                        echo "<script>alert('Unknown Error..');</script>";
+                        $_SESSION['pendingAlert'] = 'Unknown Error..';
                     }
                 }
             } else {
-                echo "<script>alert('Unknown Error..');</script>";
+                $_SESSION['pendingAlert'] = 'Unknown Error..';
             }
         } else {
-            echo "<script>alert('Not a friend! pls refresh the page..');</script>";
+            $_SESSION['pendingAlert'] = 'Not a friend! pls refresh the page..';
         }
     } else {
-        echo "<script>alert('Unknown Error..');</script>";
+        $_SESSION['pendingAlert'] = 'Unknown Error..';
     }
     mysqli_close($conn);
-    echo "<script>window.location.replace('Main/Group/?group_id=".$_REQUEST["group_id"]."');</script>";
+    header("Location:Main/Group/?group_id=".$_REQUEST["group_id"]);
+    exit();
 } else {
-    echo "<script>alert('Unknown Error..');</script>";
+    $_SESSION['pendingAlert'] = 'Unknown Error..';
+    header("Location:Main/");
+    exit();
 }
 
 ?>

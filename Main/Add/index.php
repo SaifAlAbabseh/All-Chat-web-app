@@ -403,7 +403,7 @@ if (isset($_POST) && isset($_POST["addFriendButton"])) {
                         }
                     }
                 } else {
-                    echo "<script>window.alert('Connection Error.');</script>";
+                    echo "<script>window.pendingAlerts = window.pendingAlerts || []; window.pendingAlerts.push('Connection Error.');</script>";
                 }
             } else {
                 echo
@@ -416,7 +416,7 @@ if (isset($_POST) && isset($_POST["addFriendButton"])) {
                 ";
             }
         } else {
-            echo "<script>window.alert('Connection Error.');</script>";
+            echo "<script>window.pendingAlerts = window.pendingAlerts || []; window.pendingAlerts.push('Connection Error.');</script>";
         }
         mysqli_close($conn);
     } else {

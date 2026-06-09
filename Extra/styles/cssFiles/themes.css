@@ -2491,3 +2491,116 @@ body.light-mode .groupRow:hover {
 body.light-mode .friendUsername {
     color: #2B303A;
 }
+
+/* Custom Audio Player */
+.custom-audio-player {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    padding: 8px 15px;
+    margin-top: 5px;
+    width: 250px;
+    max-width: 100%;
+    box-sizing: border-box;
+    gap: 10px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.audio-play-btn {
+    background: #F76D57;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+.audio-play-btn:hover {
+    transform: scale(1.1);
+    background: #ff523a;
+}
+.audio-progress-container {
+    flex-grow: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.audio-progress-bar {
+    height: 100%;
+    background: #F76D57;
+    border-radius: 3px;
+    width: 0%;
+    pointer-events: none;
+    transition: width 0.1s linear;
+}
+.audio-time {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    min-width: 35px;
+    text-align: right;
+    font-weight: 600;
+}
+/* Light mode adjustments */
+body.light-mode .custom-audio-player {
+    background: rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+body.light-mode .audio-time {
+    color: #333;
+}
+body.light-mode .audio-progress-container {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* WhatsApp-style Recording UI */
+.recording-ui {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(43, 48, 58, 0.9);
+    border-radius: 20px;
+    padding: 10px 15px;
+    box-sizing: border-box;
+}
+body.light-mode .recording-ui {
+    background: rgba(255, 255, 255, 0.9);
+}
+.recording-timer-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+#recordingTimer {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #fff;
+    min-width: 45px;
+}
+body.light-mode #recordingTimer {
+    color: #333;
+}
+.recording-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.action-cancel {
+    color: #ef4444;
+}
+.action-pause {
+    color: #3b82f6;
+}
+.action-send {
+    color: #22c55e;
+}

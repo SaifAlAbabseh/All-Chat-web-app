@@ -41,9 +41,10 @@ if(isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_RE
                                 $pos="".$row2[2];
                                 $message="".$row2[1];
                                 $lastwho="".$row2[0];
+                                $is_edited = isset($row2[5]) ? $row2[5] : 0;
                             }
                             $messageDecoded=nl2br(formatMessage(urldecode($message)));
-                            $arr=array("ava" => $ava, "date" => $date, "pos" => $pos, "message" => $messageDecoded, "lastwho" => $lastwho);
+                            $arr=array("ava" => $ava, "date" => $date, "pos" => $pos, "message" => $messageDecoded, "lastwho" => $lastwho, "is_edited" => $is_edited);
                             echo json_encode($arr);
                         }
                         else{

@@ -70,8 +70,8 @@ function formatMessageNode(msg) {
                 return `<br/><a href='${fullPath}' target='_blank'><img src='${fullPath}' onload='var b=document.getElementById("messages"); if(b && (b.scrollHeight - b.scrollTop - b.clientHeight <= 300)) b.scrollTop=b.scrollHeight;' style='max-width:100%; height:auto; max-height:200px; border-radius:10px; margin-top:5px; display:block; box-sizing:border-box;' alt='${name}'/></a>`;
             } else if (['mp4', 'webm'].includes(ext)) {
                 return `<br/><video src='${fullPath}' onloadeddata='var b=document.getElementById("messages"); if(b && (b.scrollHeight - b.scrollTop - b.clientHeight <= 300)) b.scrollTop=b.scrollHeight;' controls style='max-width:100%; height:auto; max-height:200px; border-radius:10px; margin-top:5px; display:block; box-sizing:border-box;'></video>`;
-            } else if (['mp3', 'wav'].includes(ext)) {
-                return `<br/><audio src='${fullPath}' controls style='max-width:100%; margin-top:5px; display:block; box-sizing:border-box;'></audio>`;
+            } else if (['mp3', 'wav', 'weba', 'ogg'].includes(ext)) {
+                return `<br/><div class='custom-audio-player' data-src='${fullPath}'><button class='audio-play-btn' type='button'>▶</button><div class='audio-progress-container'><div class='audio-progress-bar'></div></div><span class='audio-time'>0:00</span></div>`;
             } else {
                 return `<br/><a href='${fullPath}' target='_blank' class='chatFileLink' style='display:inline-block; margin-top:5px; padding:5px 10px; border-radius:10px; text-decoration:none; color:inherit;'>📎 ${name}</a>`;
             }
@@ -376,7 +376,7 @@ wss.on('connection', async (ws, req) => {
                 const tname = data.tname;
                 const towho = data.to;
                 const newMessageEncoded = data.new_message;
-                const [result] = await dbPool.query(`UPDATE \`${tname}\` SET message = ? WHERE pos = ? AND fromwho = ?`, [newMessageEncoded, pos, username]);
+                const [result] = await dbPool.query(`UPDATE \`${tname}\` SET message = ?, is_edited = 1 WHERE pos = ? AND fromwho = ?`, [newMessageEncoded, pos, username]);
                 if (result.affectedRows > 0) {
                     const editMsg = JSON.stringify({ type: 'message_edited', pos: pos, tname: tname, message: formatMessageNode(newMessageEncoded), rawMessage: decodeURIComponent(newMessageEncoded) });
                     ws.send(editMsg);
@@ -392,7 +392,7 @@ wss.on('connection', async (ws, req) => {
                 const pos = data.pos;
                 const tname = data.tname;
                 const newMessageEncoded = data.new_message;
-                const [result] = await dbPool.query(`UPDATE \`${tname}\` SET message = ? WHERE pos = ? AND fromwho = ?`, [newMessageEncoded, pos, username]);
+                const [result] = await dbPool.query(`UPDATE \`${tname}\` SET message = ?, is_edited = 1 WHERE pos = ? AND fromwho = ?`, [newMessageEncoded, pos, username]);
                 if (result.affectedRows > 0) {
                     const editMsg = JSON.stringify({ type: 'message_edited', pos: pos, tname: tname, message: formatMessageNode(newMessageEncoded), rawMessage: decodeURIComponent(newMessageEncoded) });
                     const [groupMembers] = await dbPool.query(`SELECT username FROM \`${tname}_users\``);

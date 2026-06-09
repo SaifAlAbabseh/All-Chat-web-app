@@ -115,6 +115,19 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
             box-shadow: 0 4px 15px rgba(247, 109, 87, 0.4);
             transform: translateY(-2px);
         }
+        .recording-indicator {
+            width: 14px;
+            height: 14px;
+            background-color: #ef4444;
+            border-radius: 3px;
+            margin: auto;
+            animation: glow-pulse 1.5s infinite;
+        }
+        @keyframes glow-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); transform: scale(0.95); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); transform: scale(1); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); transform: scale(0.95); }
+        }
     </style>
     <script>
         function showChatSettingsBox() {
@@ -216,6 +229,7 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
                                         $messageitself = "" . $row[1];
                                         $lastmessageindex++;
                                         $date = "" . $row[3];
+                                        $is_edited = isset($row[5]) ? $row[5] : 0;
                             ?>
                                         <div class='message-container-outer' id='msg-pos-<?php echo $row[2]; ?>'>
                                             <div class='message-container <?php echo ($from == $you) ? "right-message" : "left-message"; ?>' title='<?php echo $date; ?>'>
@@ -241,6 +255,7 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
                                                 </div>
                                                 <div class='message-text' id='msg-text-<?php echo $row[2]; ?>' data-raw='<?php echo htmlspecialchars(urldecode($messageitself), ENT_QUOTES); ?>'>
                                                     <?php echo nl2br(formatMessage((urldecode($messageitself)))); ?>
+                                                    <?php if ($is_edited) echo " <span style='font-size:0.7em;opacity:0.7;'>(edited)</span>"; ?>
                                                 </div>
                                                 <div class="reactions-bar" id="reactions-<?php echo $row[2]; ?>">
                                                     <?php
@@ -281,18 +296,30 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
                         </div>
                     </div>
                     <div class="message-fields">
-                        <div class="input-wrapper">
+                        <div class="input-wrapper" id="standardInputs">
                             <textarea name="messageField" id="messageField" placeholder="Type a message..."></textarea>
 
                             <div class="input-actions">
                                 <button class="icon-btn" id="emojiButton" type="button">😊</button>
                                 <button class="icon-btn" id="attachButton" type="button">📎</button>
+                                <button class="icon-btn" id="micButton" type="button" title="Record Voice Note">🎤</button>
                                 <input type="file" id="chatFileInput" multiple style="display:none;" />
                             </div>
                         </div>
                         <button class="send-btn" name="sendButton" id="sendButton">
                             ➤
                         </button>
+                        <div class="recording-ui" id="recordingUI" style="display:none;">
+                            <div class="recording-timer-container">
+                                <div class="recording-indicator" id="recordingIndicator"></div>
+                                <span id="recordingTimer">0:00</span>
+                            </div>
+                            <div class="recording-actions">
+                                <button class="icon-btn action-cancel" id="cancelRecordButton" type="button" title="Cancel">🗑️</button>
+                                <button class="icon-btn action-pause" id="pauseRecordButton" type="button" title="Pause/Resume">⏸️</button>
+                                <button class="icon-btn action-send" id="sendRecordButton" type="button" title="Send">➤</button>
+                            </div>
+                        </div>
                     </div>
                     <h2 id="ErrorField" style="color:red"></h2>
                 </div>
@@ -409,7 +436,7 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
                                                 </div>
                                             </div>
                                             <div class='message-text' id='msg-text-${res.pos}' data-raw='${escapeHtml(res.rawMessage)}'>
-                                                ${res.message}
+                                                ${res.message}${res.is_edited == 1 ? " <span style='font-size:0.7em;opacity:0.7;'>(edited)</span>" : ""}
                                             </div>
                                             <div class="reactions-bar" id="reactions-${res.pos}">
                                                 ${reactionsHtml}
@@ -500,10 +527,11 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
                             <div class="reactions-bar" id="reactions-${res.pos}"></div>
                         </div>
                     `;
-                    msg.appendChild(messageElement);
                     const box = document.getElementById("messages");
-                    
                     const isScrolledUp = box.scrollHeight - box.scrollTop - box.clientHeight > 100;
+                    
+                    msg.appendChild(messageElement);
+                    
                     if (isScrolledUp && !isMe) {
                         let indicator = document.getElementById("newMsgIndicator");
                         if (!indicator) {
@@ -520,7 +548,9 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
                             indicator.style.display = "block";
                         }
                     } else {
-                        box.scrollTop = box.scrollHeight;
+                        setTimeout(() => {
+                            box.scrollTop = box.scrollHeight;
+                        }, 50);
                         const indicator = document.getElementById("newMsgIndicator");
                         if (indicator) indicator.style.display = "none";
                     }
@@ -553,7 +583,7 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
                     }
                 } else if (res.type === 'friend_deleted') {
                     if (res.from === towho) {
-                        alert("You have been removed from this friend's list.");
+                        window.customAlert("You have been removed from this friend's list.");
                         window.location.href = "../";
                     }
                 }
@@ -649,7 +679,7 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
                 }
                 
                 if (newText === "") {
-                    alert("Message cannot be empty.");
+                    window.customAlert("Message cannot be empty.");
                     return;
                 }
                 
@@ -727,6 +757,129 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
                 pendingFiles = files;
                 attachButton.innerHTML = `📎 (${files.length})`;
                 attachButton.style.color = "#22c55e"; // Green to indicate attached
+            });
+
+            // Voice Record Logic
+            const micButton = document.getElementById('micButton');
+            const recordingUI = document.getElementById('recordingUI');
+            const standardInputs = document.getElementById('standardInputs');
+            const mainSendButton = document.getElementById('sendButton');
+            const recordingTimer = document.getElementById('recordingTimer');
+            const recordingIndicator = document.getElementById('recordingIndicator');
+            const cancelRecordButton = document.getElementById('cancelRecordButton');
+            const pauseRecordButton = document.getElementById('pauseRecordButton');
+            const sendRecordButton = document.getElementById('sendRecordButton');
+            
+            let mediaRecorder = null;
+            let audioChunks = [];
+            let isRecording = false;
+            let isPaused = false;
+            let timerInterval = null;
+            let recordSeconds = 0;
+            let isCancelled = false;
+
+            function updateTimerDisplay() {
+                const mins = Math.floor(recordSeconds / 60);
+                const secs = recordSeconds % 60;
+                recordingTimer.innerText = mins + ":" + (secs < 10 ? "0" : "") + secs;
+            }
+
+            function stopRecordingUI() {
+                clearInterval(timerInterval);
+                recordingUI.style.display = "none";
+                standardInputs.style.display = "flex";
+                mainSendButton.style.display = "flex";
+                isRecording = false;
+                isPaused = false;
+                pauseRecordButton.innerHTML = "⏸️";
+                recordingIndicator.style.animation = "glow-pulse 1.5s infinite";
+                recordingIndicator.style.opacity = "1";
+            }
+
+            micButton.addEventListener('click', async () => {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    recordSeconds = 0;
+                    isCancelled = false;
+                    updateTimerDisplay();
+                    
+                    mediaRecorder.addEventListener('dataavailable', event => {
+                        audioChunks.push(event.data);
+                    });
+                    
+                    mediaRecorder.addEventListener('stop', () => {
+                        // If stopped naturally (for sending)
+                        if (audioChunks.length > 0 && !isCancelled) {
+                            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                            const file = new File([audioBlob], 'Voice_Record.weba', { type: 'audio/webm' });
+                            
+                            // Auto-send immediately
+                            pendingFiles.push(file);
+                            $("#sendButton").click();
+                        }
+                    });
+                    
+                    mediaRecorder.start();
+                    isRecording = true;
+                    isPaused = false;
+                    
+                    // Show UI
+                    standardInputs.style.display = "none";
+                    mainSendButton.style.display = "none";
+                    recordingUI.style.display = "flex";
+                    
+                    timerInterval = setInterval(() => {
+                        if (!isPaused) {
+                            recordSeconds++;
+                            updateTimerDisplay();
+                        }
+                    }, 1000);
+                    
+                } catch (e) {
+                    window.customAlert("Microphone permission denied or error accessing microphone: " + e.message);
+                }
+            });
+
+            cancelRecordButton.addEventListener('click', () => {
+                isCancelled = true;
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                }
+                audioChunks = []; // discard
+                stopRecordingUI();
+            });
+
+            pauseRecordButton.addEventListener('click', () => {
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    mediaRecorder.requestData();
+                    mediaRecorder.pause();
+                    mediaRecorder.stream.getAudioTracks().forEach(t => t.enabled = false);
+                    isPaused = true;
+                    pauseRecordButton.innerHTML = "▶️";
+                    recordingIndicator.style.animation = "none";
+                    recordingIndicator.style.opacity = "0.5";
+                } else if (mediaRecorder && mediaRecorder.state === 'paused') {
+                    mediaRecorder.stream.getAudioTracks().forEach(t => t.enabled = true);
+                    mediaRecorder.resume();
+                    isPaused = false;
+                    pauseRecordButton.innerHTML = "⏸️";
+                    recordingIndicator.style.animation = "glow-pulse 1.5s infinite";
+                    recordingIndicator.style.opacity = "1";
+                }
+            });
+
+            sendRecordButton.addEventListener('click', () => {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    if (mediaRecorder.state === 'paused') {
+                        mediaRecorder.resume();
+                    }
+                    mediaRecorder.stop();
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                }
+                stopRecordingUI();
             });
 
             $("#sendButton").click(async function() {
@@ -814,23 +967,24 @@ if (isset($_POST) && isset($_POST["changeBgButton"])) {
         $name = $_FILES["bgPic"]["name"];
         $type = substr($name, strlen($name) - 3, strlen($name) - 1);
         if (strtolower($type) == "png") {
-            $size = round((($_FILES["bgPic"]["size"]) / 1024000), 0);
+            define('MB_BG', 1048576);
+            $size = round((($_FILES["bgPic"]["size"]) / MB_BG), 0);
             if ($size <= 2) {
                 $tmp_name = $_FILES["bgPic"]["tmp_name"];
                 $path = "../../Extra/styles/images/chat_backgrounds/bg_" . $tname . ".png";
                 if (move_uploaded_file($tmp_name, $path)) {
-                    echo "<script>alert('Successfully Changed Background');</script>";
+                    echo "<script>window.pendingAlerts = window.pendingAlerts || []; window.pendingAlerts.push('Successfully Changed Background');</script>";
                 } else {
-                    echo "<script>alert('Error uploading background');</script>";
+                    echo "<script>window.pendingAlerts = window.pendingAlerts || []; window.pendingAlerts.push('Error uploading background');</script>";
                 }
             } else {
-                echo "<script>alert('Size is bigger than 2 MB');</script>";
+                echo "<script>window.pendingAlerts = window.pendingAlerts || []; window.pendingAlerts.push('Size is bigger than 2 MB');</script>";
             }
         } else {
-            echo "<script>alert('Type is not PNG');</script>";
+            echo "<script>window.pendingAlerts = window.pendingAlerts || []; window.pendingAlerts.push('Type is not PNG');</script>";
         }
     } else {
-        echo "<script>alert('Invalid file');</script>";
+        echo "<script>window.pendingAlerts = window.pendingAlerts || []; window.pendingAlerts.push('Invalid file');</script>";
     }
 }
 ?>

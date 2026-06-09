@@ -15,6 +15,7 @@ require_once(dirname(__DIR__, 3) . '/common.php');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Chat | Edit Profile | Change Password</title>
     <link rel="stylesheet" href="<?= asset('../../../Extra/styles/cssFiles/themes.css') ?>" />
+    <script src="<?= asset('../../../scripts/commonMethods.js') ?>"></script>
 
     <style>
         body {
@@ -227,25 +228,25 @@ if (isset($_POST) && isset($_POST["changePassButton"])) {
                             $pwd = password_hash($newPass, PASSWORD_BCRYPT);
                             mysqli_stmt_bind_param($stmt2, "ss", $pwd, $who);
                             if (mysqli_stmt_execute($stmt2)) {
-                                echo "<script>alert('Successfully changed password :)');</script>";
+                                echo "<script>window.customAlert('Successfully changed password :)');</script>";
                             } else {
-                                echo "<script>alert('Invalid Error..');</script>";
+                                echo "<script>window.customAlert('Invalid Error..');</script>";
                             }
                         } else {
-                            echo "<script>alert('Invalid current password..');</script>";
+                            echo "<script>window.customAlert('Invalid current password..');</script>";
                         }
                     mysqli_close($conn);
                 } else {
-                    echo "<script>alert('New password and confirmed one are not identical.. please try again');</script>";
+                    echo "<script>window.customAlert('New password and confirmed one are not identical.. please try again');</script>";
                 }
             } else {
-                echo "<script>alert('New password does not follow the requirements..');</script>";
+                echo "<script>window.customAlert('New password does not follow the requirements..');</script>";
             }
         } else {
-            echo "<script>alert('Invalid');</script>";
+            echo "<script>window.customAlert('Invalid');</script>";
         }
     } else {
-        echo "<script>alert('Invalid');</script>";
+        echo "<script>window.customAlert('Invalid');</script>";
     }
 }
 
