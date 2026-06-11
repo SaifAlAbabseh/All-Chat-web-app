@@ -41,7 +41,7 @@ if (isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_R
             }
         }
     } else {
-        echo "<div style='text-align:center; padding: 20px;'><h2 style='margin:0; color: #888;'>No friends to show..</h2></div>";
+        echo "<div style='text-align:center; padding: 20px;'><h2 style='margin:0; color: #888;'>Start adding people..</h2></div>";
     }
 } else {
     echo "<div style='text-align:center; padding: 20px;'><h2 style='margin:0; color: #888;'>Error..</h2></div>";

@@ -127,10 +127,6 @@ require_once(dirname(__DIR__, 3) . '/common.php');
         body.light-mode .modern-btn-clear:hover {
             background: rgba(0, 0, 0, 0.1);
         }
-        body.light-mode .backButton {
-            color: #034780 !important;
-            border-color: rgba(0,0,0,0.1) !important;
-        }
         body.light-mode #passreq {
             border-color: rgba(0,0,0,0.2) !important;
             color: #034780 !important;
@@ -151,7 +147,7 @@ require_once(dirname(__DIR__, 3) . '/common.php');
 
 <body>
     <div style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
-        <a href="../" class="backButton" style="text-decoration:none; font-size:1.2rem; color: #F76D57; font-weight:bold; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:20px; backdrop-filter:blur(5px); border: 1px solid rgba(255,255,255,0.1); transition:all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">🔙 Back</a>
+        <a href="../" class="backButton">🔙 Back</a>
     </div>
     
     <div class="modern-change-pass-box">

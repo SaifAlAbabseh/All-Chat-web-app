@@ -16,7 +16,7 @@ if (isset($_REQUEST) && isset($_REQUEST["value"]) && isset($_REQUEST["exact"]) &
             $output = "";
             $counter = 1;
             while ($row = mysqli_fetch_row($result)) {
-                $output .= "<div onclick=fill_result_username('r" . $counter . "') class='sug_row'><img src='../View_Image/?u=" . $row[0] . "' width='50px' height='50px' style='border-radius:50%'/><h3 id='r" . $counter . "'>" . $row[0] . "</h3></div>";
+                $output .= "<div onclick=fill_result_username('r" . $counter . "') class='friendRow' style='cursor: pointer; width: 110px; height: auto; padding: 15px 10px; gap: 8px;'><img src='../View_Image/?u=" . $row[0] . "' width='60px' height='60px' style='border-radius:50%; object-fit: cover;'/><h2 id='r" . $counter . "' class='friendUsername' style='font-size: 0.95rem; margin: 0;'>" . $row[0] . "</h2></div>";
                 $counter++;
             }
             echo $output;

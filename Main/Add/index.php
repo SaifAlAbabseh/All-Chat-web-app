@@ -130,11 +130,17 @@ require_once(dirname(__DIR__, 2) . '/common.php');
             border-radius: 12px;
             max-height: 200px;
             overflow-y: auto;
+            overflow-x: hidden;
             z-index: 100;
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             display: none;
-            flex-direction: column;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 15px;
+            gap: 15px;
             border: 1px solid rgba(255,255,255,0.1);
+            box-sizing: border-box;
         }
         .modern-input:focus + #sug_box, #sug_box:active, #sug_box:hover {
             display: flex;
@@ -153,32 +159,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
         body.light-mode .no_sug_label {
             color: #666;
         }
-        .sug_row {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            gap: 15px;
-            cursor: pointer;
-            transition: background 0.2s;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        body.light-mode .sug_row {
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        .sug_row:hover {
-            background: rgba(255,255,255,0.1);
-        }
-        body.light-mode .sug_row:hover {
-            background: rgba(0,0,0,0.05);
-        }
-        .sug_row h3 {
-            margin: 0;
-            font-size: 1.1rem;
-            color: white !important; 
-        }
-        body.light-mode .sug_row h3 {
-            color: #333 !important;
-        }
+
         #addfriendLabel {
             margin-top: 15px;
             margin-bottom: 0;
@@ -272,7 +253,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
 <body>
     <div id="whole_box" style="height:100%;">
         <div style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
-            <a href="../" class="backButton" style="text-decoration:none; font-size:1.5rem; color: #0162AF; font-weight:bold; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:20px; backdrop-filter:blur(5px); transition:all 0.3s ease;">🔙 Back</a>
+            <a href="../" class="backButton">🔙 Back</a>
         </div>
         <div class="modern-add-outer">
             <div class="modern-add-box">
@@ -362,7 +343,7 @@ if (isset($_POST) && isset($_POST["addFriendButton"])) {
                                     // Send real-time notification
                                     var wsToken = '" . (isset($_SESSION['ws_token']) ? $_SESSION['ws_token'] : '') . "';
                                     var protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-                                    var wsHost = '" . (getenv('WS_URL') ?: (isset($_SERVER['HTTP_HOST']) ? explode(':', $_SERVER['HTTP_HOST'])[0] . ':8080' : 'localhost:8080')) . "';
+                                    var wsHost = '" . (getenv('WS_URL') ?: (isset($_SERVER['HTTP_HOST']) ? explode(':', $_SERVER['HTTP_HOST'])[0] . ':'.getVarFromEnv('WS_PORT') : 'localhost:'.getVarFromEnv('WS_PORT'))) . "';
                                     var wsUrl = protocol + wsHost + '?token=' + encodeURIComponent(wsToken);
                                     var wsTemp = new WebSocket(wsUrl);
                                     wsTemp.onopen = function() {

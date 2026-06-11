@@ -135,11 +135,72 @@ window.customAlert = function(message) {
         setTimeout(() => modal.classList.add("show"), 10);
     }
 
-    if (document.readyState === 'loading') {
+        if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', createAlert);
     } else {
         createAlert();
     }
+};
+
+window.customConfirm = function(message, formElement, btnName, btnValue) {
+    function createConfirm() {
+        let modal = document.getElementById('globalCustomConfirmModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'globalCustomConfirmModal';
+            modal.className = 'custom-modal';
+            modal.style.zIndex = '99999';
+            modal.innerHTML = `
+                <div class="custom-modal-content">
+                    <h3 style="color:#F76D57; margin-bottom: 20px; font-size: 1.4rem;">Confirmation</h3>
+                    <p id="globalCustomConfirmText" style="color:#ccc; margin-bottom: 30px; font-size: 1.1rem; line-height: 1.4;"></p>
+                    <div class="custom-modal-actions">
+                        <button id="customConfirmCancelBtn" class="btn-cancel">Cancel</button>
+                        <button id="customConfirmConfirmBtn" class="btn-confirm">Confirm</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        document.getElementById('globalCustomConfirmText').innerText = message;
+        
+        let cancelBtn = document.getElementById('customConfirmCancelBtn');
+        let confirmBtn = document.getElementById('customConfirmConfirmBtn');
+        
+        // Remove old event listeners
+        let newCancelBtn = cancelBtn.cloneNode(true);
+        cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+        let newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        
+        newCancelBtn.addEventListener('click', () => {
+            modal.classList.remove("show");
+            setTimeout(() => { modal.style.display = "none"; }, 300);
+        });
+        
+        newConfirmBtn.addEventListener('click', () => {
+            modal.classList.remove("show");
+            setTimeout(() => { modal.style.display = "none"; }, 300);
+            
+            // Submit form with button data
+            let hidden = document.createElement("input");
+            hidden.type = "hidden";
+            hidden.name = btnName;
+            hidden.value = btnValue;
+            formElement.appendChild(hidden);
+            formElement.submit();
+        });
+        
+        modal.style.display = "flex";
+        setTimeout(() => modal.classList.add("show"), 10);
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', createConfirm);
+    } else {
+        createConfirm();
+    }
+    return false; // Prevents default form submission
 };
 
 window.closeCustomAlert = function() {

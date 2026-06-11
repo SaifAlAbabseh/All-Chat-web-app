@@ -34,7 +34,7 @@ require_once(dirname(__DIR__, 2) . '/common.php');
 
 <body>
     <div style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
-        <a href="../" class="backButton" style="text-decoration:none; font-size:1.5rem; color: #F76D57; font-weight:bold; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:20px; backdrop-filter:blur(5px); transition:all 0.3s ease;">🔙 Back</a>
+        <a href="../" class="backButton">🔙 Back</a>
     </div>
     <br /><br /><br />
     <div class="outer">

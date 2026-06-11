@@ -152,7 +152,7 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
 
 <body>
     <div class="mobile-back-btn" style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
-        <a href="../" class="backButton" style="text-decoration:none; font-size:1.5rem; color: #F76D57; font-weight:bold; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:20px; backdrop-filter:blur(5px); transition:all 0.3s ease;">🔙 Back</a>
+        <a href="../" class="backButton">🔙 Back</a>
     </div>
     <div id='chatSettingsBox' class='modern-modal'>
         <button onclick='chatSettingsExitDialog()' class='modern-modal-close'>✖</button>
@@ -468,7 +468,7 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
 
             var wsToken = "<?php echo isset($_SESSION['ws_token']) ? $_SESSION['ws_token'] : ''; ?>";
             var protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-            var wsHost = "<?php echo getVarFromEnv('WS_URL') ?: (isset($_SERVER['HTTP_HOST']) ? explode(':', $_SERVER['HTTP_HOST'])[0] . ':8080' : 'localhost:8080'); ?>";
+            var wsHost = "<?php echo getVarFromEnv('WS_URL') ?: (isset($_SERVER['HTTP_HOST']) ? explode(':', $_SERVER['HTTP_HOST'])[0] . ':'.getVarFromEnv('WS_PORT') : 'localhost:'.getVarFromEnv('WS_PORT')); ?>";
             var wsUrl = protocol + wsHost + '?token=' + encodeURIComponent(wsToken);
             var ws = new WebSocket(wsUrl);
 

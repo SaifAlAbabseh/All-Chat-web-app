@@ -23,11 +23,11 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
                     <form action="" method="POST" style="margin-bottom:5px;">
                         <input type="hidden" name="acceptFriendRequestField" value="' . htmlspecialchars($row[0]) . '">
                         <input type="hidden" name="acceptFriendRequestUsernameField" value="' . htmlspecialchars($row[1]) . '">
-                        <input type="submit" name="acceptFriendRequestButton" value="Accept" class="accept-btn">
+                        <input type="submit" name="acceptFriendRequestButton" value="Accept" class="accept-btn" onclick="return customConfirm(\'Are you sure you want to accept this request?\', this.form, this.name, this.value);">
                     </form>
                     <form action="" method="POST">
                         <input type="hidden" name="rejectFriendRequestField" value="' . htmlspecialchars($row[0]) . '">
-                        <input type="submit" name="rejectFriendRequestButton" value="Reject" class="reject-btn">
+                        <input type="submit" name="rejectFriendRequestButton" value="Reject" class="reject-btn" onclick="return customConfirm(\'Are you sure you want to reject this request?\', this.form, this.name, this.value);">
                     </form>
                 </td>
             </tr>';

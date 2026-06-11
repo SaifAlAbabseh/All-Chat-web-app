@@ -94,6 +94,79 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
         </form>
     </div>
 </body>
+    <link rel="icon" type="image/x-icon" href="../Extra/images/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="<?= asset('../Extra/styles/cssFiles/themes.css') ?>" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Mobile Sign Up</title>
+</head>
+
+<body>
+    <div class="signup_box">
+        <h1 class="boxupperlabel">
+            Sign Up
+        </h1>
+        <form action="" method="post" autocomplete="off" class="forms signupForm">
+            <table>
+                <tr>
+                    <td colspan="2">
+                        <input type="email" name="signupemail" class="inputfield" id="signupemail_inputfield" placeholder="Enter Your Email.." required />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="text" name="signupusername" class="inputfield" id="signupusername_inputfield" placeholder="Enter Username.." required />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="password" name="signupuserpassword" class="inputfield" id="signupuserpassword_field" placeholder="Enter Password.." required />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="password" name="signupuserconfirmpassword" class="inputfield" id="signupuserconfirmpassword_field" placeholder="Confirm Password.." required />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <br>
+                        <input type="submit" name="signupButton" class="buttontag" id="signup_buttontag" value="SIGNUP" />
+                    </td>
+                    <td>
+                        <br>
+                        <input type="reset" name="signup_clearbutton" class="buttontag" id="signup_buttontagclear" value="CLEAR" />
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <div class="captchaOuterBoxParent">
+                <?php
+
+                function showCaptcha()
+                {
+                    $_SESSION["code"] = "";
+
+                    $how_many_chars = rand(4, 6);
+                    for ($i = 1; $i <= $how_many_chars; $i++) {
+                        $_SESSION["code"] .= generateRandomChar();
+                    }
+
+                    echo "<img width='200' height='50' src='../captcha.php' id='captchaBox'>";
+                }
+
+                showCaptcha();
+
+                ?>
+                <input type="text" name="signup_code_field" class="inputfield captchaInputField" placeholder="Code.." required />
+            </div>
+            <h2 class="invalid" id="invalidforsignup">
+                INVALID
+            </h2>
+        </form>
+    </div>
+</body>
 
 </html>
 
@@ -107,6 +180,7 @@ function generateSignupCode()
     for ($i = 1; $i <= $how_many_chars; $i++) {
         $_SESSION["signup_code"] .= generateRandomChar();
     }
+    $_SESSION["signup_time"] = time();
 }
 
 
@@ -249,46 +323,61 @@ if (isset($_POST["signupButton"]) || isset($_POST["verification_button"])) {
                 invalidfield.style.display='block';
             </script>";
         }
-    } else if (isset($verification_button) && isset($_SESSION) && isset($_SESSION["u_email"]) && isset($_SESSION["u_username"]) && isset($_SESSION["u_password"]) && isset($verification_code_field)) {
-        if ($verification_code_field == $_SESSION["signup_code"]) {
-            $squery = "INSERT INTO users(username, password, picture, available, email) VALUES (?,?,?,?,?)";
-            $stmt = mysqli_prepare($conn, $squery);
-            $pic = 'user';
-            $ava = '0';
-            mysqli_stmt_bind_param($stmt, "sssss", $_SESSION["u_username"], $_SESSION["u_password"], $pic, $ava, $_SESSION["u_email"]);
-            if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_close($stmt);
-                echo
-                "<script>
-                
-                var invalidfield=document.getElementById('invalidforsignup');
-                invalidfield.style.display='block';
-                invalidfield.style.color='green';
-                invalidforsignup.innerHTML='Successful';
+    } else if (isset($verification_button) && isset($_SESSION["u_email"]) && isset($_SESSION["u_username"]) && isset($_SESSION["u_password"]) && isset($_SESSION["signup_code"]) && isset($_SESSION["signup_time"]) && isset($verification_code_field)) {
+        if (time() - $_SESSION["signup_time"] > 300) {
+            unset($_SESSION["signup_code"]);
+            unset($_SESSION["u_email"]);
+            unset($_SESSION["u_username"]);
+            unset($_SESSION["u_password"]);
+            unset($_SESSION["signup_time"]);
+            echo "<script>
+                alert('Your verification code has expired after 5 minutes. Please sign up again.');
+                window.location.href = 'createAccount.php';
             </script>";
-            } else {
-                mysqli_stmt_close($stmt);
-                echo
-                "<script>
-                
-                var invalidfield=document.getElementById('invalidforsignup');
-                invalidfield.style.display='block';
-                invalidforsignup.innerHTML='Connection Error';
-            </script>";
-            }
         } else {
-            echo
-            "<script>
-                            
-                            var invalidfield=document.getElementById('invalidforsignup');
-                            invalidfield.style.display='block';
-                            invalidforsignup.innerHTML='Invalid Code';
-                        </script>";
+            if ($verification_code_field == $_SESSION["signup_code"]) {
+                $squery = "INSERT INTO users(username, password, picture, available, email) VALUES (?,?,?,?,?)";
+                $stmt = mysqli_prepare($conn, $squery);
+                $pic = 'user';
+                $ava = '0';
+                mysqli_stmt_bind_param($stmt, "sssss", $_SESSION["u_username"], $_SESSION["u_password"], $pic, $ava, $_SESSION["u_email"]);
+                if (mysqli_stmt_execute($stmt)) {
+                    mysqli_stmt_close($stmt);
+                    echo
+                    "<script>
+                    var invalidfield=document.getElementById('invalidforsignup');
+                    invalidfield.style.display='block';
+                    invalidfield.style.color='green';
+                    invalidforsignup.innerHTML='Successful';
+                </script>";
+                } else {
+                    mysqli_stmt_close($stmt);
+                    echo
+                    "<script>
+                    var invalidfield=document.getElementById('invalidforsignup');
+                    invalidfield.style.display='block';
+                    invalidforsignup.innerHTML='Connection Error';
+                </script>";
+                }
+                unset($_SESSION["signup_code"]);
+                unset($_SESSION["u_email"]);
+                unset($_SESSION["u_username"]);
+                unset($_SESSION["u_password"]);
+                unset($_SESSION["signup_time"]);
+            } else {
+                echo
+                "<div id='email_verification_box_parent'>
+                    <div id='email_verification_box'>
+                        <h2 style='color:black'>Verify Your Email</h2>
+                        <form action='' method='post'>
+                            <input type='text' name='verification_code_field' class='inputfield' placeholder='Enter your verification code'>
+                            <input type='submit' class='buttontag' name='verification_button' value='Verify'>
+                        </form>
+                        <h2 class='invalid' style='display:block; position:relative; bottom:auto; margin-top:15px !important;'>Invalid Code. Please try again.</h2>
+                    </div>
+                </div>";
+            }
         }
-        unset($_SESSION["signup_code"]);
-        unset($_SESSION["u_email"]);
-        unset($_SESSION["u_username"]);
-        unset($_SESSION["u_password"]);
     }
     mysqli_close($conn);
 }

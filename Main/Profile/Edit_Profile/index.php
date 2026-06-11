@@ -104,6 +104,37 @@ require_once(dirname(__DIR__, 3) . '/common.php');
             box-shadow: 0 0 10px rgba(247, 109, 87, 0.3);
         }
         
+        .modern-input::-webkit-file-upload-button {
+            background: linear-gradient(135deg, #0162AF 0%, #004d8c 100%);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 15px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .modern-input::file-selector-button {
+            background: linear-gradient(135deg, #0162AF 0%, #004d8c 100%);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 15px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .modern-input::-webkit-file-upload-button:hover {
+            box-shadow: 0 4px 10px rgba(1, 98, 175, 0.4);
+            transform: translateY(-1px);
+        }
+        .modern-input::file-selector-button:hover {
+            box-shadow: 0 4px 10px rgba(1, 98, 175, 0.4);
+            transform: translateY(-1px);
+        }
+        
         .modern-submit-btn {
             background: linear-gradient(135deg, #0162AF 0%, #004d8c 100%);
             color: white;
@@ -113,10 +144,12 @@ require_once(dirname(__DIR__, 3) . '/common.php');
             font-size: 1.2rem;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             width: 100%;
             margin-top: 10px;
             box-shadow: 0 4px 15px rgba(1, 98, 175, 0.3);
+            backface-visibility: hidden;
+            -webkit-font-smoothing: subpixel-antialiased;
         }
         .modern-submit-btn:hover {
             transform: translateY(-2px);
@@ -181,7 +214,7 @@ require_once(dirname(__DIR__, 3) . '/common.php');
 <body>
     <div id="whole_box" style="width: 100%; display: flex; justify-content: center; align-items: center;">
         <div style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
-            <a href="../" class="backButton" style="text-decoration:none; font-size:1.5rem; color: #F76D57; font-weight:bold; background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:20px; backdrop-filter:blur(5px); transition:all 0.3s ease;">🔙 Back</a>
+            <a href="../" class="backButton">🔙 Back</a>
         </div>
         
         <div class="modern-profile-box">
@@ -193,7 +226,7 @@ require_once(dirname(__DIR__, 3) . '/common.php');
             
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="modern-form-group">
-                    <input type="file" onchange="renderImage()" name="image" class="modern-input" id="picField" required />
+                    <input type="file" onchange="renderImage()" name="image" class="modern-input" id="picField" accept=".png" required />
                     
                     <div id="imageRenderOuterBox"></div>
                     

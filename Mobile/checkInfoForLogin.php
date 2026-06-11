@@ -14,19 +14,17 @@ if(isset($_REQUEST) && isset($_REQUEST["check"]) && $_REQUEST["check"]=="fromMob
             $row = mysqli_fetch_assoc($result);
             $db_pass = $row['password'];
             // Check if plaintext matches BCrypt, or if plaintext matches MD5, or if provided password is the MD5 itself and matches MD5
-            if(password_verify($password, $db_pass) || md5($password) === $db_pass || $password === $db_pass) {
+            if(password_verify($password, $db_pass) || md5($password) === $db_pass) {
                 echo "ok";
                 // Transparent migration if needed
-                if(md5($password) === $db_pass || $password === $db_pass) {
-                    // if $password is plaintext, we can migrate it
-                    if (md5($password) === $db_pass) {
-                        $new_hash = password_hash($password, PASSWORD_BCRYPT);
-                        $upd = "UPDATE users SET password=? WHERE BINARY username=?";
-                        $upd_stmt = mysqli_prepare($conn, $upd);
-                        mysqli_stmt_bind_param($upd_stmt, "ss", $new_hash, $username);
-                        mysqli_stmt_execute($upd_stmt);
-                        mysqli_stmt_close($upd_stmt);
-                    }
+                // if $password is plaintext, we can migrate it
+                if (md5($password) === $db_pass) {
+                    $new_hash = password_hash($password, PASSWORD_BCRYPT);
+                    $upd = "UPDATE users SET password=? WHERE BINARY username=?";
+                    $upd_stmt = mysqli_prepare($conn, $upd);
+                    mysqli_stmt_bind_param($upd_stmt, "ss", $new_hash, $username);
+                    mysqli_stmt_execute($upd_stmt);
+                    mysqli_stmt_close($upd_stmt);
                 }
             } else {
                 echo "Username or password is incorrect";

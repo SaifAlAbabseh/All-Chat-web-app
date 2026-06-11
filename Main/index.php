@@ -6,6 +6,7 @@ if (!(isset($_SESSION) && isset($_SESSION["who"]))) {
 
 require_once("../DB.php");
 require_once(dirname(__DIR__, 1) . '/common.php');
+require_once(dirname(__DIR__, 1) . '/ws_auth.php');
 
 if (isset($_POST) && isset($_POST["acceptFriendRequestButton"])) {
     extract($_POST);
@@ -89,67 +90,6 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
             }
         }
 
-        /* Modern Delete Friend Modal */
-        .custom-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .custom-modal.show {
-            display: flex;
-            opacity: 1;
-        }
-        .custom-modal-content {
-            background: #2B303A;
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            transform: scale(0.8);
-            transition: transform 0.3s ease;
-            min-width: 300px;
-            border: 1px solid #3d4554;
-        }
-        .custom-modal.show .custom-modal-content {
-            transform: scale(1);
-        }
-        .custom-modal-actions {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-        }
-        .custom-modal-actions button {
-            flex: 1;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s ease;
-        }
-        .btn-cancel {
-            background: #394240;
-            color: #fff;
-        }
-        .btn-cancel:hover {
-            background: #506C7F;
-        }
-        .btn-confirm {
-            background: #F76D57;
-            color: #fff;
-        }
-        .btn-confirm:hover {
-            background: #ff523a;
-            box-shadow: 0 0 15px rgba(247, 109, 87, 0.4);
-        }
 
         /* Modern User Card */
         .user-card {
@@ -216,6 +156,25 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
             display: flex;
             align-items: center;
             justify-content: space-between;
+        }
+        .modern-badge {
+            background: linear-gradient(135deg, rgba(247, 109, 87, 0.15) 0%, rgba(255, 82, 58, 0.25) 100%);
+            border: 1px solid rgba(247, 109, 87, 0.4);
+            padding: 6px 16px;
+            border-radius: 0 0 20px 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(247, 109, 87, 0.1);
+            backdrop-filter: blur(5px);
+            text-shadow: none;
+        }
+        body.light-mode .modern-badge {
+            background: linear-gradient(135deg, rgba(247, 109, 87, 0.1) 0%, rgba(255, 82, 58, 0.15) 100%);
+            box-shadow: 0 2px 8px rgba(247, 109, 87, 0.1);
+            border: 1px solid rgba(247, 109, 87, 0.3);
         }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -361,7 +320,7 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
 
         var wsToken = "<?php echo isset($_SESSION['ws_token']) ? $_SESSION['ws_token'] : ''; ?>";
         var protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-        var wsHost = "<?php echo getVarFromEnv('WS_URL') ?: (isset($_SERVER['HTTP_HOST']) ? explode(':', $_SERVER['HTTP_HOST'])[0] . ':8080' : 'localhost:8080'); ?>";
+        var wsHost = "<?php echo getVarFromEnv('WS_URL') ?: (isset($_SERVER['HTTP_HOST']) ? explode(':', $_SERVER['HTTP_HOST'])[0] . ':'.getVarFromEnv('WS_PORT') : 'localhost:'.getVarFromEnv('WS_PORT')); ?>";
         var wsUrl = protocol + wsHost + '?token=' + encodeURIComponent(wsToken);
         var wsMain = new WebSocket(wsUrl);
 
@@ -467,7 +426,7 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                 <div class="modern-input-group" style="display: flex; flex-direction: column; gap: 8px; text-align: left;">
                     <label style="font-weight: 600; font-size: 0.95rem; opacity: 0.9;">Group Profile Image:</label>
                     <div style="display: flex; gap: 10px;">
-                        <input type="file" onchange='renderImage()' name="image" id="picField" class="modern-input-file" style="flex: 1; padding: 10px; min-width: 0;">
+                        <input type="file" onchange='renderImage()' name="image" id="picField" class="modern-input-file" style="flex: 1; padding: 10px; min-width: 0;" accept=".png">
                         <div class="modern-info-btn" id="imagereq" style="display: flex; align-items: center; justify-content: center; width: 40px; border-radius: 12px; background: rgba(255,255,255,0.1); cursor: pointer; border: 1px solid rgba(255,255,255,0.2);">i</div>
                     </div>
                 </div>
@@ -481,17 +440,6 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
     <div id="notificationsBox">
         <button class="closeButtonForNotifications" id="closeNotificationsButton">X</button>
         <table class="notificationsInnerBox">
-            <tr>
-                <th>
-                    Requester:
-                </th>
-                <th>
-                    Sent Date:
-                </th>
-                <th>
-                    Action:
-                </th>
-            </tr>
             <?php
             $query = "SELECT * FROM friend_requests WHERE requested_user=?";
             $stmt = mysqli_prepare($conn, $query);
@@ -502,6 +450,19 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
             $hasNotifications = false;
             if ($result && mysqli_num_rows($result) > 0) {
                 $hasNotifications = true;
+            ?>
+                <tr>
+                    <th>
+                        Requester:
+                    </th>
+                    <th>
+                        Sent Date:
+                    </th>
+                    <th>
+                        Action:
+                    </th>
+                </tr>
+            <?php
                 while ($row = mysqli_fetch_row($result)) {
             ?>
                     <tr>
@@ -516,11 +477,11 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                             <form action="" method="POST" style="margin-bottom:5px;">
                                 <input type="hidden" name="acceptFriendRequestField" value="<?php echo $row[0]; ?>">
                                 <input type="hidden" name="acceptFriendRequestUsernameField" value="<?php echo $row[1]; ?>">
-                                <input type="submit" name="acceptFriendRequestButton" value="Accept" class="accept-btn">
+                                <input type="submit" name="acceptFriendRequestButton" value="Accept" class="accept-btn" onclick="return customConfirm('Are you sure you want to accept this request?', this.form, this.name, this.value);">
                             </form>
                             <form action="" method="POST">
                                 <input type="hidden" name="rejectFriendRequestField" value="<?php echo $row[0]; ?>">
-                                <input type="submit" name="rejectFriendRequestButton" value="Reject" class="reject-btn">
+                                <input type="submit" name="rejectFriendRequestButton" value="Reject" class="reject-btn" onclick="return customConfirm('Are you sure you want to reject this request?', this.form, this.name, this.value);">
                             </form>
                         </td>
                     </tr>
@@ -551,15 +512,32 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                         object-fit: contain;
                         margin: 20px auto 15px auto;
                         display: block;
-                        border-radius: 20px;
-                        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
                         animation: floatLogo 4s ease-in-out infinite;
                         transition: all 0.3s ease;
+                        border-radius: 50%;
+
+                        
+                        /* Dark Mode integration: Remove white bg and make blue pop */
+                        filter: invert(1) hue-rotate(180deg) brightness(1.5);
+                        mix-blend-mode: screen;
+                        opacity: 0.95;
                     }
                     .brand-logo-img:hover {
                         transform: scale(1.05) translateY(-5px);
-                        box-shadow: 0 12px 35px rgba(0,0,0,0.5);
+                        opacity: 1;
+                        filter: invert(1) hue-rotate(180deg) brightness(1.8);
                     }
+                    
+                    body.light-mode .brand-logo-img {
+                        /* Light Mode integration: Multiply removes the white background */
+                        filter: none;
+                        mix-blend-mode: multiply;
+                        opacity: 0.9;
+                    }
+                    body.light-mode .brand-logo-img:hover {
+                        filter: brightness(0.8);
+                    }
+
                     @keyframes floatLogo {
                         0% { transform: translateY(0px); }
                         50% { transform: translateY(-8px); }
@@ -586,15 +564,9 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
 
                 <div class='profileBox'>
                     <button <?php if ($hasNotifications) { ?> <?php } ?> title="Notifications" id="notificationsButton" class="notificationsButton <?php if (!$hasNotifications) echo "notificationsButtonDisabled"; ?>">
-                        <svg id="bellImage" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" id="Layer_1" width="800px" height="800px" viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve">
-                            <g>
-                                <path fill="#394240" d="M56,48c-3.313,0-6-2.687-6-6V22c0-8.577-6.004-15.74-14.035-17.548C35.984,4.304,36,4.154,36,4   c0-2.209-1.791-4-4-4s-4,1.791-4,4c0,0.154,0.016,0.304,0.035,0.452C20.004,6.26,14,13.423,14,22v20c0,3.313-2.687,6-6,6   c-2.209,0-4,1.791-4,4s1.791,4,4,4h16c0,4.418,3.582,8,8,8s8-3.582,8-8h16c2.209,0,4-1.791,4-4S58.209,48,56,48z M32,2   c1.104,0,2,0.896,2,2c0,0.04-0.014,0.075-0.017,0.115C33.332,4.043,32.671,4,32,4s-1.332,0.043-1.983,0.115   C30.014,4.075,30,4.04,30,4C30,2.896,30.896,2,32,2z M16,22c0-8.837,7.163-16,16-16s16,7.163,16,16v12H16V22z M16,36h32v4H16V36z    M32,62c-3.313,0-6-2.687-6-6h12C38,59.313,35.313,62,32,62z M56,54H8c-1.104,0-2-0.896-2-2s0.896-2,2-2c4.418,0,8-3.582,8-8h32   c0,4.418,3.582,8,8,8c1.104,0,2,0.896,2,2S57.104,54,56,54z" />
-                                <path fill="#506C7F" d="M32,2c1.104,0,2,0.896,2,2c0,0.04-0.014,0.075-0.017,0.115C33.332,4.043,32.671,4,32,4   s-1.332,0.043-1.983,0.115C30.014,4.075,30,4.04,30,4C30,2.896,30.896,2,32,2z" />
-                                <path fill="#F76D57" d="M16,22c0-8.837,7.163-16,16-16s16,7.163,16,16v12H16V22z" />
-                                <rect x="16" y="36" fill="#F9EBB2" width="32" height="4" />
-                                <path fill="#B4CCB9" d="M32,62c-3.313,0-6-2.687-6-6h12C38,59.313,35.313,62,32,62z" />
-                                <path fill="#F76D57" d="M56,54H8c-1.104,0-2-0.896-2-2s0.896-2,2-2c4.418,0,8-3.582,8-8h32c0,4.418,3.582,8,8,8   c1.104,0,2,0.896,2,2S57.104,54,56,54z" />
-                            </g>
+                        <svg id="bellImage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                         </svg>
                         <span class="hasNotifications"></span>
                     </button>
@@ -632,7 +604,7 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
 
         <div class="groupsListBox" id="groupsBox">
             <div class="modern-box-header" style="margin-bottom: 15px;">
-                <span>👥 Groups</span>
+                <span class="modern-badge">👥 Groups</span>
                 <button class="plus_button" id="create_group_button" title="Create Group">+</button>
             </div>
             <div id="groupsInnerData">
@@ -641,7 +613,7 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
 
         <div class="friendsListBox" id="friendBox">
             <div class="modern-box-header">
-                <span>💬 Friends</span>
+                <span class="modern-badge">💬 Friends</span>
             </div>
             <div id="innerData">
             </div>

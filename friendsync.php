@@ -37,7 +37,7 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
             }
         }
     } else {
-        echo "<h2 class='empty-state-msg'>No friends to show..</h2>";
+        echo "<h2 class='empty-state-msg'>Start adding people..</h2>";
     }
 } else {
     session_destroy();

@@ -643,9 +643,15 @@ input[type="file"]::file-selector-button:hover {
 
 .outer_reqs_box {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     display: none;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    backdrop-filter: blur(5px);
 }
 
 .reqs {
@@ -689,26 +695,83 @@ input[type="file"]::file-selector-button:hover {
 }
 
 #email_verification_box_parent {
-    position: absolute;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(15px);
+    z-index: 1000;
+    animation: fadeInModal 0.4s ease forwards;
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 #email_verification_box {
-    position: absolute;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 90%;
+    max-width: 420px;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: 0 20px 60px rgba(1, 98, 175, 0.15), 0 0 0 1px rgba(1, 98, 175, 0.1);
+    transform: translateY(20px);
+    animation: slideUpModal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUpModal {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+#email_verification_box h2 {
+    color: #102a43;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.verification-text {
+    color: #486581;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.verification-form {
+    width: 100%;
+    display: flex;
     flex-direction: column;
-    width: 40%;
-    height: 40%;
-    background-color: red;
-    border-radius: 10px;
-    padding: 10px;
-    border: solid 5px black;
+    align-items: center;
+    gap: 15px;
+}
+
+.verification-form .inputfield {
+    width: 100% !important;
+    text-align: center;
+    letter-spacing: 2px;
+    font-size: 1.1rem;
+    padding: 15px !important;
+}
+
+.verification-form .buttontag {
+    width: 100% !important;
+    padding: 15px !important;
+    font-size: 1.1rem;
+    margin-top: 5px;
 }
 
 
@@ -889,7 +952,7 @@ body.light-mode .otherPlatformDownloadLink:hover {
     justify-content: center;
     background: linear-gradient(135deg, #F76D57 0%, #ff523a 100%);
     color: white;
-    border-radius: 50%;
+    border-radius: 0 0 0 50%;
     border: none;
     font-weight: bolder;
     transition: all 0.3s ease;
@@ -1093,27 +1156,42 @@ body.light-mode .otherPlatformDownloadLink:hover {
     width: max-content;
     position: relative;
     margin-right: auto;
+    color: white; /* Dark mode default */
+    transition: color 0.3s ease;
+    padding: 0;
+    line-height: 0;
+}
+
+body.light-mode .notificationsButton {
+    color: #333;
 }
 
 .notificationsButtonDisabled {
     cursor: not-allowed;
+    opacity: 0.5;
 }
 
 #bellImage {
     width: 32px;
     height: 32px;
-    stroke: #000;
-    stroke-width: 1px;
+    stroke: currentColor;
+    stroke-width: 2px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
 .hasNotifications {
     border-radius: 50%;
-    width: 10px;
-    height: 10px;
-    background-color: red;
+    width: 8px;
+    height: 8px;
+    background-color: #ef4444; /* Modern red */
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: 2px;
+    right: 2px;
+    box-shadow: 0 0 0 2px #2B303A; /* Add a stroke to separate it from the bell */
+    transition: box-shadow 0.3s ease;
+}
+body.light-mode .hasNotifications {
+    box-shadow: 0 0 0 2px #f8f9fa; /* Light mode stroke */
 }
 
 .notificationUserImage {
@@ -2603,4 +2681,98 @@ body.light-mode #recordingTimer {
 }
 .action-send {
     color: #22c55e;
-}
+}
+
+/* Unified Back Button Design */
+.backButton {
+    text-decoration: none;
+    font-size: 1.2rem;
+    color: #0162AF;
+    font-weight: bold;
+    background: rgba(255,255,255,0.1);
+    padding: 10px 20px;
+    border-radius: 20px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    display: inline-block;
+}
+.backButton:hover {
+    background: rgba(255,255,255,0.2);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    transform: translateY(-2px);
+    color: #0162AF;
+}
+body.light-mode .backButton {
+    color: #034780 !important;
+    border-color: rgba(0,0,0,0.1) !important;
+    background: rgba(0,0,0,0.05);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+body.light-mode .backButton:hover {
+    background: rgba(0,0,0,0.1);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+/* Modern Confirmation & Alert Modal */
+.custom-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 99999;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.custom-modal.show {
+    display: flex;
+    opacity: 1;
+}
+.custom-modal-content {
+    background: #2B303A;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+    min-width: 300px;
+    border: 1px solid #3d4554;
+}
+.custom-modal.show .custom-modal-content {
+    transform: scale(1);
+}
+.custom-modal-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+.custom-modal-actions button {
+    flex: 1;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+.btn-cancel {
+    background: #394240;
+    color: #fff;
+}
+.btn-cancel:hover {
+    background: #506C7F;
+}
+.btn-confirm {
+    background: #F76D57;
+    color: #fff;
+}
+.btn-confirm:hover {
+    background: #ff523a;
+    box-shadow: 0 0 15px rgba(247, 109, 87, 0.4);
+}

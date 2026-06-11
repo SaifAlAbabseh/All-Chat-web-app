@@ -45,10 +45,10 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
             }
         }
         if (!$checkIfAtLeastOneGroupMatch) {
-            echo "<h2 class='empty-state-msg'>No groups to show..</h2>";
+            echo "<h2 class='empty-state-msg'>Start creating groups..</h2>";
         }
     } else {
-        echo "<h2 class='empty-state-msg'>No groups to show..</h2>";
+        echo "<h2 class='empty-state-msg'>Start creating groups..</h2>";
     }
 } else {
     session_destroy();
