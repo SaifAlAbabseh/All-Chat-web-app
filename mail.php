@@ -20,10 +20,10 @@ function sendFriendRequestMail($conn, $to_email, $to_name, $requester_username)
     return sendMail($to_email, $to_name, $subject, $body);
 }
 
-function sendVerificationCodeMail($to_email, $to_name, $code)
+function sendVerificationCodeMail($action, $to_email, $to_name, $code)
 {
     $subject = "All Chat Email Verification Code";
-    $template = file_get_contents(__DIR__ . "/email_templates/signup_verification_template.html");
+    $template = file_get_contents(__DIR__ . "/email_templates/" . $action . "_verification_template.html");
     $site_name = "All Chat";
     $body = str_replace(
         ['{{CODE}}', '{{YEAR}}', '{{SITE_NAME}}'],

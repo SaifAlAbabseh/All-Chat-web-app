@@ -259,7 +259,7 @@ if (isset($_POST["signupButton"]) || isset($_POST["verification_button"])) {
                             $_SESSION["u_password"] = $password;
 
                             require_once "../mail.php";
-                            if (sendVerificationCodeMail($signupemail, $un, $_SESSION["signup_code"])) {
+                            if (sendVerificationCodeMail("signup", $signupemail, $un, $_SESSION["signup_code"])) {
                                 echo
                                 "<script>
                                     if(document.getElementById('loading_box_outer_id')){

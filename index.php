@@ -573,7 +573,7 @@ function generateSignupCode()
     $_SESSION["signup_time"] = time();
 }
 
-if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton"]) || isset($_POST["verification_button"]))) {
+if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton"]) || isset($_POST["verification_button"]) || isset($_POST["login_verification_button"]))) {
     echo "<script>startLoading('main_box-id');</script>";
     extract($_POST);
 
@@ -582,16 +582,18 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
         $password = trim($userpassword);
         if (trim($un) != "" && $password != "") {
 
-            $query = "SELECT password FROM users WHERE BINARY username=?";
+            $query = "SELECT password, email FROM users WHERE BINARY username=?";
             $stmt = mysqli_prepare($conn, $query);
             mysqli_stmt_bind_param($stmt, "s", $un);
             mysqli_stmt_execute($stmt);
             $result = mysqli_stmt_get_result($stmt);
             $login_success = false;
+            $db_email = "";
             
             if (mysqli_num_rows($result)) {
                 $row = mysqli_fetch_assoc($result);
                 $db_pass = $row['password'];
+                $db_email = $row['email'];
                 if (password_verify($password, $db_pass) || md5($password) === $db_pass) {
                     $login_success = true;
                     // Transparent migration from MD5 to BCrypt
@@ -609,19 +611,40 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
             mysqli_stmt_close($stmt);
 
             if ($login_success) {
-                    $_SESSION["who"] = $un;
-                    $av = "UPDATE users SET available='1' WHERE BINARY username=?";
-                    $stmt = mysqli_prepare($conn, $av);
-                    mysqli_stmt_bind_param($stmt, "s", $un);
-                    mysqli_stmt_execute($stmt);
-                    mysqli_stmt_close($stmt);
-                    
-                    if (isset($rememberCred)) {
-                        $hash = hash_hmac('sha256', $un, getVarFromEnv('DB_PASSWORD'));
-                        $cookie_value = $un . ':' . $hash;
-                        setcookie('remember_user', $cookie_value, time() + (86400 * 30), "/", "", false, true);
-                    }
-                    echo "<script>window.location.replace('Main/');</script>";
+                $_SESSION["login_code"] = "";
+                $how_many_chars = rand(4, 8);
+                for ($i = 1; $i <= $how_many_chars; $i++) {
+                    $_SESSION["login_code"] .= generateRandomChar();
+                }
+                $_SESSION["login_time"] = time();
+                $_SESSION["l_username"] = $un;
+                $_SESSION["l_remember"] = isset($rememberCred) ? true : false;
+
+                require_once "mail.php";
+                if (sendVerificationCodeMail("login", $db_email, $un, $_SESSION["login_code"])) {
+                    echo
+                    "<script>
+                        $('#loading_box_outer_id').stop(true, true).css({opacity: 0, 'z-index': '-100'});
+                        $('#main_box-id').stop(true, true).css({'pointer-events': 'all', opacity: 1});
+                    </script>
+                    <div id='email_verification_box_parent'>
+                        <div id='email_verification_box'>
+                            <h2>Verify Your Email</h2>
+                            <p class='verification-text'>We've sent a verification code to your email.</p>
+                            <form action='' method='post' class='verification-form'>
+                                <input type='text' name='verification_code_field' class='inputfield' placeholder='Enter verification code'>
+                                <input type='submit' class='buttontag' name='login_verification_button' value='Verify'>
+                            </form>
+                        </div>
+                    </div>";
+                } else {
+                    echo
+                    "<script>
+                         var invalidfield=document.getElementById('invalidforlogin');
+                         invalidfield.style.display='block';
+                         invalidfield.innerHTML='Failed to send OTP';
+                    </script>";
+                }
             } else {
                 echo
                 "<script>
@@ -700,7 +723,7 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                                 $_SESSION["u_password"] = $password;
                                 
                                 require_once "mail.php";
-                                if (sendVerificationCodeMail($signupemail, $un, $_SESSION["signup_code"])) {
+                                if (sendVerificationCodeMail("signup", $signupemail, $un, $_SESSION["signup_code"])) {
                                     echo
                                     "<script>
                                         $('#loading_box_outer_id').stop(true, true).css({opacity: 0, 'z-index': '-100'});
@@ -819,6 +842,55 @@ if (isset($_POST) && (isset($_POST["loginButton"]) || isset($_POST["signupButton
                         <form action='' method='post' class='verification-form'>
                             <input type='text' name='verification_code_field' class='inputfield' placeholder='Enter verification code'>
                             <input type='submit' class='buttontag' name='verification_button' value='Verify'>
+                        </form>
+                        <h2 class='invalid' style='display:block; position:relative; bottom:auto; margin-top:15px !important; transform:none; left:auto; width:auto; box-shadow:none;'>Invalid Code. Please try again.</h2>
+                    </div>
+                </div>";
+            }
+        }
+    } else if (isset($login_verification_button) && isset($_SESSION["l_username"]) && isset($_SESSION["login_code"]) && isset($_SESSION["login_time"]) && isset($verification_code_field)) {
+        if (time() - $_SESSION["login_time"] > 300) {
+            unset($_SESSION["login_code"]);
+            unset($_SESSION["l_username"]);
+            unset($_SESSION["l_remember"]);
+            unset($_SESSION["login_time"]);
+            echo "<script>
+                alert('Your verification code has expired after 5 minutes. Please login again.');
+                window.location.href = 'index.php';
+            </script>";
+        } else {
+            if ($verification_code_field == $_SESSION["login_code"]) {
+                $un = $_SESSION["l_username"];
+                $_SESSION["who"] = $un;
+                $av = "UPDATE users SET available='1' WHERE BINARY username=?";
+                $stmt = mysqli_prepare($conn, $av);
+                mysqli_stmt_bind_param($stmt, "s", $un);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+                
+                if ($_SESSION["l_remember"]) {
+                    $hash = hash_hmac('sha256', $un, getVarFromEnv('DB_PASSWORD'));
+                    $cookie_value = $un . ':' . $hash;
+                    setcookie('remember_user', $cookie_value, time() + (86400 * 30), "/", "", false, true);
+                }
+                unset($_SESSION["login_code"]);
+                unset($_SESSION["l_username"]);
+                unset($_SESSION["l_remember"]);
+                unset($_SESSION["login_time"]);
+                echo "<script>window.location.replace('Main/');</script>";
+            } else {
+                echo
+                "<script>
+                    $('#loading_box_outer_id').stop(true, true).css({opacity: 0, 'z-index': '-100'});
+                    $('#main_box-id').stop(true, true).css({'pointer-events': 'all', opacity: 1});
+                </script>
+                <div id='email_verification_box_parent'>
+                    <div id='email_verification_box'>
+                        <h2>Verify Your Email</h2>
+                        <p class='verification-text'>We've sent a verification code to your email.</p>
+                        <form action='' method='post' class='verification-form'>
+                            <input type='text' name='verification_code_field' class='inputfield' placeholder='Enter verification code'>
+                            <input type='submit' class='buttontag' name='login_verification_button' value='Verify'>
                         </form>
                         <h2 class='invalid' style='display:block; position:relative; bottom:auto; margin-top:15px !important; transform:none; left:auto; width:auto; box-shadow:none;'>Invalid Code. Please try again.</h2>
                     </div>
