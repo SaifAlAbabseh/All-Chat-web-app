@@ -1354,10 +1354,16 @@ body.light-mode .hasNotifications {
     display: flex;
     flex-direction: row;
     gap: 15px;
+    flex-wrap: wrap;
     align-items: center;
     background: rgba(0, 0, 0, 0.1);
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     box-sizing: border-box;
+}
+
+.replyingToBlock {
+    width: 100%;
+    margin-bottom: -10px;
 }
 
 .input-wrapper {
@@ -1428,8 +1434,8 @@ body.light-mode .hasNotifications {
 
 .left-message {
     margin-left: 5px;
-    margin-right: auto;
     align-self: flex-start;
+    text-align: left;
     background: rgba(255, 255, 255, 0.1);
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1440,8 +1446,8 @@ body.light-mode .hasNotifications {
 
 .right-message {
     margin-right: 5px;
-    margin-left: auto;
     align-self: flex-end;
+    text-align: left;
     background: linear-gradient(135deg, #F76D57 0%, #ff523a 100%);
     color: white;
     border-bottom-right-radius: 5px;
@@ -2776,3 +2782,24 @@ body.light-mode .backButton:hover {
     background: #ff523a;
     box-shadow: 0 0 15px rgba(247, 109, 87, 0.4);
 }
+
+.reply-block { background: rgba(0, 0, 0, 0.2); border-left: 4px solid #F76D57; padding: 8px 12px; margin-bottom: 8px; border-radius: 4px; font-size: 0.9em; }
+body.light-mode .reply-block { background: rgba(0, 0, 0, 0.05); }
+.reply-header { color: #F76D57; font-weight: bold; margin-bottom: 4px; }
+.reply-text { opacity: 0.8; white-space: pre-wrap; word-break: break-word; overflow: hidden; max-height: 60px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+
+.message-container-outer { position: relative; width: 100%; display: flex; flex-direction: row; align-items: center; }
+.message-container-outer.left-outer { justify-content: flex-start; }
+.message-container-outer.right-outer { justify-content: flex-end; }
+.msg-hover-actions { opacity: 0; transition: opacity 0.2s ease-in-out; display: flex; align-items: center; cursor: pointer; background: rgba(255, 255, 255, 0.1); border-radius: 50%; padding: 8px; color: #ffffff; }
+.left-outer .msg-hover-actions { margin-left: 10px; }
+.right-outer .msg-hover-actions { order: -1; margin-right: 10px; }
+body.light-mode .msg-hover-actions { background: rgba(0, 0, 0, 0.05); color: #333333; }
+.msg-hover-actions:hover { background: rgba(255, 255, 255, 0.2); }
+body.light-mode .msg-hover-actions:hover { background: rgba(0, 0, 0, 0.1); }
+.message-container:hover + .msg-hover-actions, .msg-hover-actions:hover { opacity: 1; }
+#replyingToBlock { display: none; background: #2B303A; border-left: 4px solid #F76D57; padding: 12px 15px; border-radius: 15px 15px 0 0; position: relative; border-bottom: 1px solid rgba(255,255,255,0.05); max-width: 100%; box-sizing: border-box; overflow: hidden; flex: 0 0 100%; margin-bottom: -15px; }
+@media (max-width: 768px) { #replyingToBlock { margin-bottom: -8px; } }
+body.light-mode #replyingToBlock { background: #f0f2f5; border-bottom: 1px solid rgba(0,0,0,0.05); }
+#cancelReplyButton { position: absolute; top: 12px; right: 15px; cursor: pointer; color: #a0a0a0; font-size: 1.2em; background: none; border: none; transition: color 0.2s; }
+#cancelReplyButton:hover { color: #F76D57; }

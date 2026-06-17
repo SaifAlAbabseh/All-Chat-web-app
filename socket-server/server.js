@@ -77,6 +77,11 @@ function formatMessageNode(msg) {
             }
         });
 
+        // Parse Replies: [REPLY:username]...[/REPLY]
+        const replyPattern = /\[REPLY:(.*?)\]([\s\S]*?)\[\/REPLY\]/g;
+        const replyReplacement = '<div class="reply-block"><div class="reply-header">$1</div><div class="reply-text">$2</div></div>';
+        decoded = decoded.replace(replyPattern, replyReplacement);
+
         // PHP's preg_replace for links
         const pattern = /(https?:\/\/[^\s]+)/g;
         const replacement = '<a href="$1" target="_blank" rel="noopener noreferrer" class="chatMessageLink">$1</a>';

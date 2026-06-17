@@ -38,6 +38,14 @@ function formatMessage($message)
     $replacement = '<a href="$1" target="_blank" rel="noopener noreferrer" class="chatMessageLink">$1</a>';
     $message = preg_replace($pattern, $replacement, $message);
 
+    // Format replies
+    $replyPattern = '/\[REPLY:(.*?)\](.*?)\[\/REPLY\]/s';
+    $message = preg_replace_callback($replyPattern, function($matches) {
+        $username = htmlspecialchars($matches[1], ENT_QUOTES, 'UTF-8');
+        $content = trim($matches[2]);
+        return '<div class="reply-block"><div class="reply-header">' . $username . '</div><div class="reply-text">' . $content . '</div></div>';
+    }, $message);
+
     // Format mentions
     $mentionPattern = '/(?<!\w)@(\w+)/';
     $mentionReplacement = '<span class="mention-text">@$1</span>';

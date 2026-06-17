@@ -508,7 +508,7 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                                             $decodedMessage = urldecode($messageitself);
                                             $isMentioned = preg_match('/(?<!\w)@' . preg_quote($you, '/') . '\b/', $decodedMessage);
                                             ?>
-                                            <div class='message-container-outer <?php echo ($from == $you) ? "right-message-outer" : "left-message-outer"; ?>' id='msg-pos-<?php echo $row[2]; ?>' style='display: flex; align-items: flex-end; margin-bottom: 10px; <?php echo ($from == $you) ? "flex-direction: row-reverse;" : ""; ?>'>
+                                            <div class='message-container-outer <?php echo ($from == $you) ? "right-message-outer right-outer" : "left-message-outer left-outer"; ?>' id='msg-pos-<?php echo $row[2]; ?>' style='display: flex; align-items: flex-end; margin-bottom: 10px;'>
                                                 <?php if ($from != $you): ?>
                                                     <img src="../View_Image/?u=<?php echo urlencode($from); ?>" class="message-profile-pic" alt="Profile" style="width: 30px; height: 30px; border-radius: 50%; margin: 0 10px; object-fit: cover; flex-shrink: 0;" />
                                                 <?php endif; ?>
@@ -553,6 +553,9 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                                                         ?>
                                                     </div>
                                                 </div>
+                                                <div class="msg-hover-actions" onclick="replyToMessage('<?php echo $row[2]; ?>', '<?php echo htmlspecialchars($from, ENT_QUOTES); ?>')" title="Reply">
+                                                    <span style="font-size: 1.2em; line-height: 1;">&#x21A9;&#xFE0F;</span>
+                                                </div>
                                             </div>
                                 <?php
                                         }
@@ -576,6 +579,11 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                             </div>
                         </div>
                         <div class="message-fields">
+                            <div id="replyingToBlock">
+                                <button id="cancelReplyButton" type="button" onclick="cancelReply()">✖</button>
+                                <div id="replyingToName" style="color: #F76D57; font-weight: bold; font-size: 0.9em; margin-bottom: 4px;"></div>
+                                <div id="replyingToText" style="font-size: 0.85em; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90%;"></div>
+                            </div>
                             <div class="input-wrapper" id="standardInputs" style="position: relative;">
                                 <div id="mention-dropdown" class="mention-dropdown"></div>
                                 <textarea name="messageField" id="messageField" placeholder="Type a message..."></textarea>
@@ -699,7 +707,7 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                                 }
                                 
                                 htmlToPrepend += `
-                                    <div class='message-container-outer ${isMe ? "right-message-outer" : "left-message-outer"}' id='msg-pos-${res.pos}' style='display: flex; align-items: flex-end; margin-bottom: 10px; ${isMe ? "flex-direction: row-reverse;" : ""}'>
+                                    <div class='message-container-outer ${isMe ? "right-message-outer right-outer" : "left-message-outer left-outer"}' id='msg-pos-${res.pos}' style='display: flex; align-items: flex-end; margin-bottom: 10px;' data-raw='${escapeHtml(res.rawMessage)}'>
                                         ${!isMe ? '<img src="../View_Image/?u=' + encodeURIComponent(res.from) + '" class="message-profile-pic" alt="Profile" style="width: 30px; height: 30px; border-radius: 50%; margin: 0 10px; object-fit: cover; flex-shrink: 0;" />' : ''}
                                         <div class='message-container ${isMe ? "right-message" : "left-message"} ${isMentioned ? "mentioned-message" : ""}' title='${res.date}'>
                                             <div class='message-header'>
@@ -728,6 +736,9 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                                             <div class="reactions-bar" id="reactions-${res.pos}">
                                                 ${reactionsHtml}
                                             </div>
+                                        </div>
+                                        <div class="msg-hover-actions" onclick="replyToMessage('${res.pos}', '${escapeHtml(res.from)}')" title="Reply">
+                                            <span style="font-size: 1.2em; line-height: 1;">&#x21A9;&#xFE0F;</span>
                                         </div>
                                     </div>
                                 `;
@@ -776,10 +787,9 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                         isMentioned = mentionRegex.test(res.rawMessage);
                     }
                     const messageElement = document.createElement("div");
-                    messageElement.classList.add("message-container-outer");
+                    messageElement.classList.add("message-container-outer", isMe ? "right-outer" : "left-outer");
                     if (isMe) {
                         messageElement.classList.add("right-message-outer");
-                        messageElement.style.flexDirection = "row-reverse";
                     } else {
                         messageElement.classList.add("left-message-outer");
                     }
@@ -814,6 +824,9 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                                 ${res.message}
                             </div>
                             <div class="reactions-bar" id="reactions-${res.pos}"></div>
+                        </div>
+                        <div class="msg-hover-actions" onclick="replyToMessage('${res.pos}', '${escapeHtml(res.lastwho)}')" title="Reply">
+                            <span style="font-size: 1.2em; line-height: 1;">&#x21A9;&#xFE0F;</span>
                         </div>
                     `;
                     const box = document.getElementById("messages");
@@ -896,7 +909,16 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                     fileTags.push(match[0]);
                 }
                 
-                rawText = rawText.replace(fileRegex, "").trim();
+                rawText = rawText.replace(fileRegex, "");
+
+                const replyRegex = /\[REPLY:(.*?)\]([\s\S]*?)\[\/REPLY\]/g;
+                let replyMatch = replyRegex.exec(rawText);
+                if (replyMatch) {
+                    textEl.setAttribute("data-reply", replyMatch[0]);
+                    rawText = rawText.replace(replyRegex, "");
+                }
+                
+                rawText = rawText.trim();
                 
                 if (fileTags.length > 0) {
                     textEl.setAttribute("data-files", fileTags.join("\n"));
@@ -921,6 +943,38 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                 textEl.innerHTML = textEl.getAttribute("data-orig-html");
                 textEl.removeAttribute("data-editing");
                 textEl.removeAttribute("data-files");
+                textEl.removeAttribute("data-reply");
+            };
+
+            let replyingToUsername = null;
+            let replyingToText = null;
+
+            window.replyToMessage = function(pos, username) {
+                replyingToUsername = username;
+                const textEl = document.getElementById("msg-text-" + pos);
+                if (!textEl) return;
+                let rawText = textEl.getAttribute("data-raw") || "";
+                
+                let hasFiles = /\[FILE:/.test(rawText);
+                rawText = rawText.replace(/\[FILE:\s*(.+?):\s*(.+?)\]/g, "");
+                rawText = rawText.replace(/\[REPLY:.*?\].*?\[\/REPLY\]/gs, "").trim();
+                
+                if (rawText === "" && hasFiles) {
+                    rawText = "[Attachment]";
+                }
+                
+                replyingToText = rawText;
+                
+                document.getElementById("replyingToBlock").style.display = "block";
+                document.getElementById("replyingToName").innerText = username;
+                document.getElementById("replyingToText").innerText = rawText.substring(0, 100) + (rawText.length > 100 ? "..." : "");
+                document.getElementById("messageField").focus();
+            };
+
+            window.cancelReply = function() {
+                replyingToUsername = null;
+                replyingToText = null;
+                document.getElementById("replyingToBlock").style.display = "none";
             };
 
             // Emoji Picker Logic
@@ -968,6 +1022,11 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                 const fileTags = textEl.getAttribute("data-files");
                 if (fileTags) {
                     newText = newText ? (newText + "\n" + fileTags) : fileTags;
+                }
+                
+                const replyPrefix = textEl.getAttribute("data-reply");
+                if (replyPrefix) {
+                    newText = replyPrefix + "\n" + newText;
                 }
                 
                 if (newText === "") {
@@ -1406,6 +1465,12 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                 }
 
                 let finalMessage = message;
+
+                if (replyingToUsername && replyingToText !== null) {
+                    finalMessage = `[REPLY:${replyingToUsername}]${replyingToText}[/REPLY]\n` + finalMessage;
+                    cancelReply();
+                }
+
                 if (fileTags.length > 0) {
                     const allTags = fileTags.join("\n");
                     finalMessage = finalMessage ? (finalMessage + "\n" + allTags) : allTags;
