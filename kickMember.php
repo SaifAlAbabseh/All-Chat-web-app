@@ -18,6 +18,13 @@ else{
     $stmt = mysqli_prepare($conn, $remove_query);
     mysqli_stmt_bind_param($stmt, "s", $member_to_kick);
     $remove_result = mysqli_stmt_execute($stmt);
+    if ($remove_result) {
+        $_SESSION['pending_ws_events'][] = [
+            'type' => 'kick_user',
+            'tname' => 'g'.$group_id,
+            'target' => $member_to_kick
+        ];
+    }
     mysqli_close($conn);
     header("Location:Main/Group/?group_id=".$_REQUEST["group_id"]);
 }

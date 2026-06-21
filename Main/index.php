@@ -26,6 +26,19 @@ if (isset($_POST) && isset($_POST["acceptFriendRequestButton"])) {
             if ($stmt) {
                 mysqli_stmt_execute($stmt);
             }
+            
+            echo "<script>
+            window.addEventListener('load', function() {
+                var attemptSocket = function() {
+                    if (window.wsMain && window.wsMain.readyState === WebSocket.OPEN) {
+                        window.wsMain.send(JSON.stringify({ type: 'accept_friend_request', target: '" . htmlspecialchars($acceptFriendRequestUsernameField, ENT_QUOTES) . "' }));
+                    } else {
+                        setTimeout(attemptSocket, 500);
+                    }
+                };
+                attemptSocket();
+            });
+            </script>";
         } else {
             echo "<script>window.pendingAlerts = window.pendingAlerts || []; window.pendingAlerts.push('Connection Error.');</script>";
         }
@@ -55,6 +68,24 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
             window.pendingAlerts.push(<?= json_encode($_SESSION['pendingAlert']) ?>);
         </script>
         <?php unset($_SESSION['pendingAlert']); ?>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['pending_ws_events']) && is_array($_SESSION['pending_ws_events']) && count($_SESSION['pending_ws_events']) > 0): ?>
+        <script>
+            window.addEventListener('load', function() {
+                var pendingEvents = <?php echo json_encode($_SESSION['pending_ws_events']); ?>;
+                var attemptSocket = function() {
+                    if (window.wsMain && window.wsMain.readyState === WebSocket.OPEN) {
+                        pendingEvents.forEach(function(evt) {
+                            window.wsMain.send(JSON.stringify(evt));
+                        });
+                    } else {
+                        setTimeout(attemptSocket, 500);
+                    }
+                };
+                attemptSocket();
+            });
+        </script>
+        <?php unset($_SESSION['pending_ws_events']); ?>
     <?php endif; ?>
     <style>
         @keyframes bellWiggle {
@@ -175,6 +206,28 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
             background: linear-gradient(135deg, rgba(247, 109, 87, 0.1) 0%, rgba(255, 82, 58, 0.15) 100%);
             box-shadow: 0 2px 8px rgba(247, 109, 87, 0.1);
             border: 1px solid rgba(247, 109, 87, 0.3);
+        }
+        .unread-bell {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.6);
+            animation: bellWiggle 1s ease-in-out infinite;
+            z-index: 10;
+            display: none; /* hidden by default */
+            border: 2px solid #2B303A;
+        }
+        body.light-mode .unread-bell {
+            border: 2px solid #f8f9fa;
         }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -332,21 +385,81 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                         $('#notificationsButton').removeClass('notificationsButtonDisabled');
                     });
                 }
+                
+                if (data.type === 'friend_deleted' || data.type === 'friend_added') {
+                    if (window.reloadFriendsList) window.reloadFriendsList();
+                }
+                
+                if (data.type === 'group_added' || data.type === 'group_destroyed' || data.type === 'user_kicked' || data.type === 'user_promoted' || data.type === 'user_demoted') {
+                    if (window.reloadGroupsList) window.reloadGroupsList();
+                }
+                if (data.type === 'personal') {
+                    if (data.lastwho !== '<?php echo $_SESSION["who"]; ?>') {
+                        let unreads = JSON.parse(localStorage.getItem('unread_friends') || '[]');
+                        if (!unreads.includes(data.lastwho)) unreads.push(data.lastwho);
+                        localStorage.setItem('unread_friends', JSON.stringify(unreads));
+                        if (window.restoreUnreadState) window.restoreUnreadState();
+                    }
+                }
+
+                if (data.type === 'group') {
+                    if (data.lastwho !== '<?php echo $_SESSION["who"]; ?>') {
+                        let unreads = JSON.parse(localStorage.getItem('unread_groups') || '[]');
+                        if (!unreads.includes(data.groupId.toString())) unreads.push(data.groupId.toString());
+                        localStorage.setItem('unread_groups', JSON.stringify(unreads));
+                        if (window.restoreUnreadState) window.restoreUnreadState();
+                    }
+                }
+
+                if (data.type === 'status_change') {
+                    var userRow = $('.friendRow[data-username="'+data.username+'"]');
+                    if (userRow.length > 0) {
+                        var color = data.ava === "1" ? "#10b981" : "#ef4444";
+                        userRow.find('img').css('border-color', color);
+                    }
+                }
             } catch(e) {}
+        };
+
+        window.restoreUnreadState = function() {
+            let unreadFriends = JSON.parse(localStorage.getItem('unread_friends') || '[]');
+            let unreadGroups = JSON.parse(localStorage.getItem('unread_groups') || '[]');
+
+            $('.friendRow').each(function() {
+                let username = $(this).data('username');
+                if (unreadFriends.includes(username)) {
+                    $(this).find('.unread-bell').show();
+                } else {
+                    $(this).find('.unread-bell').hide();
+                }
+            });
+
+            $('.groupRow').each(function() {
+                let groupid = $(this).data('groupid').toString();
+                if (unreadGroups.includes(groupid)) {
+                    $(this).find('.unread-bell').show();
+                } else {
+                    $(this).find('.unread-bell').hide();
+                }
+            });
+        };
+
+        window.clearUnreadFriend = function(username) {
+            let unreadFriends = JSON.parse(localStorage.getItem('unread_friends') || '[]');
+            unreadFriends = unreadFriends.filter(u => u !== username);
+            localStorage.setItem('unread_friends', JSON.stringify(unreadFriends));
+        };
+
+        window.clearUnreadGroup = function(groupId) {
+            let unreadGroups = JSON.parse(localStorage.getItem('unread_groups') || '[]');
+            unreadGroups = unreadGroups.filter(g => g !== groupId.toString());
+            localStorage.setItem('unread_groups', JSON.stringify(unreadGroups));
         };
 
         function openDeleteModal(friendName) {
             $("#deleteFriendName").text(friendName);
             $("#confirmDeleteBtn").off("click").on("click", function() {
-                if (wsMain && wsMain.readyState === WebSocket.OPEN) {
-                    wsMain.send(JSON.stringify({
-                        type: 'delete_friend',
-                        target: friendName
-                    }));
-                }
-                setTimeout(() => {
-                    window.location.href = "Delete_Friend/?name=" + encodeURIComponent(friendName);
-                }, 100);
+                window.location.href = "Delete_Friend/?name=" + encodeURIComponent(friendName);
             });
             $("#deleteFriendModal").css("display", "flex");
             setTimeout(() => $("#deleteFriendModal").addClass("show"), 10);

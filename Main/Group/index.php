@@ -58,6 +58,28 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
         </script>
         <?php unset($_SESSION['pendingAlert']); ?>
     <?php endif; ?>
+    <?php if (isset($_SESSION['pending_ws_events']) && is_array($_SESSION['pending_ws_events']) && count($_SESSION['pending_ws_events']) > 0): ?>
+        <script>
+            window.addEventListener('load', function() {
+                var pendingEvents = <?php echo json_encode($_SESSION['pending_ws_events']); ?>;
+                var attemptSocket = function() {
+                    if (window.wsMain && window.wsMain.readyState === WebSocket.OPEN) {
+                        pendingEvents.forEach(function(evt) {
+                            window.wsMain.send(JSON.stringify(evt));
+                        });
+                    } else if (window.ws && window.ws.readyState === WebSocket.OPEN) {
+                        pendingEvents.forEach(function(evt) {
+                            window.ws.send(JSON.stringify(evt));
+                        });
+                    } else {
+                        setTimeout(attemptSocket, 500);
+                    }
+                };
+                attemptSocket();
+            });
+        </script>
+        <?php unset($_SESSION['pending_ws_events']); ?>
+    <?php endif; ?>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         const currentTheme = localStorage.getItem('theme') || 'dark';
@@ -350,15 +372,7 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
             $("#destroyGroupModal").css("display", "flex");
             setTimeout(() => $("#destroyGroupModal").addClass("show"), 10);
             $("#confirmDestroyBtn").off("click").on("click", function() {
-                if (ws && ws.readyState === WebSocket.OPEN) {
-                    ws.send(JSON.stringify({
-                        type: 'destroy_group',
-                        tname: tname
-                    }));
-                }
-                setTimeout(() => {
-                    window.location.href = "Destroy_Group/?group_id=<?php echo $_REQUEST['group_id']; ?>";
-                }, 100);
+                window.location.href = "Destroy_Group/?group_id=<?php echo $_REQUEST['group_id']; ?>";
             });
         }
 
@@ -1099,17 +1113,7 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
 
             window.confirmKickMember = function() {
                 if (pendingKickMember) {
-                    if (ws && ws.readyState === WebSocket.OPEN) {
-                        ws.send(JSON.stringify({
-                            type: 'kick_user',
-                            tname: tname,
-                            target: pendingKickMember
-                        }));
-                    }
-                    setTimeout(() => {
-                        window.location.href = "../../kickMember.php?group_id=<?php echo $_REQUEST['group_id'] ?? ''; ?>&member=" + encodeURIComponent(pendingKickMember);
-                    }, 100);
-                    closeKickMemberModal();
+                    window.location.href = "../../kickMember.php?group_id=<?php echo $_REQUEST['group_id'] ?? ''; ?>&member=" + encodeURIComponent(pendingKickMember);
                 }
             };
 

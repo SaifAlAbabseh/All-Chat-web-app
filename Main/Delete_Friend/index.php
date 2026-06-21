@@ -15,6 +15,10 @@ if(isset($_REQUEST) && isset($_REQUEST["name"]) && isset($_SESSION) && isset($_S
         if ($stmt && mysqli_stmt_execute($stmt)) {}
     }
     mysqli_close($conn);
+    $_SESSION['pending_ws_events'][] = [
+        'type' => 'delete_friend',
+        'target' => $fName
+    ];
     header("Location:../");
 }
 else{

@@ -30,7 +30,7 @@ function formatMessage($message)
         } else if (in_array($ext, ['mp3', 'wav', 'weba', 'ogg'])) {
             return "<br/><div class='custom-audio-player' data-src='" . $fullPath . "'><button class='audio-play-btn' type='button'>▶</button><div class='audio-progress-container'><div class='audio-progress-bar'></div></div><span class='audio-time'>0:00</span></div>";
         } else {
-            return "<br/><a href='" . $fullPath . "' target='_blank' class='chatFileLink' style='display:inline-block; margin-top:5px; padding:5px 10px; border-radius:10px; text-decoration:none; color:inherit;'>📎 " . $name . "</a>";
+            return "<br/><a href='" . $fullPath . "' target='_blank' class='chatFileLink' style='display:inline-block; margin-top:5px; padding:5px 10px; border-radius:10px; text-decoration:none; color:inherit; max-width:100%; box-sizing:border-box; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; vertical-align:middle;'>📎 " . $name . "</a>";
         }
     }, $message);
     

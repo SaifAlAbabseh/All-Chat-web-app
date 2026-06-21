@@ -28,6 +28,11 @@ if (isset($_SESSION) && isset($_SESSION["who"]) && isset($_REQUEST) && isset($_R
                     mysqli_stmt_bind_param($stmt3, "s", $user_to_add);
                     if (mysqli_stmt_execute($stmt3)) {
                         $_SESSION['pendingAlert'] = $_REQUEST["user"] . ' was added to the group successfully!';
+                        $_SESSION['pending_ws_events'][] = [
+                            'type' => 'add_group_member',
+                            'tname' => 'g'.$_REQUEST["group_id"],
+                            'target' => $user_to_add
+                        ];
                         header("Location:Main/Group/?group_id=" . $_REQUEST["group_id"]);
                         exit();
                     } else {

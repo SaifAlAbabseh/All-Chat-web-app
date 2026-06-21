@@ -56,10 +56,27 @@ $(document).ready(function () {
         const friends_url = url;
         generateURL("groupsync.php", 1).then(url => {
             const groups_url = url;
-            setInterval(function () {
-                $("#innerData").load(friends_url);
-                $("#groupsInnerData").load(groups_url);
-            }, 2000);
+            
+            // Initial load
+            $("#innerData").load(friends_url, function() {
+                if (window.restoreUnreadState) window.restoreUnreadState();
+            });
+            $("#groupsInnerData").load(groups_url, function() {
+                if (window.restoreUnreadState) window.restoreUnreadState();
+            });
+            
+            // Expose globally to be called from websocket events
+            window.reloadFriendsList = function() {
+                $("#innerData").load(friends_url, function() {
+                    if (window.restoreUnreadState) window.restoreUnreadState();
+                });
+            };
+            
+            window.reloadGroupsList = function() {
+                $("#groupsInnerData").load(groups_url, function() {
+                    if (window.restoreUnreadState) window.restoreUnreadState();
+                });
+            };
         });
     });
 });

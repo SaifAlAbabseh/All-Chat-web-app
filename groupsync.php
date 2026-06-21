@@ -31,14 +31,19 @@ if (isset($_SESSION) && isset($_SESSION["who"])) {
                     $admin_badge = "<div style='margin-top: 5px; padding: 2px 6px; font-size: 0.65rem; font-weight: 800; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.4); text-transform: uppercase; letter-spacing: 0.5px;'>Admin</div>";
                 }
                 echo "
-                                    <div class='groupRow' title= '" . htmlspecialchars($group_name) . "'>
+                                    <div class='groupRow' data-groupid='" . htmlspecialchars($group_id, ENT_QUOTES) . "' title='" . htmlspecialchars($group_name, ENT_QUOTES) . "'>
+                                        <div class='unread-bell' style='display:none;'>
+                                            <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' style='width: 16px; height: 16px; margin: auto; display: block;'>
+                                                <path d='M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.89 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z' fill='currentColor'/>
+                                            </svg>
+                                        </div>
                                         <div style='display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;'>
-                                            <img src='View_Group_Image/?group_id=" . $group_id . "' width='60px' height='60px' style='border-radius:50%; object-fit: cover;'/>
+                                            <img src='View_Group_Image/?group_id=" . urlencode($group_id) . "' width='60px' height='60px' style='border-radius:50%; object-fit: cover;'/>
                                             " . $admin_badge . "
                                         </div>
                                         <h2 class='friendUsername'>" . htmlspecialchars($group_name) . "</h2> 
                                         <div class='bubble-btn-container'>
-                                            <a href='Group/?group_id=" . $group_id . "' class='bubble-btn chat' title='Enter Group'>&#128172;</a>
+                                            <a href='Group/?group_id=" . urlencode($group_id) . "' class='bubble-btn chat' title='Enter Group' onclick='clearUnreadGroup(\"" . htmlspecialchars($group_id, ENT_QUOTES) . "\")'>&#128172;</a>
                                         </div>
                                     </div>
                                     ";

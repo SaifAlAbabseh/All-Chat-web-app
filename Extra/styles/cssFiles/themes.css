@@ -1257,6 +1257,7 @@ body.light-mode .hasNotifications {
     width: 140px;
     height: 195px;
     box-sizing: border-box;
+    position: relative;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 

@@ -24,6 +24,10 @@ else{
         if($second_result){
             $image_path = "../../../Extra/styles/images/groups_images/i" . $group_id . ".png";
             if(unlink($image_path)){
+                $_SESSION['pending_ws_events'][] = [
+                    'type' => 'destroy_group',
+                    'tname' => $second_group_table_name
+                ];
                 header("Location:../../");
             }
             else{
