@@ -11,7 +11,11 @@ function formatMessage($message)
 
     // Format if there is links in it
     $message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
-    
+    // Format URLs FIRST to avoid breaking other tags
+    $pattern = '/(https?:\/\/[^\s]+?)(?=\[\/REPLY\]|\[REPLY:|\[FILE:|\s|$)/';
+    $replacement = '<a href="$1" target="_blank" rel="noopener noreferrer" class="chatMessageLink">$1</a>';
+    $message = preg_replace($pattern, $replacement, $message);
+
     // Format files: [FILE:path:name]
     $filePattern = '/\[FILE:\s*(.+?):\s*(.+?)\]/';
     $message = preg_replace_callback($filePattern, function($matches) use ($urlMainPath) {
@@ -33,10 +37,7 @@ function formatMessage($message)
             return "<br/><a href='" . $fullPath . "' target='_blank' class='chatFileLink' style='display:inline-block; margin-top:5px; padding:5px 10px; border-radius:10px; text-decoration:none; color:inherit; max-width:100%; box-sizing:border-box; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; vertical-align:middle;'>📎 " . $name . "</a>";
         }
     }, $message);
-    
-    $pattern = '/(https?:\/\/[^\s]+)/';
-    $replacement = '<a href="$1" target="_blank" rel="noopener noreferrer" class="chatMessageLink">$1</a>';
-    $message = preg_replace($pattern, $replacement, $message);
+
 
     // Format replies
     $replyPattern = '/\[REPLY:(.*?)\](.*?)\[\/REPLY\]/s';

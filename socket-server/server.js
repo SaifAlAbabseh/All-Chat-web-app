@@ -58,6 +58,11 @@ function formatMessageNode(msg) {
         };
         decoded = escapeHtml(decoded);
 
+        // PHP's preg_replace for links (done FIRST to avoid breaking tags)
+        const pattern = /(https?:\/\/[^\s]+?)(?=\[\/REPLY\]|\[REPLY:|\[FILE:|\s|$)/g;
+        const replacement = '<a href="$1" target="_blank" rel="noopener noreferrer" class="chatMessageLink">$1</a>';
+        decoded = decoded.replace(pattern, replacement);
+
         // Format files: [FILE:path:name]
         decoded = decoded.replace(/\[FILE:\s*(.+?):\s*(.+?)\]/g, (match, filepath, name) => {
             const filename = path.basename(filepath);
@@ -82,10 +87,6 @@ function formatMessageNode(msg) {
         const replyReplacement = '<div class="reply-block"><div class="reply-header">$1</div><div class="reply-text">$2</div></div>';
         decoded = decoded.replace(replyPattern, replyReplacement);
 
-        // PHP's preg_replace for links
-        const pattern = /(https?:\/\/[^\s]+)/g;
-        const replacement = '<a href="$1" target="_blank" rel="noopener noreferrer" class="chatMessageLink">$1</a>';
-        decoded = decoded.replace(pattern, replacement);
 
         // Format mentions
         decoded = decoded.replace(/(?<!\w)@(\w+)/g, '<span class="mention-text">@$1</span>');
