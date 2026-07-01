@@ -425,12 +425,12 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
     </div>
     <div class="main_box" id="main_box-id">
         <div class="allchat_image_box">
-            <img src="Extra/styles/images/main.png" alt="all_chat image" width="400px" height="400px" />
+            <img src="<?= asset('Extra/styles/images/main.png') ?>" alt="all_chat image" width="400px" height="400px" />
         </div>
         <div class="forms_wrapper" id="forms_wrapper">
             <div class="forms_slider" id="forms_slider">
             <div class="login_box" id="login_box">
-                <img src="Extra/styles/images/main.png" alt="All Chat Logo" class="mobile-logo" />
+                <img src="<?= asset('Extra/styles/images/main.png') ?>" alt="All Chat Logo" class="mobile-logo" />
                 <h1 class="boxupperlabel">
                     Login
                 </h1>
@@ -481,7 +481,7 @@ if (isset($_SESSION) && isset($_SESSION["code"])) {
                 <button class="goBackToLoginButton" onclick="switchToSignupForm(false)">
                     &lt; Go back to login
                 </button>
-                <img src="Extra/styles/images/main.png" alt="All Chat Logo" class="mobile-logo" />
+                <img src="<?= asset('Extra/styles/images/main.png') ?>" alt="All Chat Logo" class="mobile-logo" />
                 <h1 class="boxupperlabel">
                     Sign Up
                 </h1>

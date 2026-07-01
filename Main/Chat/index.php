@@ -187,7 +187,7 @@ if (isset($_SESSION["who"]) && isset($_REQUEST["with"])) {
                         ?>
                     </h2>
                     <a onclick="showChatSettingsBox()" title="Chat Settings" class="settingsIconClickable" href="#" style="margin-left:auto; display:flex; align-items:center;">
-                        <img class="settingsIcon" src="../../Extra/styles/images/settings.png" alt="settings icon" style="width:30px; height:30px;">
+                        <img class="settingsIcon" src="<?= asset('../../Extra/styles/images/settings.png') ?>" alt="settings icon" style="width:30px; height:30px;">
                     </a>
                 </div>
                 <div id="chatBox" style="position: relative;">

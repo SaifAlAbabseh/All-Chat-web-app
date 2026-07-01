@@ -657,7 +657,7 @@ if (isset($_POST) && isset($_POST["rejectFriendRequestButton"])) {
                         100% { transform: translateY(0px); }
                     }
                 </style>
-                <img src="../Extra/styles/images/main.png" alt="All Chat Brand Logo" class="brand-logo-img" />
+                <img src="<?= asset('../Extra/styles/images/main.png') ?>" alt="All Chat Brand Logo" class="brand-logo-img" />
                 <hr class="hrLine">
                 <div class="menuContainer">
                     <a href="Add/" class="link" id="addLink">Add New Friend</a>

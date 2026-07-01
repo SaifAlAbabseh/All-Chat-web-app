@@ -478,7 +478,7 @@ require_once(dirname(__DIR__, 2) . '/ws_auth.php');
                             ?>
                         </h2>
                         <a onclick="showGroupInfoBox()" title="Group Info" class="settingsIconClickable" href="#" style="margin-left:auto; display:flex; align-items:center;">
-                            <img class="settingsIcon" src="../../Extra/styles/images/settings.png" alt="settings icon" style="width:30px; height:30px;">
+                            <img class="settingsIcon" src="<?= asset('../../Extra/styles/images/settings.png') ?>" alt="settings icon" style="width:30px; height:30px;">
                         </a>
                         <?php
                         if ($check_result_row[2] == "leader" || $check_result_row[1] == $_SESSION["who"]) {
