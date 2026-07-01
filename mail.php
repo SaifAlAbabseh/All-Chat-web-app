@@ -11,10 +11,11 @@ function sendFriendRequestMail($conn, $to_email, $to_name, $requester_username)
 
     $imageName = getUserImageName($conn, $requester_username);
     $imagePath = 'Extra/styles/images/users_images/' . $imageName . '.png';
+    $siteLogoPath = 'Extra/styles/images/main.png';
 
     $body = str_replace(
-        ['{{IMAGE_SOURCE}}', '{{REQUESTER_USERNAME}}', '{{YEAR}}', '{{SITE_NAME}}'],
-        [$imagePath, $requester_username, date('Y'), $site_name],
+        ['{{SITE_LOGO}}', '{{IMAGE_SOURCE}}', '{{REQUESTER_USERNAME}}', '{{YEAR}}', '{{SITE_NAME}}'],
+        [$siteLogoPath, $imagePath, $requester_username, date('Y'), $site_name],
         $template
     );
     return sendMail($to_email, $to_name, $subject, $body);
@@ -25,9 +26,11 @@ function sendVerificationCodeMail($action, $to_email, $to_name, $code)
     $subject = "All Chat Email Verification Code";
     $template = file_get_contents(__DIR__ . "/email_templates/" . $action . "_verification_template.html");
     $site_name = "All Chat";
+    $siteLogoPath = 'Extra/styles/images/main.png';
+
     $body = str_replace(
-        ['{{CODE}}', '{{YEAR}}', '{{SITE_NAME}}'],
-        [$code, date('Y'), $site_name],
+        ['{{SITE_LOGO}}', '{{CODE}}', '{{YEAR}}', '{{SITE_NAME}}'],
+        [$siteLogoPath, $code, date('Y'), $site_name],
         $template
     );
     return sendMail($to_email, $to_name, $subject, $body);
